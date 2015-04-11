@@ -1,0 +1,193 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{58C61D4A-CED8-4014-BD0B-D6606F2D6053}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Chat.DAL</RootNamespace>
+    <AssemblyName>Chat.DAL</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="aspnet_Applications.cs">
+      <DependentUpon>ChatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="aspnet_Membership.cs">
+      <DependentUpon>ChatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="aspnet_Membership_GetPasswordWithFormat_Result.cs">
+      <DependentUpon>ChatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="aspnet_Membership_GetPassword_Result.cs">
+      <DependentUpon>ChatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="aspnet_Membership_GetUserByName_Result.cs">
+      <DependentUpon>ChatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="aspnet_Membership_GetUserByUserId_Result.cs">
+      <DependentUpon>ChatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="aspnet_Paths.cs">
+      <DependentUpon>ChatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="aspnet_PersonalizationAllUsers.cs">
+      <DependentUpon>ChatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="aspnet_PersonalizationPerUser.cs">
+      <DependentUpon>ChatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="aspnet_Profile.cs">
+      <DependentUpon>ChatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="aspnet_Profile_GetProperties_Result.cs">
+      <DependentUpon>ChatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="aspnet_Roles.cs">
+      <DependentUpon>ChatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="aspnet_SchemaVersions.cs">
+      <DependentUpon>ChatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="aspnet_Users.cs">
+      <DependentUpon>ChatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="aspnet_UsersInRoles_RemoveUsersFromRoles_Result.cs">
+      <DependentUpon>ChatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="aspnet_WebEvent_Events.cs">
+      <DependentUpon>ChatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ChatModel.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ChatModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ChatModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ChatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ChatModel.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ChatModel.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="tblChatRoom.cs">
+      <DependentUpon>ChatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="tblChatUser.cs">
+      <DependentUpon>ChatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="tblChatUserStatu.cs">
+      <DependentUpon>ChatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="tblRoomMessageSession.cs">
+      <DependentUpon>ChatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="tblRoomUser.cs">
+      <DependentUpon>ChatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="tblUserLogin.cs">
+      <DependentUpon>ChatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="vw_aspnet_Applications.cs">
+      <DependentUpon>ChatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="vw_aspnet_MembershipUsers.cs">
+      <DependentUpon>ChatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="vw_aspnet_Profiles.cs">
+      <DependentUpon>ChatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="vw_aspnet_Roles.cs">
+      <DependentUpon>ChatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="vw_aspnet_Users.cs">
+      <DependentUpon>ChatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="vw_aspnet_UsersInRoles.cs">
+      <DependentUpon>ChatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="vw_aspnet_WebPartState_Paths.cs">
+      <DependentUpon>ChatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="vw_aspnet_WebPartState_Shared.cs">
+      <DependentUpon>ChatModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="vw_aspnet_WebPartState_User.cs">
+      <DependentUpon>ChatModel.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <EntityDeploy Include="ChatModel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>ChatModel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="ChatModel.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>ChatModel.edmx</DependentUpon>
+      <LastGenOutput>ChatModel.Context.cs</LastGenOutput>
+    </None>
+    <None Include="ChatModel.edmx.diagram">
+      <DependentUpon>ChatModel.edmx</DependentUpon>
+    </None>
+    <None Include="ChatModel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>ChatModel.edmx</DependentUpon>
+      <LastGenOutput>ChatModel.cs</LastGenOutput>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

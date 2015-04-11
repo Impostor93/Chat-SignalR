@@ -1,0 +1,10 @@
+D:\Vs2012 Project\Chat SignalR\Chat\Chat.DAL\bin\Debug\Chat.DAL.dll.config
+D:\Vs2012 Project\Chat SignalR\Chat\Chat.DAL\bin\Debug\Chat.DAL.dll
+D:\Vs2012 Project\Chat SignalR\Chat\Chat.DAL\bin\Debug\Chat.DAL.pdb
+D:\Vs2012 Project\Chat SignalR\Chat\Chat.DAL\bin\Debug\EntityFramework.dll
+D:\Vs2012 Project\Chat SignalR\Chat\Chat.DAL\bin\Debug\EntityFramework.SqlServer.dll
+D:\Vs2012 Project\Chat SignalR\Chat\Chat.DAL\bin\Debug\EntityFramework.xml
+D:\Vs2012 Project\Chat SignalR\Chat\Chat.DAL\bin\Debug\EntityFramework.SqlServer.xml
+D:\Vs2012 Project\Chat SignalR\Chat\Chat.DAL\obj\Debug\Chat.DAL.dll
+D:\Vs2012 Project\Chat SignalR\Chat\Chat.DAL\obj\Debug\Chat.DAL.pdb
+D:\Vs2012 Project\Chat SignalR\Chat\Chat.DAL\obj\Debug\Chat.DAL.csprojResolveAssemblyReference.cache

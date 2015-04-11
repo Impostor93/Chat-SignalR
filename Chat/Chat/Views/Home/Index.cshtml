@@ -1,0 +1,81 @@
+﻿@{
+    ViewBag.Title = "Chat";
+}
+
+<div class="jumbotron" style="min-height: 500px;">
+    <div class="GlobalContentDiv">
+    </div>
+    <div id="Chat" class="Chat">
+        <div id="UserList" class="UserListContent">
+            <div id="listContent" style="float: left;padding-top: 15px;">
+                <ul id="UserInList" class="UserInList"></ul>
+            </div>
+            <div class="ListUserFooter">
+                <div>
+                    <textarea rows="2" class="SearchUser" onfocus="TextAreaOnFocus(this)" onblur="TextAreaOnBlur(this)">Search</textarea>
+                </div>
+                <div id="Settings" onclick="ShowSetting(this)" class="Status" style="background-image:url(@Url.Content("~/ChatImage/settingsButton.png"));background-repeat: no-repeat;background-size: contain;">
+                </div>
+                <div id="Status" class="Status">
+                </div>
+            </div>
+            <div id="Conteiner" class="divConteiner">
+
+            </div>
+        </div>
+        <div id="SettingsDiv" class="SettingsDiv" style="display:none">
+            <ul class="settingsContent">
+                <li class="SettigsElment">
+                    <div onclick="ChangeStatus(this)" status="1"><span>OnLine </span> <img src="@Url.Content("~/ChatImage/online.png")" style="width: 15px;" /></div>
+                </li>
+                <li class="SettigsElment">
+                    <div><span onclick="ChangeStatus(this)" status="2">OffLine </span><img src="@Url.Content("~/ChatImage/offline.png")" style="width: 15px;" /></div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/ChatStyle/ChatStyle.css")" />
+    @*<link rel="stylesheet" type="text/css" href="@Url.Content("~/Style/MasterStyle.css")" />*@
+
+    <style>
+        .divConteiner {
+            float: right;
+            padding-right: 4px;
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            margin-right: 240px;
+            height: 35px;
+        }
+        .header {
+            width: 100%;
+            background: gray;
+            height: 25px;
+        }
+        
+        .Content {
+            width: 100%;
+            height: 78%;
+            overflow-y: scroll;
+            font-size: 9pt;
+            font-family: 'lucida grande',tahoma,verdana,arial,sans-serif;
+            word-wrap: break-word;
+            text-align: left;
+            white-space: pre-wrap;
+        }
+        .DownOfContent {
+            position: relative;
+            text-align: center;
+            border-top: 1px solid red;
+        }
+        
+    </style>
+
+    <script type="text/javascript">
+        function SizeListOfUsers() {
+            document.getElementById("UserInList").style.maxHeight = (document.documentElement.clientHeight - 50) + "px"
+            document.getElementById("listContent").style.maxHeight = (document.documentElement.clientHeight - 55) + "px"
+        }
+    </script>
+    

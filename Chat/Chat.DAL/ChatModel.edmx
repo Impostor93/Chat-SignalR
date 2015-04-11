@@ -1,0 +1,2564 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="ChatModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="aspnet_Applications">
+          <Key>
+            <PropertyRef Name="ApplicationId" />
+          </Key>
+          <Property Name="ApplicationName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="LoweredApplicationName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="ApplicationId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="256" />
+        </EntityType>
+        <EntityType Name="aspnet_Membership">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="ApplicationId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Password" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="PasswordFormat" Type="int" Nullable="false" />
+          <Property Name="PasswordSalt" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="MobilePIN" Type="nvarchar" MaxLength="16" />
+          <Property Name="Email" Type="nvarchar" MaxLength="256" />
+          <Property Name="LoweredEmail" Type="nvarchar" MaxLength="256" />
+          <Property Name="PasswordQuestion" Type="nvarchar" MaxLength="256" />
+          <Property Name="PasswordAnswer" Type="nvarchar" MaxLength="128" />
+          <Property Name="IsApproved" Type="bit" Nullable="false" />
+          <Property Name="IsLockedOut" Type="bit" Nullable="false" />
+          <Property Name="CreateDate" Type="datetime" Nullable="false" />
+          <Property Name="LastLoginDate" Type="datetime" Nullable="false" />
+          <Property Name="LastPasswordChangedDate" Type="datetime" Nullable="false" />
+          <Property Name="LastLockoutDate" Type="datetime" Nullable="false" />
+          <Property Name="FailedPasswordAttemptCount" Type="int" Nullable="false" />
+          <Property Name="FailedPasswordAttemptWindowStart" Type="datetime" Nullable="false" />
+          <Property Name="FailedPasswordAnswerAttemptCount" Type="int" Nullable="false" />
+          <Property Name="FailedPasswordAnswerAttemptWindowStart" Type="datetime" Nullable="false" />
+          <Property Name="Comment" Type="ntext" />
+        </EntityType>
+        <EntityType Name="aspnet_Paths">
+          <Key>
+            <PropertyRef Name="PathId" />
+          </Key>
+          <Property Name="ApplicationId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="PathId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Path" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="LoweredPath" Type="nvarchar" MaxLength="256" Nullable="false" />
+        </EntityType>
+        <EntityType Name="aspnet_PersonalizationAllUsers">
+          <Key>
+            <PropertyRef Name="PathId" />
+          </Key>
+          <Property Name="PathId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="PageSettings" Type="image" Nullable="false" />
+          <Property Name="LastUpdatedDate" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="aspnet_PersonalizationPerUser">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="PathId" Type="uniqueidentifier" />
+          <Property Name="UserId" Type="uniqueidentifier" />
+          <Property Name="PageSettings" Type="image" Nullable="false" />
+          <Property Name="LastUpdatedDate" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="aspnet_Profile">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="PropertyNames" Type="ntext" Nullable="false" />
+          <Property Name="PropertyValuesString" Type="ntext" Nullable="false" />
+          <Property Name="PropertyValuesBinary" Type="image" Nullable="false" />
+          <Property Name="LastUpdatedDate" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="aspnet_Roles">
+          <Key>
+            <PropertyRef Name="RoleId" />
+          </Key>
+          <Property Name="ApplicationId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="RoleId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="RoleName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="LoweredRoleName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="256" />
+        </EntityType>
+        <EntityType Name="aspnet_SchemaVersions">
+          <Key>
+            <PropertyRef Name="Feature" />
+            <PropertyRef Name="CompatibleSchemaVersion" />
+          </Key>
+          <Property Name="Feature" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="CompatibleSchemaVersion" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="IsCurrentVersion" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="aspnet_Users">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="ApplicationId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="LoweredUserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="MobileAlias" Type="nvarchar" MaxLength="16" />
+          <Property Name="IsAnonymous" Type="bit" Nullable="false" />
+          <Property Name="LastActivityDate" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="aspnet_UsersInRoles">
+          <Key>
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="RoleId" />
+          </Key>
+          <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="RoleId" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="aspnet_WebEvent_Events">
+          <Key>
+            <PropertyRef Name="EventId" />
+          </Key>
+          <Property Name="EventId" Type="char" MaxLength="32" Nullable="false" />
+          <Property Name="EventTimeUtc" Type="datetime" Nullable="false" />
+          <Property Name="EventTime" Type="datetime" Nullable="false" />
+          <Property Name="EventType" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="EventSequence" Type="decimal" Precision="19" Scale="0" Nullable="false" />
+          <Property Name="EventOccurrence" Type="decimal" Precision="19" Scale="0" Nullable="false" />
+          <Property Name="EventCode" Type="int" Nullable="false" />
+          <Property Name="EventDetailCode" Type="int" Nullable="false" />
+          <Property Name="Message" Type="nvarchar" MaxLength="1024" />
+          <Property Name="ApplicationPath" Type="nvarchar" MaxLength="256" />
+          <Property Name="ApplicationVirtualPath" Type="nvarchar" MaxLength="256" />
+          <Property Name="MachineName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="RequestUrl" Type="nvarchar" MaxLength="1024" />
+          <Property Name="ExceptionType" Type="nvarchar" MaxLength="256" />
+          <Property Name="Details" Type="ntext" />
+        </EntityType>
+        <EntityType Name="tblChatRooms">
+          <Key>
+            <PropertyRef Name="IdRoom" />
+          </Key>
+          <Property Name="IdRoom" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RoomIdentifier" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="HashIdentifier" Type="int" />
+          <Property Name="UserInRoom" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="UserCreater" Type="nvarchar" MaxLength="50" />
+          <Property Name="DateCreated" Type="datetime" />
+          <Property Name="DateChanged" Type="datetime" />
+        </EntityType>
+        <EntityType Name="tblChatUser">
+          <Key>
+            <PropertyRef Name="IdUser" />
+          </Key>
+          <Property Name="IdUser" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdLogin" Type="int" Nullable="false" />
+          <Property Name="ChatUserIdentifier" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ChatUserName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="IdChatUserStatus" Type="int" Nullable="false" />
+          <Property Name="LastSeen" Type="datetime" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="50" />
+          <Property Name="DateCreated" Type="datetime" />
+          <Property Name="DateChange" Type="datetime" />
+        </EntityType>
+        <EntityType Name="tblChatUserStatus">
+          <Key>
+            <PropertyRef Name="IdStatus" />
+          </Key>
+          <Property Name="IdStatus" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="StatusName" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="MakeOperation" Type="bit" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="50" />
+          <Property Name="DateCreated" Type="datetime" />
+          <Property Name="DateChange" Type="datetime" />
+        </EntityType>
+        <EntityType Name="tblRoomMessageSession">
+          <Key>
+            <PropertyRef Name="IdSassion" />
+          </Key>
+          <Property Name="IdSassion" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdRoom" Type="int" Nullable="false" />
+          <Property Name="SessionStartDate" Type="datetime" Nullable="false" />
+          <Property Name="SessionEndDate" Type="datetime" Nullable="false" />
+          <Property Name="SessionMessages" Type="ntext" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="50" />
+          <Property Name="DateCreated" Type="datetime" />
+          <Property Name="DateChanged" Type="datetime" />
+        </EntityType>
+        <EntityType Name="tblRoomUsers">
+          <Key>
+            <PropertyRef Name="IdRoom" />
+            <PropertyRef Name="IdUser" />
+          </Key>
+          <Property Name="IdRoom" Type="int" Nullable="false" />
+          <Property Name="IdUser" Type="int" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="50" />
+          <Property Name="DateChange" Type="datetime" />
+          <Property Name="DateCreated" Type="datetime" />
+        </EntityType>
+        <EntityType Name="tblUserLogins">
+          <Key>
+            <PropertyRef Name="IdLogin" />
+          </Key>
+          <Property Name="IdLogin" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="DateCreated" Type="datetime" />
+          <Property Name="DateChanged" Type="datetime" />
+          <Property Name="AspAuthenticationUserId" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Chat.dbo.vw_aspnet_Applications' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vw_aspnet_Applications">
+          <Key>
+            <PropertyRef Name="ApplicationName" />
+            <PropertyRef Name="LoweredApplicationName" />
+            <PropertyRef Name="ApplicationId" />
+          </Key>
+          <Property Name="ApplicationName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="LoweredApplicationName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="ApplicationId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="256" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Chat.dbo.vw_aspnet_MembershipUsers' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vw_aspnet_MembershipUsers">
+          <Key>
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="PasswordFormat" />
+            <PropertyRef Name="IsApproved" />
+            <PropertyRef Name="IsLockedOut" />
+            <PropertyRef Name="CreateDate" />
+            <PropertyRef Name="LastLoginDate" />
+            <PropertyRef Name="LastPasswordChangedDate" />
+            <PropertyRef Name="LastLockoutDate" />
+            <PropertyRef Name="FailedPasswordAttemptCount" />
+            <PropertyRef Name="FailedPasswordAttemptWindowStart" />
+            <PropertyRef Name="FailedPasswordAnswerAttemptCount" />
+            <PropertyRef Name="FailedPasswordAnswerAttemptWindowStart" />
+            <PropertyRef Name="ApplicationId" />
+            <PropertyRef Name="UserName" />
+            <PropertyRef Name="IsAnonymous" />
+            <PropertyRef Name="LastActivityDate" />
+          </Key>
+          <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="PasswordFormat" Type="int" Nullable="false" />
+          <Property Name="MobilePIN" Type="nvarchar" MaxLength="16" />
+          <Property Name="Email" Type="nvarchar" MaxLength="256" />
+          <Property Name="LoweredEmail" Type="nvarchar" MaxLength="256" />
+          <Property Name="PasswordQuestion" Type="nvarchar" MaxLength="256" />
+          <Property Name="PasswordAnswer" Type="nvarchar" MaxLength="128" />
+          <Property Name="IsApproved" Type="bit" Nullable="false" />
+          <Property Name="IsLockedOut" Type="bit" Nullable="false" />
+          <Property Name="CreateDate" Type="datetime" Nullable="false" />
+          <Property Name="LastLoginDate" Type="datetime" Nullable="false" />
+          <Property Name="LastPasswordChangedDate" Type="datetime" Nullable="false" />
+          <Property Name="LastLockoutDate" Type="datetime" Nullable="false" />
+          <Property Name="FailedPasswordAttemptCount" Type="int" Nullable="false" />
+          <Property Name="FailedPasswordAttemptWindowStart" Type="datetime" Nullable="false" />
+          <Property Name="FailedPasswordAnswerAttemptCount" Type="int" Nullable="false" />
+          <Property Name="FailedPasswordAnswerAttemptWindowStart" Type="datetime" Nullable="false" />
+          <Property Name="Comment" Type="ntext" />
+          <Property Name="ApplicationId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="MobileAlias" Type="nvarchar" MaxLength="16" />
+          <Property Name="IsAnonymous" Type="bit" Nullable="false" />
+          <Property Name="LastActivityDate" Type="datetime" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Chat.dbo.vw_aspnet_Profiles' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vw_aspnet_Profiles">
+          <Key>
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="LastUpdatedDate" />
+          </Key>
+          <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="LastUpdatedDate" Type="datetime" Nullable="false" />
+          <Property Name="DataSize" Type="int" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Chat.dbo.vw_aspnet_Roles' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vw_aspnet_Roles">
+          <Key>
+            <PropertyRef Name="ApplicationId" />
+            <PropertyRef Name="RoleId" />
+            <PropertyRef Name="RoleName" />
+            <PropertyRef Name="LoweredRoleName" />
+          </Key>
+          <Property Name="ApplicationId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="RoleId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="RoleName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="LoweredRoleName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="256" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Chat.dbo.vw_aspnet_Users' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vw_aspnet_Users">
+          <Key>
+            <PropertyRef Name="ApplicationId" />
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="UserName" />
+            <PropertyRef Name="LoweredUserName" />
+            <PropertyRef Name="IsAnonymous" />
+            <PropertyRef Name="LastActivityDate" />
+          </Key>
+          <Property Name="ApplicationId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="LoweredUserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="MobileAlias" Type="nvarchar" MaxLength="16" />
+          <Property Name="IsAnonymous" Type="bit" Nullable="false" />
+          <Property Name="LastActivityDate" Type="datetime" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Chat.dbo.vw_aspnet_UsersInRoles' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vw_aspnet_UsersInRoles">
+          <Key>
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="RoleId" />
+          </Key>
+          <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="RoleId" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Chat.dbo.vw_aspnet_WebPartState_Paths' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vw_aspnet_WebPartState_Paths">
+          <Key>
+            <PropertyRef Name="ApplicationId" />
+            <PropertyRef Name="PathId" />
+            <PropertyRef Name="Path" />
+            <PropertyRef Name="LoweredPath" />
+          </Key>
+          <Property Name="ApplicationId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="PathId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Path" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="LoweredPath" Type="nvarchar" MaxLength="256" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Chat.dbo.vw_aspnet_WebPartState_Shared' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vw_aspnet_WebPartState_Shared">
+          <Key>
+            <PropertyRef Name="PathId" />
+            <PropertyRef Name="LastUpdatedDate" />
+          </Key>
+          <Property Name="PathId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="DataSize" Type="int" />
+          <Property Name="LastUpdatedDate" Type="datetime" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Chat.dbo.vw_aspnet_WebPartState_User' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vw_aspnet_WebPartState_User">
+          <Key>
+            <PropertyRef Name="LastUpdatedDate" />
+          </Key>
+          <Property Name="PathId" Type="uniqueidentifier" />
+          <Property Name="UserId" Type="uniqueidentifier" />
+          <Property Name="DataSize" Type="int" />
+          <Property Name="LastUpdatedDate" Type="datetime" Nullable="false" />
+        </EntityType>
+        <Association Name="FK__aspnet_Me__Appli__31EC6D26">
+          <End Role="aspnet_Applications" Type="Self.aspnet_Applications" Multiplicity="1" />
+          <End Role="aspnet_Membership" Type="Self.aspnet_Membership" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="aspnet_Applications">
+              <PropertyRef Name="ApplicationId" />
+            </Principal>
+            <Dependent Role="aspnet_Membership">
+              <PropertyRef Name="ApplicationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__aspnet_Me__UserI__32E0915F">
+          <End Role="aspnet_Users" Type="Self.aspnet_Users" Multiplicity="1" />
+          <End Role="aspnet_Membership" Type="Self.aspnet_Membership" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="aspnet_Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="aspnet_Membership">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__aspnet_Pa__Appli__6B24EA82">
+          <End Role="aspnet_Applications" Type="Self.aspnet_Applications" Multiplicity="1" />
+          <End Role="aspnet_Paths" Type="Self.aspnet_Paths" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="aspnet_Applications">
+              <PropertyRef Name="ApplicationId" />
+            </Principal>
+            <Dependent Role="aspnet_Paths">
+              <PropertyRef Name="ApplicationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__aspnet_Pe__PathI__72C60C4A">
+          <End Role="aspnet_Paths" Type="Self.aspnet_Paths" Multiplicity="1" />
+          <End Role="aspnet_PersonalizationAllUsers" Type="Self.aspnet_PersonalizationAllUsers" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="aspnet_Paths">
+              <PropertyRef Name="PathId" />
+            </Principal>
+            <Dependent Role="aspnet_PersonalizationAllUsers">
+              <PropertyRef Name="PathId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__aspnet_Pe__PathI__787EE5A0">
+          <End Role="aspnet_Paths" Type="Self.aspnet_Paths" Multiplicity="0..1" />
+          <End Role="aspnet_PersonalizationPerUser" Type="Self.aspnet_PersonalizationPerUser" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="aspnet_Paths">
+              <PropertyRef Name="PathId" />
+            </Principal>
+            <Dependent Role="aspnet_PersonalizationPerUser">
+              <PropertyRef Name="PathId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__aspnet_Pe__UserI__797309D9">
+          <End Role="aspnet_Users" Type="Self.aspnet_Users" Multiplicity="0..1" />
+          <End Role="aspnet_PersonalizationPerUser" Type="Self.aspnet_PersonalizationPerUser" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="aspnet_Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="aspnet_PersonalizationPerUser">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__aspnet_Pr__UserI__48CFD27E">
+          <End Role="aspnet_Users" Type="Self.aspnet_Users" Multiplicity="1" />
+          <End Role="aspnet_Profile" Type="Self.aspnet_Profile" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="aspnet_Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="aspnet_Profile">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__aspnet_Ro__Appli__5441852A">
+          <End Role="aspnet_Applications" Type="Self.aspnet_Applications" Multiplicity="1" />
+          <End Role="aspnet_Roles" Type="Self.aspnet_Roles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="aspnet_Applications">
+              <PropertyRef Name="ApplicationId" />
+            </Principal>
+            <Dependent Role="aspnet_Roles">
+              <PropertyRef Name="ApplicationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__aspnet_Us__Appli__1DE57479">
+          <End Role="aspnet_Applications" Type="Self.aspnet_Applications" Multiplicity="1" />
+          <End Role="aspnet_Users" Type="Self.aspnet_Users" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="aspnet_Applications">
+              <PropertyRef Name="ApplicationId" />
+            </Principal>
+            <Dependent Role="aspnet_Users">
+              <PropertyRef Name="ApplicationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__aspnet_Us__RoleI__5AEE82B9">
+          <End Role="aspnet_Roles" Type="Self.aspnet_Roles" Multiplicity="1" />
+          <End Role="aspnet_UsersInRoles" Type="Self.aspnet_UsersInRoles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="aspnet_Roles">
+              <PropertyRef Name="RoleId" />
+            </Principal>
+            <Dependent Role="aspnet_UsersInRoles">
+              <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__aspnet_Us__UserI__59FA5E80">
+          <End Role="aspnet_Users" Type="Self.aspnet_Users" Multiplicity="1" />
+          <End Role="aspnet_UsersInRoles" Type="Self.aspnet_UsersInRoles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="aspnet_Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="aspnet_UsersInRoles">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblChatUser_tblChatUserStatus">
+          <End Role="tblChatUserStatus" Type="Self.tblChatUserStatus" Multiplicity="1" />
+          <End Role="tblChatUser" Type="Self.tblChatUser" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblChatUserStatus">
+              <PropertyRef Name="IdStatus" />
+            </Principal>
+            <Dependent Role="tblChatUser">
+              <PropertyRef Name="IdChatUserStatus" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblChatUser_tblUserLogin">
+          <End Role="tblUserLogins" Type="Self.tblUserLogins" Multiplicity="1" />
+          <End Role="tblChatUser" Type="Self.tblChatUser" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblUserLogins">
+              <PropertyRef Name="IdLogin" />
+            </Principal>
+            <Dependent Role="tblChatUser">
+              <PropertyRef Name="IdLogin" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblRoomMessageSession_tblChatRooms">
+          <End Role="tblChatRooms" Type="Self.tblChatRooms" Multiplicity="1" />
+          <End Role="tblRoomMessageSession" Type="Self.tblRoomMessageSession" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblChatRooms">
+              <PropertyRef Name="IdRoom" />
+            </Principal>
+            <Dependent Role="tblRoomMessageSession">
+              <PropertyRef Name="IdRoom" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblRoomUsers_tblChatRooms">
+          <End Role="tblChatRooms" Type="Self.tblChatRooms" Multiplicity="1" />
+          <End Role="tblRoomUsers" Type="Self.tblRoomUsers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblChatRooms">
+              <PropertyRef Name="IdRoom" />
+            </Principal>
+            <Dependent Role="tblRoomUsers">
+              <PropertyRef Name="IdRoom" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblRoomUsers_tblChatUser">
+          <End Role="tblChatUser" Type="Self.tblChatUser" Multiplicity="1" />
+          <End Role="tblRoomUsers" Type="Self.tblRoomUsers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblChatUser">
+              <PropertyRef Name="IdUser" />
+            </Principal>
+            <Dependent Role="tblRoomUsers">
+              <PropertyRef Name="IdUser" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblUserLogins_aspnet_Users">
+          <End Role="aspnet_Users" Type="Self.aspnet_Users" Multiplicity="1" />
+          <End Role="tblUserLogins" Type="Self.tblUserLogins" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="aspnet_Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="tblUserLogins">
+              <PropertyRef Name="AspAuthenticationUserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="aspnet_AnyDataInTables" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="TablesToCheck" Type="int" Mode="In" />
+        </Function>
+        <Function Name="aspnet_Applications_CreateApplication" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="ApplicationId" Type="uniqueidentifier" Mode="InOut" />
+        </Function>
+        <Function Name="aspnet_CheckSchemaVersion" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Feature" Type="nvarchar" Mode="In" />
+          <Parameter Name="CompatibleSchemaVersion" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="aspnet_Membership_ChangePasswordQuestionAndAnswer" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+          <Parameter Name="NewPasswordQuestion" Type="nvarchar" Mode="In" />
+          <Parameter Name="NewPasswordAnswer" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="aspnet_Membership_CreateUser" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+          <Parameter Name="Password" Type="nvarchar" Mode="In" />
+          <Parameter Name="PasswordSalt" Type="nvarchar" Mode="In" />
+          <Parameter Name="Email" Type="nvarchar" Mode="In" />
+          <Parameter Name="PasswordQuestion" Type="nvarchar" Mode="In" />
+          <Parameter Name="PasswordAnswer" Type="nvarchar" Mode="In" />
+          <Parameter Name="IsApproved" Type="bit" Mode="In" />
+          <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+          <Parameter Name="CreateDate" Type="datetime" Mode="In" />
+          <Parameter Name="UniqueEmail" Type="int" Mode="In" />
+          <Parameter Name="PasswordFormat" Type="int" Mode="In" />
+          <Parameter Name="UserId" Type="uniqueidentifier" Mode="InOut" />
+        </Function>
+        <Function Name="aspnet_Membership_FindUsersByEmail" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="EmailToMatch" Type="nvarchar" Mode="In" />
+          <Parameter Name="PageIndex" Type="int" Mode="In" />
+          <Parameter Name="PageSize" Type="int" Mode="In" />
+        </Function>
+        <Function Name="aspnet_Membership_FindUsersByName" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="UserNameToMatch" Type="nvarchar" Mode="In" />
+          <Parameter Name="PageIndex" Type="int" Mode="In" />
+          <Parameter Name="PageSize" Type="int" Mode="In" />
+        </Function>
+        <Function Name="aspnet_Membership_GetAllUsers" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="PageIndex" Type="int" Mode="In" />
+          <Parameter Name="PageSize" Type="int" Mode="In" />
+        </Function>
+        <Function Name="aspnet_Membership_GetNumberOfUsersOnline" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="MinutesSinceLastInActive" Type="int" Mode="In" />
+          <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="aspnet_Membership_GetPassword" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+          <Parameter Name="MaxInvalidPasswordAttempts" Type="int" Mode="In" />
+          <Parameter Name="PasswordAttemptWindow" Type="int" Mode="In" />
+          <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+          <Parameter Name="PasswordAnswer" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="aspnet_Membership_GetPasswordWithFormat" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+          <Parameter Name="UpdateLastLoginActivityDate" Type="bit" Mode="In" />
+          <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="aspnet_Membership_GetUserByEmail" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="Email" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="aspnet_Membership_GetUserByName" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+          <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+          <Parameter Name="UpdateLastActivity" Type="bit" Mode="In" />
+        </Function>
+        <Function Name="aspnet_Membership_GetUserByUserId" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="UserId" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+          <Parameter Name="UpdateLastActivity" Type="bit" Mode="In" />
+        </Function>
+        <Function Name="aspnet_Membership_ResetPassword" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+          <Parameter Name="NewPassword" Type="nvarchar" Mode="In" />
+          <Parameter Name="MaxInvalidPasswordAttempts" Type="int" Mode="In" />
+          <Parameter Name="PasswordAttemptWindow" Type="int" Mode="In" />
+          <Parameter Name="PasswordSalt" Type="nvarchar" Mode="In" />
+          <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+          <Parameter Name="PasswordFormat" Type="int" Mode="In" />
+          <Parameter Name="PasswordAnswer" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="aspnet_Membership_SetPassword" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+          <Parameter Name="NewPassword" Type="nvarchar" Mode="In" />
+          <Parameter Name="PasswordSalt" Type="nvarchar" Mode="In" />
+          <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+          <Parameter Name="PasswordFormat" Type="int" Mode="In" />
+        </Function>
+        <Function Name="aspnet_Membership_UnlockUser" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="aspnet_Membership_UpdateUser" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+          <Parameter Name="Email" Type="nvarchar" Mode="In" />
+          <Parameter Name="Comment" Type="ntext" Mode="In" />
+          <Parameter Name="IsApproved" Type="bit" Mode="In" />
+          <Parameter Name="LastLoginDate" Type="datetime" Mode="In" />
+          <Parameter Name="LastActivityDate" Type="datetime" Mode="In" />
+          <Parameter Name="UniqueEmail" Type="int" Mode="In" />
+          <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="aspnet_Membership_UpdateUserInfo" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+          <Parameter Name="IsPasswordCorrect" Type="bit" Mode="In" />
+          <Parameter Name="UpdateLastLoginActivityDate" Type="bit" Mode="In" />
+          <Parameter Name="MaxInvalidPasswordAttempts" Type="int" Mode="In" />
+          <Parameter Name="PasswordAttemptWindow" Type="int" Mode="In" />
+          <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+          <Parameter Name="LastLoginDate" Type="datetime" Mode="In" />
+          <Parameter Name="LastActivityDate" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="aspnet_Paths_CreatePath" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationId" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="Path" Type="nvarchar" Mode="In" />
+          <Parameter Name="PathId" Type="uniqueidentifier" Mode="InOut" />
+        </Function>
+        <Function Name="aspnet_Personalization_GetApplicationId" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="ApplicationId" Type="uniqueidentifier" Mode="InOut" />
+        </Function>
+        <Function Name="aspnet_PersonalizationAdministration_DeleteAllState" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="AllUsersScope" Type="bit" Mode="In" />
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="Count" Type="int" Mode="InOut" />
+        </Function>
+        <Function Name="aspnet_PersonalizationAdministration_FindState" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="AllUsersScope" Type="bit" Mode="In" />
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="PageIndex" Type="int" Mode="In" />
+          <Parameter Name="PageSize" Type="int" Mode="In" />
+          <Parameter Name="Path" Type="nvarchar" Mode="In" />
+          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+          <Parameter Name="InactiveSinceDate" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="aspnet_PersonalizationAdministration_GetCountOfState" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Count" Type="int" Mode="InOut" />
+          <Parameter Name="AllUsersScope" Type="bit" Mode="In" />
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="Path" Type="nvarchar" Mode="In" />
+          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+          <Parameter Name="InactiveSinceDate" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="aspnet_PersonalizationAdministration_ResetSharedState" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Count" Type="int" Mode="InOut" />
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="Path" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="aspnet_PersonalizationAdministration_ResetUserState" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Count" Type="int" Mode="InOut" />
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="InactiveSinceDate" Type="datetime" Mode="In" />
+          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+          <Parameter Name="Path" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="aspnet_PersonalizationAllUsers_GetPageSettings" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="Path" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="aspnet_PersonalizationAllUsers_ResetPageSettings" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="Path" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="aspnet_PersonalizationAllUsers_SetPageSettings" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="Path" Type="nvarchar" Mode="In" />
+          <Parameter Name="PageSettings" Type="image" Mode="In" />
+          <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="aspnet_PersonalizationPerUser_GetPageSettings" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+          <Parameter Name="Path" Type="nvarchar" Mode="In" />
+          <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="aspnet_PersonalizationPerUser_ResetPageSettings" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+          <Parameter Name="Path" Type="nvarchar" Mode="In" />
+          <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="aspnet_PersonalizationPerUser_SetPageSettings" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+          <Parameter Name="Path" Type="nvarchar" Mode="In" />
+          <Parameter Name="PageSettings" Type="image" Mode="In" />
+          <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="aspnet_Profile_DeleteInactiveProfiles" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="ProfileAuthOptions" Type="int" Mode="In" />
+          <Parameter Name="InactiveSinceDate" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="aspnet_Profile_DeleteProfiles" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="UserNames" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="aspnet_Profile_GetNumberOfInactiveProfiles" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="ProfileAuthOptions" Type="int" Mode="In" />
+          <Parameter Name="InactiveSinceDate" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="aspnet_Profile_GetProfiles" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="ProfileAuthOptions" Type="int" Mode="In" />
+          <Parameter Name="PageIndex" Type="int" Mode="In" />
+          <Parameter Name="PageSize" Type="int" Mode="In" />
+          <Parameter Name="UserNameToMatch" Type="nvarchar" Mode="In" />
+          <Parameter Name="InactiveSinceDate" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="aspnet_Profile_GetProperties" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+          <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="aspnet_Profile_SetProperties" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="PropertyNames" Type="ntext" Mode="In" />
+          <Parameter Name="PropertyValuesString" Type="ntext" Mode="In" />
+          <Parameter Name="PropertyValuesBinary" Type="image" Mode="In" />
+          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+          <Parameter Name="IsUserAnonymous" Type="bit" Mode="In" />
+          <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="aspnet_RegisterSchemaVersion" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Feature" Type="nvarchar" Mode="In" />
+          <Parameter Name="CompatibleSchemaVersion" Type="nvarchar" Mode="In" />
+          <Parameter Name="IsCurrentVersion" Type="bit" Mode="In" />
+          <Parameter Name="RemoveIncompatibleSchema" Type="bit" Mode="In" />
+        </Function>
+        <Function Name="aspnet_Roles_CreateRole" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="RoleName" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="aspnet_Roles_DeleteRole" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="RoleName" Type="nvarchar" Mode="In" />
+          <Parameter Name="DeleteOnlyIfRoleIsEmpty" Type="bit" Mode="In" />
+        </Function>
+        <Function Name="aspnet_Roles_GetAllRoles" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="aspnet_Roles_RoleExists" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="RoleName" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="aspnet_Setup_RemoveAllRoleMembers" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="name" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="aspnet_Setup_RestorePermissions" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="name" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="aspnet_UnRegisterSchemaVersion" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Feature" Type="nvarchar" Mode="In" />
+          <Parameter Name="CompatibleSchemaVersion" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="aspnet_Users_CreateUser" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationId" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+          <Parameter Name="IsUserAnonymous" Type="bit" Mode="In" />
+          <Parameter Name="LastActivityDate" Type="datetime" Mode="In" />
+          <Parameter Name="UserId" Type="uniqueidentifier" Mode="InOut" />
+        </Function>
+        <Function Name="aspnet_Users_DeleteUser" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+          <Parameter Name="TablesToDeleteFrom" Type="int" Mode="In" />
+          <Parameter Name="NumTablesDeletedFrom" Type="int" Mode="InOut" />
+        </Function>
+        <Function Name="aspnet_UsersInRoles_AddUsersToRoles" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="UserNames" Type="nvarchar" Mode="In" />
+          <Parameter Name="RoleNames" Type="nvarchar" Mode="In" />
+          <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="aspnet_UsersInRoles_FindUsersInRole" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="RoleName" Type="nvarchar" Mode="In" />
+          <Parameter Name="UserNameToMatch" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="aspnet_UsersInRoles_GetRolesForUser" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="aspnet_UsersInRoles_GetUsersInRoles" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="RoleName" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="aspnet_UsersInRoles_IsUserInRole" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+          <Parameter Name="RoleName" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="aspnet_UsersInRoles_RemoveUsersFromRoles" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="UserNames" Type="nvarchar" Mode="In" />
+          <Parameter Name="RoleNames" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="aspnet_WebEvent_LogEvent" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="EventId" Type="char" Mode="In" />
+          <Parameter Name="EventTimeUtc" Type="datetime" Mode="In" />
+          <Parameter Name="EventTime" Type="datetime" Mode="In" />
+          <Parameter Name="EventType" Type="nvarchar" Mode="In" />
+          <Parameter Name="EventSequence" Type="decimal" Mode="In" />
+          <Parameter Name="EventOccurrence" Type="decimal" Mode="In" />
+          <Parameter Name="EventCode" Type="int" Mode="In" />
+          <Parameter Name="EventDetailCode" Type="int" Mode="In" />
+          <Parameter Name="Message" Type="nvarchar" Mode="In" />
+          <Parameter Name="ApplicationPath" Type="nvarchar" Mode="In" />
+          <Parameter Name="ApplicationVirtualPath" Type="nvarchar" Mode="In" />
+          <Parameter Name="MachineName" Type="nvarchar" Mode="In" />
+          <Parameter Name="RequestUrl" Type="nvarchar" Mode="In" />
+          <Parameter Name="ExceptionType" Type="nvarchar" Mode="In" />
+          <Parameter Name="Details" Type="ntext" Mode="In" />
+        </Function>
+        <EntityContainer Name="ChatModelStoreContainer">
+          <EntitySet Name="aspnet_Applications" EntityType="Self.aspnet_Applications" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="aspnet_Membership" EntityType="Self.aspnet_Membership" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="aspnet_Paths" EntityType="Self.aspnet_Paths" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="aspnet_PersonalizationAllUsers" EntityType="Self.aspnet_PersonalizationAllUsers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="aspnet_PersonalizationPerUser" EntityType="Self.aspnet_PersonalizationPerUser" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="aspnet_Profile" EntityType="Self.aspnet_Profile" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="aspnet_Roles" EntityType="Self.aspnet_Roles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="aspnet_SchemaVersions" EntityType="Self.aspnet_SchemaVersions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="aspnet_Users" EntityType="Self.aspnet_Users" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="aspnet_UsersInRoles" EntityType="Self.aspnet_UsersInRoles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="aspnet_WebEvent_Events" EntityType="Self.aspnet_WebEvent_Events" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblChatRooms" EntityType="Self.tblChatRooms" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblChatUser" EntityType="Self.tblChatUser" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblChatUserStatus" EntityType="Self.tblChatUserStatus" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblRoomMessageSession" EntityType="Self.tblRoomMessageSession" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblRoomUsers" EntityType="Self.tblRoomUsers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblUserLogins" EntityType="Self.tblUserLogins" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="vw_aspnet_Applications" EntityType="Self.vw_aspnet_Applications" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vw_aspnet_Applications].[ApplicationName] AS [ApplicationName], 
+    [vw_aspnet_Applications].[LoweredApplicationName] AS [LoweredApplicationName], 
+    [vw_aspnet_Applications].[ApplicationId] AS [ApplicationId], 
+    [vw_aspnet_Applications].[Description] AS [Description]
+    FROM [dbo].[vw_aspnet_Applications] AS [vw_aspnet_Applications]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="vw_aspnet_MembershipUsers" EntityType="Self.vw_aspnet_MembershipUsers" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vw_aspnet_MembershipUsers].[UserId] AS [UserId], 
+    [vw_aspnet_MembershipUsers].[PasswordFormat] AS [PasswordFormat], 
+    [vw_aspnet_MembershipUsers].[MobilePIN] AS [MobilePIN], 
+    [vw_aspnet_MembershipUsers].[Email] AS [Email], 
+    [vw_aspnet_MembershipUsers].[LoweredEmail] AS [LoweredEmail], 
+    [vw_aspnet_MembershipUsers].[PasswordQuestion] AS [PasswordQuestion], 
+    [vw_aspnet_MembershipUsers].[PasswordAnswer] AS [PasswordAnswer], 
+    [vw_aspnet_MembershipUsers].[IsApproved] AS [IsApproved], 
+    [vw_aspnet_MembershipUsers].[IsLockedOut] AS [IsLockedOut], 
+    [vw_aspnet_MembershipUsers].[CreateDate] AS [CreateDate], 
+    [vw_aspnet_MembershipUsers].[LastLoginDate] AS [LastLoginDate], 
+    [vw_aspnet_MembershipUsers].[LastPasswordChangedDate] AS [LastPasswordChangedDate], 
+    [vw_aspnet_MembershipUsers].[LastLockoutDate] AS [LastLockoutDate], 
+    [vw_aspnet_MembershipUsers].[FailedPasswordAttemptCount] AS [FailedPasswordAttemptCount], 
+    [vw_aspnet_MembershipUsers].[FailedPasswordAttemptWindowStart] AS [FailedPasswordAttemptWindowStart], 
+    [vw_aspnet_MembershipUsers].[FailedPasswordAnswerAttemptCount] AS [FailedPasswordAnswerAttemptCount], 
+    [vw_aspnet_MembershipUsers].[FailedPasswordAnswerAttemptWindowStart] AS [FailedPasswordAnswerAttemptWindowStart], 
+    [vw_aspnet_MembershipUsers].[Comment] AS [Comment], 
+    [vw_aspnet_MembershipUsers].[ApplicationId] AS [ApplicationId], 
+    [vw_aspnet_MembershipUsers].[UserName] AS [UserName], 
+    [vw_aspnet_MembershipUsers].[MobileAlias] AS [MobileAlias], 
+    [vw_aspnet_MembershipUsers].[IsAnonymous] AS [IsAnonymous], 
+    [vw_aspnet_MembershipUsers].[LastActivityDate] AS [LastActivityDate]
+    FROM [dbo].[vw_aspnet_MembershipUsers] AS [vw_aspnet_MembershipUsers]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="vw_aspnet_Profiles" EntityType="Self.vw_aspnet_Profiles" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vw_aspnet_Profiles].[UserId] AS [UserId], 
+    [vw_aspnet_Profiles].[LastUpdatedDate] AS [LastUpdatedDate], 
+    [vw_aspnet_Profiles].[DataSize] AS [DataSize]
+    FROM [dbo].[vw_aspnet_Profiles] AS [vw_aspnet_Profiles]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="vw_aspnet_Roles" EntityType="Self.vw_aspnet_Roles" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vw_aspnet_Roles].[ApplicationId] AS [ApplicationId], 
+    [vw_aspnet_Roles].[RoleId] AS [RoleId], 
+    [vw_aspnet_Roles].[RoleName] AS [RoleName], 
+    [vw_aspnet_Roles].[LoweredRoleName] AS [LoweredRoleName], 
+    [vw_aspnet_Roles].[Description] AS [Description]
+    FROM [dbo].[vw_aspnet_Roles] AS [vw_aspnet_Roles]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="vw_aspnet_Users" EntityType="Self.vw_aspnet_Users" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vw_aspnet_Users].[ApplicationId] AS [ApplicationId], 
+    [vw_aspnet_Users].[UserId] AS [UserId], 
+    [vw_aspnet_Users].[UserName] AS [UserName], 
+    [vw_aspnet_Users].[LoweredUserName] AS [LoweredUserName], 
+    [vw_aspnet_Users].[MobileAlias] AS [MobileAlias], 
+    [vw_aspnet_Users].[IsAnonymous] AS [IsAnonymous], 
+    [vw_aspnet_Users].[LastActivityDate] AS [LastActivityDate]
+    FROM [dbo].[vw_aspnet_Users] AS [vw_aspnet_Users]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="vw_aspnet_UsersInRoles" EntityType="Self.vw_aspnet_UsersInRoles" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vw_aspnet_UsersInRoles].[UserId] AS [UserId], 
+    [vw_aspnet_UsersInRoles].[RoleId] AS [RoleId]
+    FROM [dbo].[vw_aspnet_UsersInRoles] AS [vw_aspnet_UsersInRoles]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="vw_aspnet_WebPartState_Paths" EntityType="Self.vw_aspnet_WebPartState_Paths" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vw_aspnet_WebPartState_Paths].[ApplicationId] AS [ApplicationId], 
+    [vw_aspnet_WebPartState_Paths].[PathId] AS [PathId], 
+    [vw_aspnet_WebPartState_Paths].[Path] AS [Path], 
+    [vw_aspnet_WebPartState_Paths].[LoweredPath] AS [LoweredPath]
+    FROM [dbo].[vw_aspnet_WebPartState_Paths] AS [vw_aspnet_WebPartState_Paths]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="vw_aspnet_WebPartState_Shared" EntityType="Self.vw_aspnet_WebPartState_Shared" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vw_aspnet_WebPartState_Shared].[PathId] AS [PathId], 
+    [vw_aspnet_WebPartState_Shared].[DataSize] AS [DataSize], 
+    [vw_aspnet_WebPartState_Shared].[LastUpdatedDate] AS [LastUpdatedDate]
+    FROM [dbo].[vw_aspnet_WebPartState_Shared] AS [vw_aspnet_WebPartState_Shared]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="vw_aspnet_WebPartState_User" EntityType="Self.vw_aspnet_WebPartState_User" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vw_aspnet_WebPartState_User].[PathId] AS [PathId], 
+    [vw_aspnet_WebPartState_User].[UserId] AS [UserId], 
+    [vw_aspnet_WebPartState_User].[DataSize] AS [DataSize], 
+    [vw_aspnet_WebPartState_User].[LastUpdatedDate] AS [LastUpdatedDate]
+    FROM [dbo].[vw_aspnet_WebPartState_User] AS [vw_aspnet_WebPartState_User]</DefiningQuery>
+          </EntitySet>
+          <AssociationSet Name="FK__aspnet_Me__Appli__31EC6D26" Association="Self.FK__aspnet_Me__Appli__31EC6D26">
+            <End Role="aspnet_Applications" EntitySet="aspnet_Applications" />
+            <End Role="aspnet_Membership" EntitySet="aspnet_Membership" />
+          </AssociationSet>
+          <AssociationSet Name="FK__aspnet_Me__UserI__32E0915F" Association="Self.FK__aspnet_Me__UserI__32E0915F">
+            <End Role="aspnet_Users" EntitySet="aspnet_Users" />
+            <End Role="aspnet_Membership" EntitySet="aspnet_Membership" />
+          </AssociationSet>
+          <AssociationSet Name="FK__aspnet_Pa__Appli__6B24EA82" Association="Self.FK__aspnet_Pa__Appli__6B24EA82">
+            <End Role="aspnet_Applications" EntitySet="aspnet_Applications" />
+            <End Role="aspnet_Paths" EntitySet="aspnet_Paths" />
+          </AssociationSet>
+          <AssociationSet Name="FK__aspnet_Pe__PathI__72C60C4A" Association="Self.FK__aspnet_Pe__PathI__72C60C4A">
+            <End Role="aspnet_Paths" EntitySet="aspnet_Paths" />
+            <End Role="aspnet_PersonalizationAllUsers" EntitySet="aspnet_PersonalizationAllUsers" />
+          </AssociationSet>
+          <AssociationSet Name="FK__aspnet_Pe__PathI__787EE5A0" Association="Self.FK__aspnet_Pe__PathI__787EE5A0">
+            <End Role="aspnet_Paths" EntitySet="aspnet_Paths" />
+            <End Role="aspnet_PersonalizationPerUser" EntitySet="aspnet_PersonalizationPerUser" />
+          </AssociationSet>
+          <AssociationSet Name="FK__aspnet_Pe__UserI__797309D9" Association="Self.FK__aspnet_Pe__UserI__797309D9">
+            <End Role="aspnet_Users" EntitySet="aspnet_Users" />
+            <End Role="aspnet_PersonalizationPerUser" EntitySet="aspnet_PersonalizationPerUser" />
+          </AssociationSet>
+          <AssociationSet Name="FK__aspnet_Pr__UserI__48CFD27E" Association="Self.FK__aspnet_Pr__UserI__48CFD27E">
+            <End Role="aspnet_Users" EntitySet="aspnet_Users" />
+            <End Role="aspnet_Profile" EntitySet="aspnet_Profile" />
+          </AssociationSet>
+          <AssociationSet Name="FK__aspnet_Ro__Appli__5441852A" Association="Self.FK__aspnet_Ro__Appli__5441852A">
+            <End Role="aspnet_Applications" EntitySet="aspnet_Applications" />
+            <End Role="aspnet_Roles" EntitySet="aspnet_Roles" />
+          </AssociationSet>
+          <AssociationSet Name="FK__aspnet_Us__Appli__1DE57479" Association="Self.FK__aspnet_Us__Appli__1DE57479">
+            <End Role="aspnet_Applications" EntitySet="aspnet_Applications" />
+            <End Role="aspnet_Users" EntitySet="aspnet_Users" />
+          </AssociationSet>
+          <AssociationSet Name="FK__aspnet_Us__RoleI__5AEE82B9" Association="Self.FK__aspnet_Us__RoleI__5AEE82B9">
+            <End Role="aspnet_Roles" EntitySet="aspnet_Roles" />
+            <End Role="aspnet_UsersInRoles" EntitySet="aspnet_UsersInRoles" />
+          </AssociationSet>
+          <AssociationSet Name="FK__aspnet_Us__UserI__59FA5E80" Association="Self.FK__aspnet_Us__UserI__59FA5E80">
+            <End Role="aspnet_Users" EntitySet="aspnet_Users" />
+            <End Role="aspnet_UsersInRoles" EntitySet="aspnet_UsersInRoles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblChatUser_tblChatUserStatus" Association="Self.FK_tblChatUser_tblChatUserStatus">
+            <End Role="tblChatUserStatus" EntitySet="tblChatUserStatus" />
+            <End Role="tblChatUser" EntitySet="tblChatUser" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblChatUser_tblUserLogin" Association="Self.FK_tblChatUser_tblUserLogin">
+            <End Role="tblUserLogins" EntitySet="tblUserLogins" />
+            <End Role="tblChatUser" EntitySet="tblChatUser" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblRoomMessageSession_tblChatRooms" Association="Self.FK_tblRoomMessageSession_tblChatRooms">
+            <End Role="tblChatRooms" EntitySet="tblChatRooms" />
+            <End Role="tblRoomMessageSession" EntitySet="tblRoomMessageSession" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblRoomUsers_tblChatRooms" Association="Self.FK_tblRoomUsers_tblChatRooms">
+            <End Role="tblChatRooms" EntitySet="tblChatRooms" />
+            <End Role="tblRoomUsers" EntitySet="tblRoomUsers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblRoomUsers_tblChatUser" Association="Self.FK_tblRoomUsers_tblChatUser">
+            <End Role="tblChatUser" EntitySet="tblChatUser" />
+            <End Role="tblRoomUsers" EntitySet="tblRoomUsers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblUserLogins_aspnet_Users" Association="Self.FK_tblUserLogins_aspnet_Users">
+            <End Role="aspnet_Users" EntitySet="aspnet_Users" />
+            <End Role="tblUserLogins" EntitySet="tblUserLogins" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="ChatModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="tblChatRoom">
+          <Key>
+            <PropertyRef Name="IdRoom" />
+          </Key>
+          <Property Name="IdRoom" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RoomIdentifier" Type="Guid" Nullable="false" />
+          <Property Name="HashIdentifier" Type="Int32" />
+          <Property Name="UserInRoom" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="UserCreater" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="DateCreated" Type="DateTime" Precision="3" />
+          <Property Name="DateChanged" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="tblRoomMessageSessions" Relationship="Self.FK_tblRoomMessageSession_tblChatRooms" FromRole="tblChatRooms" ToRole="tblRoomMessageSession" />
+          <NavigationProperty Name="tblRoomUsers" Relationship="Self.FK_tblRoomUsers_tblChatRooms" FromRole="tblChatRooms" ToRole="tblRoomUsers" />
+        </EntityType>
+        <EntityType Name="tblChatUser">
+          <Key>
+            <PropertyRef Name="IdUser" />
+          </Key>
+          <Property Name="IdUser" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IdLogin" Type="Int32" Nullable="false" />
+          <Property Name="ChatUserIdentifier" Type="Guid" Nullable="false" />
+          <Property Name="ChatUserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="IdChatUserStatus" Type="Int32" Nullable="false" />
+          <Property Name="LastSeen" Type="DateTime" Precision="3" />
+          <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="DateCreated" Type="DateTime" Precision="3" />
+          <Property Name="DateChange" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="tblChatUserStatu" Relationship="Self.FK_tblChatUser_tblChatUserStatus" FromRole="tblChatUser" ToRole="tblChatUserStatus" />
+          <NavigationProperty Name="tblUserLogin" Relationship="Self.FK_tblChatUser_tblUserLogin" FromRole="tblChatUser" ToRole="tblUserLogins" />
+          <NavigationProperty Name="tblRoomUsers" Relationship="Self.FK_tblRoomUsers_tblChatUser" FromRole="tblChatUser" ToRole="tblRoomUsers" />
+        </EntityType>
+        <EntityType Name="tblChatUserStatu">
+          <Key>
+            <PropertyRef Name="IdStatus" />
+          </Key>
+          <Property Name="IdStatus" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="StatusName" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="MakeOperation" Type="Boolean" Nullable="false" />
+          <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="DateCreated" Type="DateTime" Precision="3" />
+          <Property Name="DateChange" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="tblChatUsers" Relationship="Self.FK_tblChatUser_tblChatUserStatus" FromRole="tblChatUserStatus" ToRole="tblChatUser" />
+        </EntityType>
+        <EntityType Name="tblRoomMessageSession">
+          <Key>
+            <PropertyRef Name="IdSassion" />
+          </Key>
+          <Property Name="IdSassion" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IdRoom" Type="Int32" Nullable="false" />
+          <Property Name="SessionStartDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="SessionEndDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="SessionMessages" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="DateCreated" Type="DateTime" Precision="3" />
+          <Property Name="DateChanged" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="tblChatRoom" Relationship="Self.FK_tblRoomMessageSession_tblChatRooms" FromRole="tblRoomMessageSession" ToRole="tblChatRooms" />
+        </EntityType>
+        <EntityType Name="tblRoomUser">
+          <Key>
+            <PropertyRef Name="IdRoom" />
+            <PropertyRef Name="IdUser" />
+          </Key>
+          <Property Name="IdRoom" Type="Int32" Nullable="false" />
+          <Property Name="IdUser" Type="Int32" Nullable="false" />
+          <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="DateChange" Type="DateTime" Precision="3" />
+          <Property Name="DateCreated" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="tblChatRoom" Relationship="Self.FK_tblRoomUsers_tblChatRooms" FromRole="tblRoomUsers" ToRole="tblChatRooms" />
+          <NavigationProperty Name="tblChatUser" Relationship="Self.FK_tblRoomUsers_tblChatUser" FromRole="tblRoomUsers" ToRole="tblChatUser" />
+        </EntityType>
+        <EntityType Name="tblUserLogin">
+          <Key>
+            <PropertyRef Name="IdLogin" />
+          </Key>
+          <Property Name="IdLogin" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="DateCreated" Type="DateTime" Precision="3" />
+          <Property Name="DateChanged" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="tblChatUsers" Relationship="Self.FK_tblChatUser_tblUserLogin" FromRole="tblUserLogins" ToRole="tblChatUser" />
+          <Property Name="AspAuthenticationUserId" Type="Guid" Nullable="false" />
+          <NavigationProperty Name="aspnet_Users" Relationship="ChatModel.FK_tblUserLogins_aspnet_Users" FromRole="tblUserLogin" ToRole="aspnet_Users" />
+        </EntityType>
+        <Association Name="FK_tblRoomMessageSession_tblChatRooms">
+          <End Role="tblChatRooms" Type="Self.tblChatRoom" Multiplicity="1" />
+          <End Role="tblRoomMessageSession" Type="Self.tblRoomMessageSession" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblChatRooms">
+              <PropertyRef Name="IdRoom" />
+            </Principal>
+            <Dependent Role="tblRoomMessageSession">
+              <PropertyRef Name="IdRoom" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblRoomUsers_tblChatRooms">
+          <End Role="tblChatRooms" Type="Self.tblChatRoom" Multiplicity="1" />
+          <End Role="tblRoomUsers" Type="Self.tblRoomUser" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblChatRooms">
+              <PropertyRef Name="IdRoom" />
+            </Principal>
+            <Dependent Role="tblRoomUsers">
+              <PropertyRef Name="IdRoom" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblChatUser_tblChatUserStatus">
+          <End Role="tblChatUserStatus" Type="Self.tblChatUserStatu" Multiplicity="1" />
+          <End Role="tblChatUser" Type="Self.tblChatUser" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblChatUserStatus">
+              <PropertyRef Name="IdStatus" />
+            </Principal>
+            <Dependent Role="tblChatUser">
+              <PropertyRef Name="IdChatUserStatus" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblChatUser_tblUserLogin">
+          <End Role="tblUserLogins" Type="Self.tblUserLogin" Multiplicity="1" />
+          <End Role="tblChatUser" Type="Self.tblChatUser" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblUserLogins">
+              <PropertyRef Name="IdLogin" />
+            </Principal>
+            <Dependent Role="tblChatUser">
+              <PropertyRef Name="IdLogin" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblRoomUsers_tblChatUser">
+          <End Role="tblChatUser" Type="Self.tblChatUser" Multiplicity="1" />
+          <End Role="tblRoomUsers" Type="Self.tblRoomUser" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblChatUser">
+              <PropertyRef Name="IdUser" />
+            </Principal>
+            <Dependent Role="tblRoomUsers">
+              <PropertyRef Name="IdUser" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="ChatEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="tblChatRooms" EntityType="Self.tblChatRoom" />
+          <EntitySet Name="tblChatUsers" EntityType="Self.tblChatUser" />
+          <EntitySet Name="tblChatUserStatus" EntityType="Self.tblChatUserStatu" />
+          <EntitySet Name="tblRoomMessageSessions" EntityType="Self.tblRoomMessageSession" />
+          <EntitySet Name="tblRoomUsers" EntityType="Self.tblRoomUser" />
+          <EntitySet Name="tblUserLogins" EntityType="Self.tblUserLogin" />
+          <AssociationSet Name="FK_tblRoomMessageSession_tblChatRooms" Association="Self.FK_tblRoomMessageSession_tblChatRooms">
+            <End Role="tblChatRooms" EntitySet="tblChatRooms" />
+            <End Role="tblRoomMessageSession" EntitySet="tblRoomMessageSessions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblRoomUsers_tblChatRooms" Association="Self.FK_tblRoomUsers_tblChatRooms">
+            <End Role="tblChatRooms" EntitySet="tblChatRooms" />
+            <End Role="tblRoomUsers" EntitySet="tblRoomUsers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblChatUser_tblChatUserStatus" Association="Self.FK_tblChatUser_tblChatUserStatus">
+            <End Role="tblChatUserStatus" EntitySet="tblChatUserStatus" />
+            <End Role="tblChatUser" EntitySet="tblChatUsers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblChatUser_tblUserLogin" Association="Self.FK_tblChatUser_tblUserLogin">
+            <End Role="tblUserLogins" EntitySet="tblUserLogins" />
+            <End Role="tblChatUser" EntitySet="tblChatUsers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblRoomUsers_tblChatUser" Association="Self.FK_tblRoomUsers_tblChatUser">
+            <End Role="tblChatUser" EntitySet="tblChatUsers" />
+            <End Role="tblRoomUsers" EntitySet="tblRoomUsers" />
+          </AssociationSet>
+          <EntitySet Name="aspnet_Applications" EntityType="ChatModel.aspnet_Applications" />
+          <EntitySet Name="aspnet_Membership" EntityType="ChatModel.aspnet_Membership" />
+          <EntitySet Name="aspnet_Paths" EntityType="ChatModel.aspnet_Paths" />
+          <EntitySet Name="aspnet_PersonalizationAllUsers" EntityType="ChatModel.aspnet_PersonalizationAllUsers" />
+          <EntitySet Name="aspnet_PersonalizationPerUser" EntityType="ChatModel.aspnet_PersonalizationPerUser" />
+          <EntitySet Name="aspnet_Profile" EntityType="ChatModel.aspnet_Profile" />
+          <EntitySet Name="aspnet_Roles" EntityType="ChatModel.aspnet_Roles" />
+          <EntitySet Name="aspnet_SchemaVersions" EntityType="ChatModel.aspnet_SchemaVersions" />
+          <EntitySet Name="aspnet_Users" EntityType="ChatModel.aspnet_Users" />
+          <EntitySet Name="aspnet_WebEvent_Events" EntityType="ChatModel.aspnet_WebEvent_Events" />
+          <EntitySet Name="vw_aspnet_Applications" EntityType="ChatModel.vw_aspnet_Applications" />
+          <EntitySet Name="vw_aspnet_MembershipUsers" EntityType="ChatModel.vw_aspnet_MembershipUsers" />
+          <EntitySet Name="vw_aspnet_Profiles" EntityType="ChatModel.vw_aspnet_Profiles" />
+          <EntitySet Name="vw_aspnet_Roles" EntityType="ChatModel.vw_aspnet_Roles" />
+          <EntitySet Name="vw_aspnet_Users" EntityType="ChatModel.vw_aspnet_Users" />
+          <EntitySet Name="vw_aspnet_UsersInRoles" EntityType="ChatModel.vw_aspnet_UsersInRoles" />
+          <EntitySet Name="vw_aspnet_WebPartState_Paths" EntityType="ChatModel.vw_aspnet_WebPartState_Paths" />
+          <EntitySet Name="vw_aspnet_WebPartState_Shared" EntityType="ChatModel.vw_aspnet_WebPartState_Shared" />
+          <EntitySet Name="vw_aspnet_WebPartState_User" EntityType="ChatModel.vw_aspnet_WebPartState_User" />
+          <AssociationSet Name="FK__aspnet_Me__Appli__31EC6D26" Association="ChatModel.FK__aspnet_Me__Appli__31EC6D26">
+            <End Role="aspnet_Applications" EntitySet="aspnet_Applications" />
+            <End Role="aspnet_Membership" EntitySet="aspnet_Membership" />
+          </AssociationSet>
+          <AssociationSet Name="FK__aspnet_Pa__Appli__6B24EA82" Association="ChatModel.FK__aspnet_Pa__Appli__6B24EA82">
+            <End Role="aspnet_Applications" EntitySet="aspnet_Applications" />
+            <End Role="aspnet_Paths" EntitySet="aspnet_Paths" />
+          </AssociationSet>
+          <AssociationSet Name="FK__aspnet_Ro__Appli__5441852A" Association="ChatModel.FK__aspnet_Ro__Appli__5441852A">
+            <End Role="aspnet_Applications" EntitySet="aspnet_Applications" />
+            <End Role="aspnet_Roles" EntitySet="aspnet_Roles" />
+          </AssociationSet>
+          <AssociationSet Name="FK__aspnet_Us__Appli__1DE57479" Association="ChatModel.FK__aspnet_Us__Appli__1DE57479">
+            <End Role="aspnet_Applications" EntitySet="aspnet_Applications" />
+            <End Role="aspnet_Users" EntitySet="aspnet_Users" />
+          </AssociationSet>
+          <AssociationSet Name="FK__aspnet_Me__UserI__32E0915F" Association="ChatModel.FK__aspnet_Me__UserI__32E0915F">
+            <End Role="aspnet_Users" EntitySet="aspnet_Users" />
+            <End Role="aspnet_Membership" EntitySet="aspnet_Membership" />
+          </AssociationSet>
+          <AssociationSet Name="FK__aspnet_Pe__PathI__72C60C4A" Association="ChatModel.FK__aspnet_Pe__PathI__72C60C4A">
+            <End Role="aspnet_Paths" EntitySet="aspnet_Paths" />
+            <End Role="aspnet_PersonalizationAllUsers" EntitySet="aspnet_PersonalizationAllUsers" />
+          </AssociationSet>
+          <AssociationSet Name="FK__aspnet_Pe__PathI__787EE5A0" Association="ChatModel.FK__aspnet_Pe__PathI__787EE5A0">
+            <End Role="aspnet_Paths" EntitySet="aspnet_Paths" />
+            <End Role="aspnet_PersonalizationPerUser" EntitySet="aspnet_PersonalizationPerUser" />
+          </AssociationSet>
+          <AssociationSet Name="FK__aspnet_Pe__UserI__797309D9" Association="ChatModel.FK__aspnet_Pe__UserI__797309D9">
+            <End Role="aspnet_Users" EntitySet="aspnet_Users" />
+            <End Role="aspnet_PersonalizationPerUser" EntitySet="aspnet_PersonalizationPerUser" />
+          </AssociationSet>
+          <AssociationSet Name="FK__aspnet_Pr__UserI__48CFD27E" Association="ChatModel.FK__aspnet_Pr__UserI__48CFD27E">
+            <End Role="aspnet_Users" EntitySet="aspnet_Users" />
+            <End Role="aspnet_Profile" EntitySet="aspnet_Profile" />
+          </AssociationSet>
+          <AssociationSet Name="aspnet_UsersInRoles" Association="ChatModel.aspnet_UsersInRoles">
+            <End Role="aspnet_Roles" EntitySet="aspnet_Roles" />
+            <End Role="aspnet_Users" EntitySet="aspnet_Users" />
+          </AssociationSet>
+          <FunctionImport Name="aspnet_AnyDataInTables" ReturnType="Collection(String)">
+          <Parameter Name="TablesToCheck" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Applications_CreateApplication">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="ApplicationId" Mode="InOut" Type="Guid" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_CheckSchemaVersion">
+            <Parameter Name="Feature" Mode="In" Type="String" />
+            <Parameter Name="CompatibleSchemaVersion" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Membership_ChangePasswordQuestionAndAnswer">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="UserName" Mode="In" Type="String" />
+            <Parameter Name="NewPasswordQuestion" Mode="In" Type="String" />
+            <Parameter Name="NewPasswordAnswer" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Membership_CreateUser">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="UserName" Mode="In" Type="String" />
+            <Parameter Name="Password" Mode="In" Type="String" />
+            <Parameter Name="PasswordSalt" Mode="In" Type="String" />
+            <Parameter Name="Email" Mode="In" Type="String" />
+            <Parameter Name="PasswordQuestion" Mode="In" Type="String" />
+            <Parameter Name="PasswordAnswer" Mode="In" Type="String" />
+            <Parameter Name="IsApproved" Mode="In" Type="Boolean" />
+            <Parameter Name="CurrentTimeUtc" Mode="In" Type="DateTime" />
+            <Parameter Name="CreateDate" Mode="In" Type="DateTime" />
+            <Parameter Name="UniqueEmail" Mode="In" Type="Int32" />
+            <Parameter Name="PasswordFormat" Mode="In" Type="Int32" />
+            <Parameter Name="UserId" Mode="InOut" Type="Guid" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Membership_FindUsersByEmail">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="EmailToMatch" Mode="In" Type="String" />
+            <Parameter Name="PageIndex" Mode="In" Type="Int32" />
+            <Parameter Name="PageSize" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Membership_FindUsersByName">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="UserNameToMatch" Mode="In" Type="String" />
+            <Parameter Name="PageIndex" Mode="In" Type="Int32" />
+            <Parameter Name="PageSize" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Membership_GetAllUsers">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="PageIndex" Mode="In" Type="Int32" />
+            <Parameter Name="PageSize" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Membership_GetNumberOfUsersOnline">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="MinutesSinceLastInActive" Mode="In" Type="Int32" />
+            <Parameter Name="CurrentTimeUtc" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Membership_GetPassword" ReturnType="Collection(ChatModel.aspnet_Membership_GetPassword_Result)">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="UserName" Mode="In" Type="String" />
+            <Parameter Name="MaxInvalidPasswordAttempts" Mode="In" Type="Int32" />
+            <Parameter Name="PasswordAttemptWindow" Mode="In" Type="Int32" />
+            <Parameter Name="CurrentTimeUtc" Mode="In" Type="DateTime" />
+            <Parameter Name="PasswordAnswer" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Membership_GetPasswordWithFormat" ReturnType="Collection(ChatModel.aspnet_Membership_GetPasswordWithFormat_Result)">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="UserName" Mode="In" Type="String" />
+            <Parameter Name="UpdateLastLoginActivityDate" Mode="In" Type="Boolean" />
+            <Parameter Name="CurrentTimeUtc" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Membership_GetUserByEmail" ReturnType="Collection(String)">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="Email" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Membership_GetUserByName" ReturnType="Collection(ChatModel.aspnet_Membership_GetUserByName_Result)">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="UserName" Mode="In" Type="String" />
+            <Parameter Name="CurrentTimeUtc" Mode="In" Type="DateTime" />
+            <Parameter Name="UpdateLastActivity" Mode="In" Type="Boolean" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Membership_GetUserByUserId" ReturnType="Collection(ChatModel.aspnet_Membership_GetUserByUserId_Result)">
+            <Parameter Name="UserId" Mode="In" Type="Guid" />
+            <Parameter Name="CurrentTimeUtc" Mode="In" Type="DateTime" />
+            <Parameter Name="UpdateLastActivity" Mode="In" Type="Boolean" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Membership_ResetPassword">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="UserName" Mode="In" Type="String" />
+            <Parameter Name="NewPassword" Mode="In" Type="String" />
+            <Parameter Name="MaxInvalidPasswordAttempts" Mode="In" Type="Int32" />
+            <Parameter Name="PasswordAttemptWindow" Mode="In" Type="Int32" />
+            <Parameter Name="PasswordSalt" Mode="In" Type="String" />
+            <Parameter Name="CurrentTimeUtc" Mode="In" Type="DateTime" />
+            <Parameter Name="PasswordFormat" Mode="In" Type="Int32" />
+            <Parameter Name="PasswordAnswer" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Membership_SetPassword">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="UserName" Mode="In" Type="String" />
+            <Parameter Name="NewPassword" Mode="In" Type="String" />
+            <Parameter Name="PasswordSalt" Mode="In" Type="String" />
+            <Parameter Name="CurrentTimeUtc" Mode="In" Type="DateTime" />
+            <Parameter Name="PasswordFormat" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Membership_UnlockUser">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="UserName" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Membership_UpdateUser">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="UserName" Mode="In" Type="String" />
+            <Parameter Name="Email" Mode="In" Type="String" />
+            <Parameter Name="Comment" Mode="In" Type="String" />
+            <Parameter Name="IsApproved" Mode="In" Type="Boolean" />
+            <Parameter Name="LastLoginDate" Mode="In" Type="DateTime" />
+            <Parameter Name="LastActivityDate" Mode="In" Type="DateTime" />
+            <Parameter Name="UniqueEmail" Mode="In" Type="Int32" />
+            <Parameter Name="CurrentTimeUtc" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Membership_UpdateUserInfo">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="UserName" Mode="In" Type="String" />
+            <Parameter Name="IsPasswordCorrect" Mode="In" Type="Boolean" />
+            <Parameter Name="UpdateLastLoginActivityDate" Mode="In" Type="Boolean" />
+            <Parameter Name="MaxInvalidPasswordAttempts" Mode="In" Type="Int32" />
+            <Parameter Name="PasswordAttemptWindow" Mode="In" Type="Int32" />
+            <Parameter Name="CurrentTimeUtc" Mode="In" Type="DateTime" />
+            <Parameter Name="LastLoginDate" Mode="In" Type="DateTime" />
+            <Parameter Name="LastActivityDate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Paths_CreatePath">
+            <Parameter Name="ApplicationId" Mode="In" Type="Guid" />
+            <Parameter Name="Path" Mode="In" Type="String" />
+            <Parameter Name="PathId" Mode="InOut" Type="Guid" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Personalization_GetApplicationId">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="ApplicationId" Mode="InOut" Type="Guid" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_PersonalizationAdministration_DeleteAllState">
+            <Parameter Name="AllUsersScope" Mode="In" Type="Boolean" />
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="Count" Mode="InOut" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_PersonalizationAdministration_FindState">
+            <Parameter Name="AllUsersScope" Mode="In" Type="Boolean" />
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="PageIndex" Mode="In" Type="Int32" />
+            <Parameter Name="PageSize" Mode="In" Type="Int32" />
+            <Parameter Name="Path" Mode="In" Type="String" />
+            <Parameter Name="UserName" Mode="In" Type="String" />
+            <Parameter Name="InactiveSinceDate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_PersonalizationAdministration_GetCountOfState">
+            <Parameter Name="Count" Mode="InOut" Type="Int32" />
+            <Parameter Name="AllUsersScope" Mode="In" Type="Boolean" />
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="Path" Mode="In" Type="String" />
+            <Parameter Name="UserName" Mode="In" Type="String" />
+            <Parameter Name="InactiveSinceDate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_PersonalizationAdministration_ResetSharedState">
+            <Parameter Name="Count" Mode="InOut" Type="Int32" />
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="Path" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_PersonalizationAdministration_ResetUserState">
+            <Parameter Name="Count" Mode="InOut" Type="Int32" />
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="InactiveSinceDate" Mode="In" Type="DateTime" />
+            <Parameter Name="UserName" Mode="In" Type="String" />
+            <Parameter Name="Path" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_PersonalizationAllUsers_GetPageSettings" ReturnType="Collection(Binary)">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="Path" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_PersonalizationAllUsers_ResetPageSettings">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="Path" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_PersonalizationAllUsers_SetPageSettings">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="Path" Mode="In" Type="String" />
+            <Parameter Name="PageSettings" Mode="In" Type="Binary" />
+            <Parameter Name="CurrentTimeUtc" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_PersonalizationPerUser_GetPageSettings" ReturnType="Collection(Binary)">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="UserName" Mode="In" Type="String" />
+            <Parameter Name="Path" Mode="In" Type="String" />
+            <Parameter Name="CurrentTimeUtc" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_PersonalizationPerUser_ResetPageSettings">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="UserName" Mode="In" Type="String" />
+            <Parameter Name="Path" Mode="In" Type="String" />
+            <Parameter Name="CurrentTimeUtc" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_PersonalizationPerUser_SetPageSettings">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="UserName" Mode="In" Type="String" />
+            <Parameter Name="Path" Mode="In" Type="String" />
+            <Parameter Name="PageSettings" Mode="In" Type="Binary" />
+            <Parameter Name="CurrentTimeUtc" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Profile_DeleteInactiveProfiles" ReturnType="Collection(Int32)">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="ProfileAuthOptions" Mode="In" Type="Int32" />
+            <Parameter Name="InactiveSinceDate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Profile_DeleteProfiles" ReturnType="Collection(Int32)">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="UserNames" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Profile_GetNumberOfInactiveProfiles" ReturnType="Collection(Int32)">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="ProfileAuthOptions" Mode="In" Type="Int32" />
+            <Parameter Name="InactiveSinceDate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Profile_GetProfiles">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="ProfileAuthOptions" Mode="In" Type="Int32" />
+            <Parameter Name="PageIndex" Mode="In" Type="Int32" />
+            <Parameter Name="PageSize" Mode="In" Type="Int32" />
+            <Parameter Name="UserNameToMatch" Mode="In" Type="String" />
+            <Parameter Name="InactiveSinceDate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Profile_GetProperties" ReturnType="Collection(ChatModel.aspnet_Profile_GetProperties_Result)">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="UserName" Mode="In" Type="String" />
+            <Parameter Name="CurrentTimeUtc" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Profile_SetProperties">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="PropertyNames" Mode="In" Type="String" />
+            <Parameter Name="PropertyValuesString" Mode="In" Type="String" />
+            <Parameter Name="PropertyValuesBinary" Mode="In" Type="Binary" />
+            <Parameter Name="UserName" Mode="In" Type="String" />
+            <Parameter Name="IsUserAnonymous" Mode="In" Type="Boolean" />
+            <Parameter Name="CurrentTimeUtc" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_RegisterSchemaVersion">
+            <Parameter Name="Feature" Mode="In" Type="String" />
+            <Parameter Name="CompatibleSchemaVersion" Mode="In" Type="String" />
+            <Parameter Name="IsCurrentVersion" Mode="In" Type="Boolean" />
+            <Parameter Name="RemoveIncompatibleSchema" Mode="In" Type="Boolean" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Roles_CreateRole">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="RoleName" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Roles_DeleteRole">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="RoleName" Mode="In" Type="String" />
+            <Parameter Name="DeleteOnlyIfRoleIsEmpty" Mode="In" Type="Boolean" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Roles_GetAllRoles" ReturnType="Collection(String)">
+          <Parameter Name="ApplicationName" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Roles_RoleExists">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="RoleName" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Setup_RemoveAllRoleMembers">
+          <Parameter Name="name" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Setup_RestorePermissions">
+          <Parameter Name="name" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_UnRegisterSchemaVersion">
+            <Parameter Name="Feature" Mode="In" Type="String" />
+            <Parameter Name="CompatibleSchemaVersion" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Users_CreateUser">
+            <Parameter Name="ApplicationId" Mode="In" Type="Guid" />
+            <Parameter Name="UserName" Mode="In" Type="String" />
+            <Parameter Name="IsUserAnonymous" Mode="In" Type="Boolean" />
+            <Parameter Name="LastActivityDate" Mode="In" Type="DateTime" />
+            <Parameter Name="UserId" Mode="InOut" Type="Guid" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_Users_DeleteUser">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="UserName" Mode="In" Type="String" />
+            <Parameter Name="TablesToDeleteFrom" Mode="In" Type="Int32" />
+            <Parameter Name="NumTablesDeletedFrom" Mode="InOut" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_UsersInRoles_AddUsersToRoles" ReturnType="Collection(String)">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="UserNames" Mode="In" Type="String" />
+            <Parameter Name="RoleNames" Mode="In" Type="String" />
+            <Parameter Name="CurrentTimeUtc" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_UsersInRoles_FindUsersInRole" ReturnType="Collection(String)">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="RoleName" Mode="In" Type="String" />
+            <Parameter Name="UserNameToMatch" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_UsersInRoles_GetRolesForUser" ReturnType="Collection(String)">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="UserName" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_UsersInRoles_GetUsersInRoles" ReturnType="Collection(String)">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="RoleName" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_UsersInRoles_IsUserInRole">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="UserName" Mode="In" Type="String" />
+            <Parameter Name="RoleName" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_UsersInRoles_RemoveUsersFromRoles" ReturnType="Collection(ChatModel.aspnet_UsersInRoles_RemoveUsersFromRoles_Result)">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="UserNames" Mode="In" Type="String" />
+            <Parameter Name="RoleNames" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="aspnet_WebEvent_LogEvent">
+            <Parameter Name="EventId" Mode="In" Type="String" />
+            <Parameter Name="EventTimeUtc" Mode="In" Type="DateTime" />
+            <Parameter Name="EventTime" Mode="In" Type="DateTime" />
+            <Parameter Name="EventType" Mode="In" Type="String" />
+            <Parameter Name="EventSequence" Mode="In" Type="Decimal" />
+            <Parameter Name="EventOccurrence" Mode="In" Type="Decimal" />
+            <Parameter Name="EventCode" Mode="In" Type="Int32" />
+            <Parameter Name="EventDetailCode" Mode="In" Type="Int32" />
+            <Parameter Name="Message" Mode="In" Type="String" />
+            <Parameter Name="ApplicationPath" Mode="In" Type="String" />
+            <Parameter Name="ApplicationVirtualPath" Mode="In" Type="String" />
+            <Parameter Name="MachineName" Mode="In" Type="String" />
+            <Parameter Name="RequestUrl" Mode="In" Type="String" />
+            <Parameter Name="ExceptionType" Mode="In" Type="String" />
+            <Parameter Name="Details" Mode="In" Type="String" />
+          </FunctionImport>
+          <AssociationSet Name="FK_tblUserLogins_aspnet_Users" Association="ChatModel.FK_tblUserLogins_aspnet_Users">
+            <End Role="aspnet_Users" EntitySet="aspnet_Users" />
+            <End Role="tblUserLogin" EntitySet="tblUserLogins" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="aspnet_Applications">
+          <Key>
+            <PropertyRef Name="ApplicationId" />
+          </Key>
+          <Property Name="ApplicationName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="LoweredApplicationName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="ApplicationId" Type="Guid" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="aspnet_Membership" Relationship="ChatModel.FK__aspnet_Me__Appli__31EC6D26" FromRole="aspnet_Applications" ToRole="aspnet_Membership" />
+          <NavigationProperty Name="aspnet_Paths" Relationship="ChatModel.FK__aspnet_Pa__Appli__6B24EA82" FromRole="aspnet_Applications" ToRole="aspnet_Paths" />
+          <NavigationProperty Name="aspnet_Roles" Relationship="ChatModel.FK__aspnet_Ro__Appli__5441852A" FromRole="aspnet_Applications" ToRole="aspnet_Roles" />
+          <NavigationProperty Name="aspnet_Users" Relationship="ChatModel.FK__aspnet_Us__Appli__1DE57479" FromRole="aspnet_Applications" ToRole="aspnet_Users" />
+        </EntityType>
+        <EntityType Name="aspnet_Membership">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="ApplicationId" Type="Guid" Nullable="false" />
+          <Property Name="UserId" Type="Guid" Nullable="false" />
+          <Property Name="Password" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="PasswordFormat" Type="Int32" Nullable="false" />
+          <Property Name="PasswordSalt" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="MobilePIN" Type="String" MaxLength="16" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="LoweredEmail" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="PasswordQuestion" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="PasswordAnswer" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="IsApproved" Type="Boolean" Nullable="false" />
+          <Property Name="IsLockedOut" Type="Boolean" Nullable="false" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LastLoginDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LastPasswordChangedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LastLockoutDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="FailedPasswordAttemptCount" Type="Int32" Nullable="false" />
+          <Property Name="FailedPasswordAttemptWindowStart" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="FailedPasswordAnswerAttemptCount" Type="Int32" Nullable="false" />
+          <Property Name="FailedPasswordAnswerAttemptWindowStart" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Comment" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="aspnet_Applications" Relationship="ChatModel.FK__aspnet_Me__Appli__31EC6D26" FromRole="aspnet_Membership" ToRole="aspnet_Applications" />
+          <NavigationProperty Name="aspnet_Users" Relationship="ChatModel.FK__aspnet_Me__UserI__32E0915F" FromRole="aspnet_Membership" ToRole="aspnet_Users" />
+        </EntityType>
+        <EntityType Name="aspnet_Paths">
+          <Key>
+            <PropertyRef Name="PathId" />
+          </Key>
+          <Property Name="ApplicationId" Type="Guid" Nullable="false" />
+          <Property Name="PathId" Type="Guid" Nullable="false" />
+          <Property Name="Path" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="LoweredPath" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="aspnet_Applications" Relationship="ChatModel.FK__aspnet_Pa__Appli__6B24EA82" FromRole="aspnet_Paths" ToRole="aspnet_Applications" />
+          <NavigationProperty Name="aspnet_PersonalizationAllUsers" Relationship="ChatModel.FK__aspnet_Pe__PathI__72C60C4A" FromRole="aspnet_Paths" ToRole="aspnet_PersonalizationAllUsers" />
+          <NavigationProperty Name="aspnet_PersonalizationPerUser" Relationship="ChatModel.FK__aspnet_Pe__PathI__787EE5A0" FromRole="aspnet_Paths" ToRole="aspnet_PersonalizationPerUser" />
+        </EntityType>
+        <EntityType Name="aspnet_PersonalizationAllUsers">
+          <Key>
+            <PropertyRef Name="PathId" />
+          </Key>
+          <Property Name="PathId" Type="Guid" Nullable="false" />
+          <Property Name="PageSettings" Type="Binary" Nullable="false" MaxLength="Max" FixedLength="false" />
+          <Property Name="LastUpdatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="aspnet_Paths" Relationship="ChatModel.FK__aspnet_Pe__PathI__72C60C4A" FromRole="aspnet_PersonalizationAllUsers" ToRole="aspnet_Paths" />
+        </EntityType>
+        <EntityType Name="aspnet_PersonalizationPerUser">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="PathId" Type="Guid" />
+          <Property Name="UserId" Type="Guid" />
+          <Property Name="PageSettings" Type="Binary" Nullable="false" MaxLength="Max" FixedLength="false" />
+          <Property Name="LastUpdatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="aspnet_Paths" Relationship="ChatModel.FK__aspnet_Pe__PathI__787EE5A0" FromRole="aspnet_PersonalizationPerUser" ToRole="aspnet_Paths" />
+          <NavigationProperty Name="aspnet_Users" Relationship="ChatModel.FK__aspnet_Pe__UserI__797309D9" FromRole="aspnet_PersonalizationPerUser" ToRole="aspnet_Users" />
+        </EntityType>
+        <EntityType Name="aspnet_Profile">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="Guid" Nullable="false" />
+          <Property Name="PropertyNames" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PropertyValuesString" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PropertyValuesBinary" Type="Binary" Nullable="false" MaxLength="Max" FixedLength="false" />
+          <Property Name="LastUpdatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="aspnet_Users" Relationship="ChatModel.FK__aspnet_Pr__UserI__48CFD27E" FromRole="aspnet_Profile" ToRole="aspnet_Users" />
+        </EntityType>
+        <EntityType Name="aspnet_Roles">
+          <Key>
+            <PropertyRef Name="RoleId" />
+          </Key>
+          <Property Name="ApplicationId" Type="Guid" Nullable="false" />
+          <Property Name="RoleId" Type="Guid" Nullable="false" />
+          <Property Name="RoleName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="LoweredRoleName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="aspnet_Applications" Relationship="ChatModel.FK__aspnet_Ro__Appli__5441852A" FromRole="aspnet_Roles" ToRole="aspnet_Applications" />
+          <NavigationProperty Name="aspnet_Users" Relationship="ChatModel.aspnet_UsersInRoles" FromRole="aspnet_Roles" ToRole="aspnet_Users" />
+        </EntityType>
+        <EntityType Name="aspnet_SchemaVersions">
+          <Key>
+            <PropertyRef Name="Feature" />
+            <PropertyRef Name="CompatibleSchemaVersion" />
+          </Key>
+          <Property Name="Feature" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="CompatibleSchemaVersion" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="IsCurrentVersion" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="aspnet_Users">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="ApplicationId" Type="Guid" Nullable="false" />
+          <Property Name="UserId" Type="Guid" Nullable="false" />
+          <Property Name="UserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="LoweredUserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="MobileAlias" Type="String" MaxLength="16" FixedLength="false" Unicode="true" />
+          <Property Name="IsAnonymous" Type="Boolean" Nullable="false" />
+          <Property Name="LastActivityDate" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="aspnet_Applications" Relationship="ChatModel.FK__aspnet_Us__Appli__1DE57479" FromRole="aspnet_Users" ToRole="aspnet_Applications" />
+          <NavigationProperty Name="aspnet_Membership" Relationship="ChatModel.FK__aspnet_Me__UserI__32E0915F" FromRole="aspnet_Users" ToRole="aspnet_Membership" />
+          <NavigationProperty Name="aspnet_PersonalizationPerUser" Relationship="ChatModel.FK__aspnet_Pe__UserI__797309D9" FromRole="aspnet_Users" ToRole="aspnet_PersonalizationPerUser" />
+          <NavigationProperty Name="aspnet_Profile" Relationship="ChatModel.FK__aspnet_Pr__UserI__48CFD27E" FromRole="aspnet_Users" ToRole="aspnet_Profile" />
+          <NavigationProperty Name="aspnet_Roles" Relationship="ChatModel.aspnet_UsersInRoles" FromRole="aspnet_Users" ToRole="aspnet_Roles" />
+          <NavigationProperty Name="tblUserLogins" Relationship="ChatModel.FK_tblUserLogins_aspnet_Users" FromRole="aspnet_Users" ToRole="tblUserLogin" />
+        </EntityType>
+        <EntityType Name="aspnet_WebEvent_Events">
+          <Key>
+            <PropertyRef Name="EventId" />
+          </Key>
+          <Property Name="EventId" Type="String" Nullable="false" MaxLength="32" FixedLength="true" Unicode="false" />
+          <Property Name="EventTimeUtc" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EventTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EventType" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="EventSequence" Type="Decimal" Nullable="false" Precision="19" Scale="0" />
+          <Property Name="EventOccurrence" Type="Decimal" Nullable="false" Precision="19" Scale="0" />
+          <Property Name="EventCode" Type="Int32" Nullable="false" />
+          <Property Name="EventDetailCode" Type="Int32" Nullable="false" />
+          <Property Name="Message" Type="String" MaxLength="1024" FixedLength="false" Unicode="true" />
+          <Property Name="ApplicationPath" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="ApplicationVirtualPath" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="MachineName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="RequestUrl" Type="String" MaxLength="1024" FixedLength="false" Unicode="true" />
+          <Property Name="ExceptionType" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="Details" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="vw_aspnet_Applications">
+          <Key>
+            <PropertyRef Name="ApplicationName" />
+            <PropertyRef Name="LoweredApplicationName" />
+            <PropertyRef Name="ApplicationId" />
+          </Key>
+          <Property Name="ApplicationName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="LoweredApplicationName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="ApplicationId" Type="Guid" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="vw_aspnet_MembershipUsers">
+          <Key>
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="PasswordFormat" />
+            <PropertyRef Name="IsApproved" />
+            <PropertyRef Name="IsLockedOut" />
+            <PropertyRef Name="CreateDate" />
+            <PropertyRef Name="LastLoginDate" />
+            <PropertyRef Name="LastPasswordChangedDate" />
+            <PropertyRef Name="LastLockoutDate" />
+            <PropertyRef Name="FailedPasswordAttemptCount" />
+            <PropertyRef Name="FailedPasswordAttemptWindowStart" />
+            <PropertyRef Name="FailedPasswordAnswerAttemptCount" />
+            <PropertyRef Name="FailedPasswordAnswerAttemptWindowStart" />
+            <PropertyRef Name="ApplicationId" />
+            <PropertyRef Name="UserName" />
+            <PropertyRef Name="IsAnonymous" />
+            <PropertyRef Name="LastActivityDate" />
+          </Key>
+          <Property Name="UserId" Type="Guid" Nullable="false" />
+          <Property Name="PasswordFormat" Type="Int32" Nullable="false" />
+          <Property Name="MobilePIN" Type="String" MaxLength="16" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="LoweredEmail" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="PasswordQuestion" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="PasswordAnswer" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="IsApproved" Type="Boolean" Nullable="false" />
+          <Property Name="IsLockedOut" Type="Boolean" Nullable="false" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LastLoginDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LastPasswordChangedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LastLockoutDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="FailedPasswordAttemptCount" Type="Int32" Nullable="false" />
+          <Property Name="FailedPasswordAttemptWindowStart" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="FailedPasswordAnswerAttemptCount" Type="Int32" Nullable="false" />
+          <Property Name="FailedPasswordAnswerAttemptWindowStart" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Comment" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ApplicationId" Type="Guid" Nullable="false" />
+          <Property Name="UserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="MobileAlias" Type="String" MaxLength="16" FixedLength="false" Unicode="true" />
+          <Property Name="IsAnonymous" Type="Boolean" Nullable="false" />
+          <Property Name="LastActivityDate" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="vw_aspnet_Profiles">
+          <Key>
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="LastUpdatedDate" />
+          </Key>
+          <Property Name="UserId" Type="Guid" Nullable="false" />
+          <Property Name="LastUpdatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="DataSize" Type="Int32" />
+        </EntityType>
+        <EntityType Name="vw_aspnet_Roles">
+          <Key>
+            <PropertyRef Name="ApplicationId" />
+            <PropertyRef Name="RoleId" />
+            <PropertyRef Name="RoleName" />
+            <PropertyRef Name="LoweredRoleName" />
+          </Key>
+          <Property Name="ApplicationId" Type="Guid" Nullable="false" />
+          <Property Name="RoleId" Type="Guid" Nullable="false" />
+          <Property Name="RoleName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="LoweredRoleName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="vw_aspnet_Users">
+          <Key>
+            <PropertyRef Name="ApplicationId" />
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="UserName" />
+            <PropertyRef Name="LoweredUserName" />
+            <PropertyRef Name="IsAnonymous" />
+            <PropertyRef Name="LastActivityDate" />
+          </Key>
+          <Property Name="ApplicationId" Type="Guid" Nullable="false" />
+          <Property Name="UserId" Type="Guid" Nullable="false" />
+          <Property Name="UserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="LoweredUserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="MobileAlias" Type="String" MaxLength="16" FixedLength="false" Unicode="true" />
+          <Property Name="IsAnonymous" Type="Boolean" Nullable="false" />
+          <Property Name="LastActivityDate" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="vw_aspnet_UsersInRoles">
+          <Key>
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="RoleId" />
+          </Key>
+          <Property Name="UserId" Type="Guid" Nullable="false" />
+          <Property Name="RoleId" Type="Guid" Nullable="false" />
+        </EntityType>
+        <EntityType Name="vw_aspnet_WebPartState_Paths">
+          <Key>
+            <PropertyRef Name="ApplicationId" />
+            <PropertyRef Name="PathId" />
+            <PropertyRef Name="Path" />
+            <PropertyRef Name="LoweredPath" />
+          </Key>
+          <Property Name="ApplicationId" Type="Guid" Nullable="false" />
+          <Property Name="PathId" Type="Guid" Nullable="false" />
+          <Property Name="Path" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="LoweredPath" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="vw_aspnet_WebPartState_Shared">
+          <Key>
+            <PropertyRef Name="PathId" />
+            <PropertyRef Name="LastUpdatedDate" />
+          </Key>
+          <Property Name="PathId" Type="Guid" Nullable="false" />
+          <Property Name="DataSize" Type="Int32" />
+          <Property Name="LastUpdatedDate" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="vw_aspnet_WebPartState_User">
+          <Key>
+            <PropertyRef Name="LastUpdatedDate" />
+          </Key>
+          <Property Name="PathId" Type="Guid" />
+          <Property Name="UserId" Type="Guid" />
+          <Property Name="DataSize" Type="Int32" />
+          <Property Name="LastUpdatedDate" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <Association Name="FK__aspnet_Me__Appli__31EC6D26">
+          <End Type="ChatModel.aspnet_Applications" Role="aspnet_Applications" Multiplicity="1" />
+          <End Type="ChatModel.aspnet_Membership" Role="aspnet_Membership" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="aspnet_Applications">
+              <PropertyRef Name="ApplicationId" />
+            </Principal>
+            <Dependent Role="aspnet_Membership">
+              <PropertyRef Name="ApplicationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__aspnet_Pa__Appli__6B24EA82">
+          <End Type="ChatModel.aspnet_Applications" Role="aspnet_Applications" Multiplicity="1" />
+          <End Type="ChatModel.aspnet_Paths" Role="aspnet_Paths" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="aspnet_Applications">
+              <PropertyRef Name="ApplicationId" />
+            </Principal>
+            <Dependent Role="aspnet_Paths">
+              <PropertyRef Name="ApplicationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__aspnet_Ro__Appli__5441852A">
+          <End Type="ChatModel.aspnet_Applications" Role="aspnet_Applications" Multiplicity="1" />
+          <End Type="ChatModel.aspnet_Roles" Role="aspnet_Roles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="aspnet_Applications">
+              <PropertyRef Name="ApplicationId" />
+            </Principal>
+            <Dependent Role="aspnet_Roles">
+              <PropertyRef Name="ApplicationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__aspnet_Us__Appli__1DE57479">
+          <End Type="ChatModel.aspnet_Applications" Role="aspnet_Applications" Multiplicity="1" />
+          <End Type="ChatModel.aspnet_Users" Role="aspnet_Users" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="aspnet_Applications">
+              <PropertyRef Name="ApplicationId" />
+            </Principal>
+            <Dependent Role="aspnet_Users">
+              <PropertyRef Name="ApplicationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__aspnet_Me__UserI__32E0915F">
+          <End Type="ChatModel.aspnet_Users" Role="aspnet_Users" Multiplicity="1" />
+          <End Type="ChatModel.aspnet_Membership" Role="aspnet_Membership" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="aspnet_Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="aspnet_Membership">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__aspnet_Pe__PathI__72C60C4A">
+          <End Type="ChatModel.aspnet_Paths" Role="aspnet_Paths" Multiplicity="1" />
+          <End Type="ChatModel.aspnet_PersonalizationAllUsers" Role="aspnet_PersonalizationAllUsers" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="aspnet_Paths">
+              <PropertyRef Name="PathId" />
+            </Principal>
+            <Dependent Role="aspnet_PersonalizationAllUsers">
+              <PropertyRef Name="PathId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__aspnet_Pe__PathI__787EE5A0">
+          <End Type="ChatModel.aspnet_Paths" Role="aspnet_Paths" Multiplicity="0..1" />
+          <End Type="ChatModel.aspnet_PersonalizationPerUser" Role="aspnet_PersonalizationPerUser" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="aspnet_Paths">
+              <PropertyRef Name="PathId" />
+            </Principal>
+            <Dependent Role="aspnet_PersonalizationPerUser">
+              <PropertyRef Name="PathId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__aspnet_Pe__UserI__797309D9">
+          <End Type="ChatModel.aspnet_Users" Role="aspnet_Users" Multiplicity="0..1" />
+          <End Type="ChatModel.aspnet_PersonalizationPerUser" Role="aspnet_PersonalizationPerUser" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="aspnet_Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="aspnet_PersonalizationPerUser">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__aspnet_Pr__UserI__48CFD27E">
+          <End Type="ChatModel.aspnet_Users" Role="aspnet_Users" Multiplicity="1" />
+          <End Type="ChatModel.aspnet_Profile" Role="aspnet_Profile" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="aspnet_Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="aspnet_Profile">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="aspnet_UsersInRoles">
+          <End Type="ChatModel.aspnet_Roles" Role="aspnet_Roles" Multiplicity="*" />
+          <End Type="ChatModel.aspnet_Users" Role="aspnet_Users" Multiplicity="*" />
+        </Association>
+        <ComplexType Name="aspnet_Membership_GetPassword_Result">
+          <Property Type="String" Name="Column1" Nullable="true" MaxLength="128" />
+          <Property Type="Int32" Name="Column2" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="aspnet_Membership_GetPasswordWithFormat_Result">
+          <Property Type="String" Name="Column1" Nullable="true" MaxLength="128" />
+          <Property Type="Int32" Name="Column2" Nullable="true" />
+          <Property Type="String" Name="Column3" Nullable="true" MaxLength="128" />
+          <Property Type="Int32" Name="Column4" Nullable="true" />
+          <Property Type="Int32" Name="Column5" Nullable="true" />
+          <Property Type="Boolean" Name="Column6" Nullable="true" />
+          <Property Type="DateTime" Name="Column7" Nullable="true" Precision="23" />
+          <Property Type="DateTime" Name="Column8" Nullable="true" Precision="23" />
+        </ComplexType>
+        <ComplexType Name="aspnet_Membership_GetUserByName_Result">
+          <Property Type="String" Name="Email" Nullable="true" MaxLength="256" />
+          <Property Type="String" Name="PasswordQuestion" Nullable="true" MaxLength="256" />
+          <Property Type="String" Name="Comment" Nullable="true" MaxLength="Max" />
+          <Property Type="Boolean" Name="IsApproved" Nullable="false" />
+          <Property Type="DateTime" Name="CreateDate" Nullable="false" Precision="23" />
+          <Property Type="DateTime" Name="LastLoginDate" Nullable="false" Precision="23" />
+          <Property Type="DateTime" Name="LastActivityDate" Nullable="false" Precision="23" />
+          <Property Type="DateTime" Name="LastPasswordChangedDate" Nullable="false" Precision="23" />
+          <Property Type="Guid" Name="UserId" Nullable="false" />
+          <Property Type="Boolean" Name="IsLockedOut" Nullable="false" />
+          <Property Type="DateTime" Name="LastLockoutDate" Nullable="false" Precision="23" />
+        </ComplexType>
+        <ComplexType Name="aspnet_Membership_GetUserByUserId_Result">
+          <Property Type="String" Name="Email" Nullable="true" MaxLength="256" />
+          <Property Type="String" Name="PasswordQuestion" Nullable="true" MaxLength="256" />
+          <Property Type="String" Name="Comment" Nullable="true" MaxLength="Max" />
+          <Property Type="Boolean" Name="IsApproved" Nullable="false" />
+          <Property Type="DateTime" Name="CreateDate" Nullable="false" Precision="23" />
+          <Property Type="DateTime" Name="LastLoginDate" Nullable="false" Precision="23" />
+          <Property Type="DateTime" Name="LastActivityDate" Nullable="false" Precision="23" />
+          <Property Type="DateTime" Name="LastPasswordChangedDate" Nullable="false" Precision="23" />
+          <Property Type="String" Name="UserName" Nullable="false" MaxLength="256" />
+          <Property Type="Boolean" Name="IsLockedOut" Nullable="false" />
+          <Property Type="DateTime" Name="LastLockoutDate" Nullable="false" Precision="23" />
+        </ComplexType>
+        <ComplexType Name="aspnet_Profile_GetProperties_Result">
+          <Property Type="String" Name="PropertyNames" Nullable="false" MaxLength="Max" />
+          <Property Type="String" Name="PropertyValuesString" Nullable="false" MaxLength="Max" />
+          <Property Type="Binary" Name="PropertyValuesBinary" Nullable="false" MaxLength="Max" />
+        </ComplexType>
+        <ComplexType Name="aspnet_UsersInRoles_RemoveUsersFromRoles_Result">
+          <Property Type="String" Name="Column1" Nullable="false" MaxLength="1" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="256" />
+        </ComplexType>
+        <Association Name="FK_tblUserLogins_aspnet_Users">
+          <End Type="ChatModel.aspnet_Users" Role="aspnet_Users" Multiplicity="1" />
+          <End Type="ChatModel.tblUserLogin" Role="tblUserLogin" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="aspnet_Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="tblUserLogin">
+              <PropertyRef Name="AspAuthenticationUserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="ChatModelStoreContainer" CdmEntityContainer="ChatEntities">
+          <EntitySetMapping Name="tblChatRooms">
+            <EntityTypeMapping TypeName="ChatModel.tblChatRoom">
+              <MappingFragment StoreEntitySet="tblChatRooms">
+                <ScalarProperty Name="IdRoom" ColumnName="IdRoom" />
+                <ScalarProperty Name="RoomIdentifier" ColumnName="RoomIdentifier" />
+                <ScalarProperty Name="HashIdentifier" ColumnName="HashIdentifier" />
+                <ScalarProperty Name="UserInRoom" ColumnName="UserInRoom" />
+                <ScalarProperty Name="UserCreater" ColumnName="UserCreater" />
+                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+                <ScalarProperty Name="DateChanged" ColumnName="DateChanged" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblChatUsers">
+            <EntityTypeMapping TypeName="ChatModel.tblChatUser">
+              <MappingFragment StoreEntitySet="tblChatUser">
+                <ScalarProperty Name="IdUser" ColumnName="IdUser" />
+                <ScalarProperty Name="IdLogin" ColumnName="IdLogin" />
+                <ScalarProperty Name="ChatUserIdentifier" ColumnName="ChatUserIdentifier" />
+                <ScalarProperty Name="ChatUserName" ColumnName="ChatUserName" />
+                <ScalarProperty Name="IdChatUserStatus" ColumnName="IdChatUserStatus" />
+                <ScalarProperty Name="LastSeen" ColumnName="LastSeen" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+                <ScalarProperty Name="DateChange" ColumnName="DateChange" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblChatUserStatus">
+            <EntityTypeMapping TypeName="ChatModel.tblChatUserStatu">
+              <MappingFragment StoreEntitySet="tblChatUserStatus">
+                <ScalarProperty Name="IdStatus" ColumnName="IdStatus" />
+                <ScalarProperty Name="StatusName" ColumnName="StatusName" />
+                <ScalarProperty Name="MakeOperation" ColumnName="MakeOperation" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+                <ScalarProperty Name="DateChange" ColumnName="DateChange" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblRoomMessageSessions">
+            <EntityTypeMapping TypeName="ChatModel.tblRoomMessageSession">
+              <MappingFragment StoreEntitySet="tblRoomMessageSession">
+                <ScalarProperty Name="IdSassion" ColumnName="IdSassion" />
+                <ScalarProperty Name="IdRoom" ColumnName="IdRoom" />
+                <ScalarProperty Name="SessionStartDate" ColumnName="SessionStartDate" />
+                <ScalarProperty Name="SessionEndDate" ColumnName="SessionEndDate" />
+                <ScalarProperty Name="SessionMessages" ColumnName="SessionMessages" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+                <ScalarProperty Name="DateChanged" ColumnName="DateChanged" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblRoomUsers">
+            <EntityTypeMapping TypeName="ChatModel.tblRoomUser">
+              <MappingFragment StoreEntitySet="tblRoomUsers">
+                <ScalarProperty Name="IdRoom" ColumnName="IdRoom" />
+                <ScalarProperty Name="IdUser" ColumnName="IdUser" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="DateChange" ColumnName="DateChange" />
+                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblUserLogins">
+            <EntityTypeMapping TypeName="ChatModel.tblUserLogin">
+              <MappingFragment StoreEntitySet="tblUserLogins">
+                <ScalarProperty Name="AspAuthenticationUserId" ColumnName="AspAuthenticationUserId" />
+                <ScalarProperty Name="IdLogin" ColumnName="IdLogin" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+                <ScalarProperty Name="DateChanged" ColumnName="DateChanged" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="aspnet_Applications">
+            <EntityTypeMapping TypeName="ChatModel.aspnet_Applications">
+              <MappingFragment StoreEntitySet="aspnet_Applications">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="ApplicationId" ColumnName="ApplicationId" />
+                <ScalarProperty Name="LoweredApplicationName" ColumnName="LoweredApplicationName" />
+                <ScalarProperty Name="ApplicationName" ColumnName="ApplicationName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="aspnet_Membership">
+            <EntityTypeMapping TypeName="ChatModel.aspnet_Membership">
+              <MappingFragment StoreEntitySet="aspnet_Membership">
+                <ScalarProperty Name="Comment" ColumnName="Comment" />
+                <ScalarProperty Name="FailedPasswordAnswerAttemptWindowStart" ColumnName="FailedPasswordAnswerAttemptWindowStart" />
+                <ScalarProperty Name="FailedPasswordAnswerAttemptCount" ColumnName="FailedPasswordAnswerAttemptCount" />
+                <ScalarProperty Name="FailedPasswordAttemptWindowStart" ColumnName="FailedPasswordAttemptWindowStart" />
+                <ScalarProperty Name="FailedPasswordAttemptCount" ColumnName="FailedPasswordAttemptCount" />
+                <ScalarProperty Name="LastLockoutDate" ColumnName="LastLockoutDate" />
+                <ScalarProperty Name="LastPasswordChangedDate" ColumnName="LastPasswordChangedDate" />
+                <ScalarProperty Name="LastLoginDate" ColumnName="LastLoginDate" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="IsLockedOut" ColumnName="IsLockedOut" />
+                <ScalarProperty Name="IsApproved" ColumnName="IsApproved" />
+                <ScalarProperty Name="PasswordAnswer" ColumnName="PasswordAnswer" />
+                <ScalarProperty Name="PasswordQuestion" ColumnName="PasswordQuestion" />
+                <ScalarProperty Name="LoweredEmail" ColumnName="LoweredEmail" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="MobilePIN" ColumnName="MobilePIN" />
+                <ScalarProperty Name="PasswordSalt" ColumnName="PasswordSalt" />
+                <ScalarProperty Name="PasswordFormat" ColumnName="PasswordFormat" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="ApplicationId" ColumnName="ApplicationId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="aspnet_Paths">
+            <EntityTypeMapping TypeName="ChatModel.aspnet_Paths">
+              <MappingFragment StoreEntitySet="aspnet_Paths">
+                <ScalarProperty Name="LoweredPath" ColumnName="LoweredPath" />
+                <ScalarProperty Name="Path" ColumnName="Path" />
+                <ScalarProperty Name="PathId" ColumnName="PathId" />
+                <ScalarProperty Name="ApplicationId" ColumnName="ApplicationId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="aspnet_PersonalizationAllUsers">
+            <EntityTypeMapping TypeName="ChatModel.aspnet_PersonalizationAllUsers">
+              <MappingFragment StoreEntitySet="aspnet_PersonalizationAllUsers">
+                <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+                <ScalarProperty Name="PageSettings" ColumnName="PageSettings" />
+                <ScalarProperty Name="PathId" ColumnName="PathId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="aspnet_PersonalizationPerUser">
+            <EntityTypeMapping TypeName="ChatModel.aspnet_PersonalizationPerUser">
+              <MappingFragment StoreEntitySet="aspnet_PersonalizationPerUser">
+                <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+                <ScalarProperty Name="PageSettings" ColumnName="PageSettings" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="PathId" ColumnName="PathId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="aspnet_Profile">
+            <EntityTypeMapping TypeName="ChatModel.aspnet_Profile">
+              <MappingFragment StoreEntitySet="aspnet_Profile">
+                <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+                <ScalarProperty Name="PropertyValuesBinary" ColumnName="PropertyValuesBinary" />
+                <ScalarProperty Name="PropertyValuesString" ColumnName="PropertyValuesString" />
+                <ScalarProperty Name="PropertyNames" ColumnName="PropertyNames" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="aspnet_Roles">
+            <EntityTypeMapping TypeName="ChatModel.aspnet_Roles">
+              <MappingFragment StoreEntitySet="aspnet_Roles">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="LoweredRoleName" ColumnName="LoweredRoleName" />
+                <ScalarProperty Name="RoleName" ColumnName="RoleName" />
+                <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+                <ScalarProperty Name="ApplicationId" ColumnName="ApplicationId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="aspnet_SchemaVersions">
+            <EntityTypeMapping TypeName="ChatModel.aspnet_SchemaVersions">
+              <MappingFragment StoreEntitySet="aspnet_SchemaVersions">
+                <ScalarProperty Name="IsCurrentVersion" ColumnName="IsCurrentVersion" />
+                <ScalarProperty Name="CompatibleSchemaVersion" ColumnName="CompatibleSchemaVersion" />
+                <ScalarProperty Name="Feature" ColumnName="Feature" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="aspnet_Users">
+            <EntityTypeMapping TypeName="ChatModel.aspnet_Users">
+              <MappingFragment StoreEntitySet="aspnet_Users">
+                <ScalarProperty Name="LastActivityDate" ColumnName="LastActivityDate" />
+                <ScalarProperty Name="IsAnonymous" ColumnName="IsAnonymous" />
+                <ScalarProperty Name="MobileAlias" ColumnName="MobileAlias" />
+                <ScalarProperty Name="LoweredUserName" ColumnName="LoweredUserName" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="ApplicationId" ColumnName="ApplicationId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="aspnet_WebEvent_Events">
+            <EntityTypeMapping TypeName="ChatModel.aspnet_WebEvent_Events">
+              <MappingFragment StoreEntitySet="aspnet_WebEvent_Events">
+                <ScalarProperty Name="Details" ColumnName="Details" />
+                <ScalarProperty Name="ExceptionType" ColumnName="ExceptionType" />
+                <ScalarProperty Name="RequestUrl" ColumnName="RequestUrl" />
+                <ScalarProperty Name="MachineName" ColumnName="MachineName" />
+                <ScalarProperty Name="ApplicationVirtualPath" ColumnName="ApplicationVirtualPath" />
+                <ScalarProperty Name="ApplicationPath" ColumnName="ApplicationPath" />
+                <ScalarProperty Name="Message" ColumnName="Message" />
+                <ScalarProperty Name="EventDetailCode" ColumnName="EventDetailCode" />
+                <ScalarProperty Name="EventCode" ColumnName="EventCode" />
+                <ScalarProperty Name="EventOccurrence" ColumnName="EventOccurrence" />
+                <ScalarProperty Name="EventSequence" ColumnName="EventSequence" />
+                <ScalarProperty Name="EventType" ColumnName="EventType" />
+                <ScalarProperty Name="EventTime" ColumnName="EventTime" />
+                <ScalarProperty Name="EventTimeUtc" ColumnName="EventTimeUtc" />
+                <ScalarProperty Name="EventId" ColumnName="EventId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vw_aspnet_Applications">
+            <EntityTypeMapping TypeName="ChatModel.vw_aspnet_Applications">
+              <MappingFragment StoreEntitySet="vw_aspnet_Applications">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="ApplicationId" ColumnName="ApplicationId" />
+                <ScalarProperty Name="LoweredApplicationName" ColumnName="LoweredApplicationName" />
+                <ScalarProperty Name="ApplicationName" ColumnName="ApplicationName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vw_aspnet_MembershipUsers">
+            <EntityTypeMapping TypeName="ChatModel.vw_aspnet_MembershipUsers">
+              <MappingFragment StoreEntitySet="vw_aspnet_MembershipUsers">
+                <ScalarProperty Name="LastActivityDate" ColumnName="LastActivityDate" />
+                <ScalarProperty Name="IsAnonymous" ColumnName="IsAnonymous" />
+                <ScalarProperty Name="MobileAlias" ColumnName="MobileAlias" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="ApplicationId" ColumnName="ApplicationId" />
+                <ScalarProperty Name="Comment" ColumnName="Comment" />
+                <ScalarProperty Name="FailedPasswordAnswerAttemptWindowStart" ColumnName="FailedPasswordAnswerAttemptWindowStart" />
+                <ScalarProperty Name="FailedPasswordAnswerAttemptCount" ColumnName="FailedPasswordAnswerAttemptCount" />
+                <ScalarProperty Name="FailedPasswordAttemptWindowStart" ColumnName="FailedPasswordAttemptWindowStart" />
+                <ScalarProperty Name="FailedPasswordAttemptCount" ColumnName="FailedPasswordAttemptCount" />
+                <ScalarProperty Name="LastLockoutDate" ColumnName="LastLockoutDate" />
+                <ScalarProperty Name="LastPasswordChangedDate" ColumnName="LastPasswordChangedDate" />
+                <ScalarProperty Name="LastLoginDate" ColumnName="LastLoginDate" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="IsLockedOut" ColumnName="IsLockedOut" />
+                <ScalarProperty Name="IsApproved" ColumnName="IsApproved" />
+                <ScalarProperty Name="PasswordAnswer" ColumnName="PasswordAnswer" />
+                <ScalarProperty Name="PasswordQuestion" ColumnName="PasswordQuestion" />
+                <ScalarProperty Name="LoweredEmail" ColumnName="LoweredEmail" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="MobilePIN" ColumnName="MobilePIN" />
+                <ScalarProperty Name="PasswordFormat" ColumnName="PasswordFormat" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vw_aspnet_Profiles">
+            <EntityTypeMapping TypeName="ChatModel.vw_aspnet_Profiles">
+              <MappingFragment StoreEntitySet="vw_aspnet_Profiles">
+                <ScalarProperty Name="DataSize" ColumnName="DataSize" />
+                <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vw_aspnet_Roles">
+            <EntityTypeMapping TypeName="ChatModel.vw_aspnet_Roles">
+              <MappingFragment StoreEntitySet="vw_aspnet_Roles">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="LoweredRoleName" ColumnName="LoweredRoleName" />
+                <ScalarProperty Name="RoleName" ColumnName="RoleName" />
+                <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+                <ScalarProperty Name="ApplicationId" ColumnName="ApplicationId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vw_aspnet_Users">
+            <EntityTypeMapping TypeName="ChatModel.vw_aspnet_Users">
+              <MappingFragment StoreEntitySet="vw_aspnet_Users">
+                <ScalarProperty Name="LastActivityDate" ColumnName="LastActivityDate" />
+                <ScalarProperty Name="IsAnonymous" ColumnName="IsAnonymous" />
+                <ScalarProperty Name="MobileAlias" ColumnName="MobileAlias" />
+                <ScalarProperty Name="LoweredUserName" ColumnName="LoweredUserName" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="ApplicationId" ColumnName="ApplicationId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vw_aspnet_UsersInRoles">
+            <EntityTypeMapping TypeName="ChatModel.vw_aspnet_UsersInRoles">
+              <MappingFragment StoreEntitySet="vw_aspnet_UsersInRoles">
+                <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vw_aspnet_WebPartState_Paths">
+            <EntityTypeMapping TypeName="ChatModel.vw_aspnet_WebPartState_Paths">
+              <MappingFragment StoreEntitySet="vw_aspnet_WebPartState_Paths">
+                <ScalarProperty Name="LoweredPath" ColumnName="LoweredPath" />
+                <ScalarProperty Name="Path" ColumnName="Path" />
+                <ScalarProperty Name="PathId" ColumnName="PathId" />
+                <ScalarProperty Name="ApplicationId" ColumnName="ApplicationId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vw_aspnet_WebPartState_Shared">
+            <EntityTypeMapping TypeName="ChatModel.vw_aspnet_WebPartState_Shared">
+              <MappingFragment StoreEntitySet="vw_aspnet_WebPartState_Shared">
+                <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+                <ScalarProperty Name="DataSize" ColumnName="DataSize" />
+                <ScalarProperty Name="PathId" ColumnName="PathId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vw_aspnet_WebPartState_User">
+            <EntityTypeMapping TypeName="ChatModel.vw_aspnet_WebPartState_User">
+              <MappingFragment StoreEntitySet="vw_aspnet_WebPartState_User">
+                <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+                <ScalarProperty Name="DataSize" ColumnName="DataSize" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="PathId" ColumnName="PathId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="aspnet_UsersInRoles" TypeName="ChatModel.aspnet_UsersInRoles" StoreEntitySet="aspnet_UsersInRoles">
+            <EndProperty Name="aspnet_Users">
+              <ScalarProperty Name="UserId" ColumnName="UserId" />
+            </EndProperty>
+            <EndProperty Name="aspnet_Roles">
+              <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <FunctionImportMapping FunctionImportName="aspnet_AnyDataInTables" FunctionName="ChatModel.Store.aspnet_AnyDataInTables" />
+          <FunctionImportMapping FunctionImportName="aspnet_Applications_CreateApplication" FunctionName="ChatModel.Store.aspnet_Applications_CreateApplication" />
+          <FunctionImportMapping FunctionImportName="aspnet_CheckSchemaVersion" FunctionName="ChatModel.Store.aspnet_CheckSchemaVersion" />
+          <FunctionImportMapping FunctionImportName="aspnet_Membership_ChangePasswordQuestionAndAnswer" FunctionName="ChatModel.Store.aspnet_Membership_ChangePasswordQuestionAndAnswer" />
+          <FunctionImportMapping FunctionImportName="aspnet_Membership_CreateUser" FunctionName="ChatModel.Store.aspnet_Membership_CreateUser" />
+          <FunctionImportMapping FunctionImportName="aspnet_Membership_FindUsersByEmail" FunctionName="ChatModel.Store.aspnet_Membership_FindUsersByEmail" />
+          <FunctionImportMapping FunctionImportName="aspnet_Membership_FindUsersByName" FunctionName="ChatModel.Store.aspnet_Membership_FindUsersByName" />
+          <FunctionImportMapping FunctionImportName="aspnet_Membership_GetAllUsers" FunctionName="ChatModel.Store.aspnet_Membership_GetAllUsers" />
+          <FunctionImportMapping FunctionImportName="aspnet_Membership_GetNumberOfUsersOnline" FunctionName="ChatModel.Store.aspnet_Membership_GetNumberOfUsersOnline" />
+          <FunctionImportMapping FunctionImportName="aspnet_Membership_GetPassword" FunctionName="ChatModel.Store.aspnet_Membership_GetPassword">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="ChatModel.aspnet_Membership_GetPassword_Result">
+                <ScalarProperty Name="Column1" ColumnName="Column1" />
+                <ScalarProperty Name="Column2" ColumnName="Column2" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="aspnet_Membership_GetPasswordWithFormat" FunctionName="ChatModel.Store.aspnet_Membership_GetPasswordWithFormat">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="ChatModel.aspnet_Membership_GetPasswordWithFormat_Result">
+                <ScalarProperty Name="Column1" ColumnName="Column1" />
+                <ScalarProperty Name="Column2" ColumnName="Column2" />
+                <ScalarProperty Name="Column3" ColumnName="Column3" />
+                <ScalarProperty Name="Column4" ColumnName="Column4" />
+                <ScalarProperty Name="Column5" ColumnName="Column5" />
+                <ScalarProperty Name="Column6" ColumnName="Column6" />
+                <ScalarProperty Name="Column7" ColumnName="Column7" />
+                <ScalarProperty Name="Column8" ColumnName="Column8" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="aspnet_Membership_GetUserByEmail" FunctionName="ChatModel.Store.aspnet_Membership_GetUserByEmail" />
+          <FunctionImportMapping FunctionImportName="aspnet_Membership_GetUserByName" FunctionName="ChatModel.Store.aspnet_Membership_GetUserByName">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="ChatModel.aspnet_Membership_GetUserByName_Result">
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="PasswordQuestion" ColumnName="PasswordQuestion" />
+                <ScalarProperty Name="Comment" ColumnName="Comment" />
+                <ScalarProperty Name="IsApproved" ColumnName="IsApproved" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="LastLoginDate" ColumnName="LastLoginDate" />
+                <ScalarProperty Name="LastActivityDate" ColumnName="LastActivityDate" />
+                <ScalarProperty Name="LastPasswordChangedDate" ColumnName="LastPasswordChangedDate" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="IsLockedOut" ColumnName="IsLockedOut" />
+                <ScalarProperty Name="LastLockoutDate" ColumnName="LastLockoutDate" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="aspnet_Membership_GetUserByUserId" FunctionName="ChatModel.Store.aspnet_Membership_GetUserByUserId">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="ChatModel.aspnet_Membership_GetUserByUserId_Result">
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="PasswordQuestion" ColumnName="PasswordQuestion" />
+                <ScalarProperty Name="Comment" ColumnName="Comment" />
+                <ScalarProperty Name="IsApproved" ColumnName="IsApproved" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="LastLoginDate" ColumnName="LastLoginDate" />
+                <ScalarProperty Name="LastActivityDate" ColumnName="LastActivityDate" />
+                <ScalarProperty Name="LastPasswordChangedDate" ColumnName="LastPasswordChangedDate" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="IsLockedOut" ColumnName="IsLockedOut" />
+                <ScalarProperty Name="LastLockoutDate" ColumnName="LastLockoutDate" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="aspnet_Membership_ResetPassword" FunctionName="ChatModel.Store.aspnet_Membership_ResetPassword" />
+          <FunctionImportMapping FunctionImportName="aspnet_Membership_SetPassword" FunctionName="ChatModel.Store.aspnet_Membership_SetPassword" />
+          <FunctionImportMapping FunctionImportName="aspnet_Membership_UnlockUser" FunctionName="ChatModel.Store.aspnet_Membership_UnlockUser" />
+          <FunctionImportMapping FunctionImportName="aspnet_Membership_UpdateUser" FunctionName="ChatModel.Store.aspnet_Membership_UpdateUser" />
+          <FunctionImportMapping FunctionImportName="aspnet_Membership_UpdateUserInfo" FunctionName="ChatModel.Store.aspnet_Membership_UpdateUserInfo" />
+          <FunctionImportMapping FunctionImportName="aspnet_Paths_CreatePath" FunctionName="ChatModel.Store.aspnet_Paths_CreatePath" />
+          <FunctionImportMapping FunctionImportName="aspnet_Personalization_GetApplicationId" FunctionName="ChatModel.Store.aspnet_Personalization_GetApplicationId" />
+          <FunctionImportMapping FunctionImportName="aspnet_PersonalizationAdministration_DeleteAllState" FunctionName="ChatModel.Store.aspnet_PersonalizationAdministration_DeleteAllState" />
+          <FunctionImportMapping FunctionImportName="aspnet_PersonalizationAdministration_FindState" FunctionName="ChatModel.Store.aspnet_PersonalizationAdministration_FindState" />
+          <FunctionImportMapping FunctionImportName="aspnet_PersonalizationAdministration_GetCountOfState" FunctionName="ChatModel.Store.aspnet_PersonalizationAdministration_GetCountOfState" />
+          <FunctionImportMapping FunctionImportName="aspnet_PersonalizationAdministration_ResetSharedState" FunctionName="ChatModel.Store.aspnet_PersonalizationAdministration_ResetSharedState" />
+          <FunctionImportMapping FunctionImportName="aspnet_PersonalizationAdministration_ResetUserState" FunctionName="ChatModel.Store.aspnet_PersonalizationAdministration_ResetUserState" />
+          <FunctionImportMapping FunctionImportName="aspnet_PersonalizationAllUsers_GetPageSettings" FunctionName="ChatModel.Store.aspnet_PersonalizationAllUsers_GetPageSettings" />
+          <FunctionImportMapping FunctionImportName="aspnet_PersonalizationAllUsers_ResetPageSettings" FunctionName="ChatModel.Store.aspnet_PersonalizationAllUsers_ResetPageSettings" />
+          <FunctionImportMapping FunctionImportName="aspnet_PersonalizationAllUsers_SetPageSettings" FunctionName="ChatModel.Store.aspnet_PersonalizationAllUsers_SetPageSettings" />
+          <FunctionImportMapping FunctionImportName="aspnet_PersonalizationPerUser_GetPageSettings" FunctionName="ChatModel.Store.aspnet_PersonalizationPerUser_GetPageSettings" />
+          <FunctionImportMapping FunctionImportName="aspnet_PersonalizationPerUser_ResetPageSettings" FunctionName="ChatModel.Store.aspnet_PersonalizationPerUser_ResetPageSettings" />
+          <FunctionImportMapping FunctionImportName="aspnet_PersonalizationPerUser_SetPageSettings" FunctionName="ChatModel.Store.aspnet_PersonalizationPerUser_SetPageSettings" />
+          <FunctionImportMapping FunctionImportName="aspnet_Profile_DeleteInactiveProfiles" FunctionName="ChatModel.Store.aspnet_Profile_DeleteInactiveProfiles" />
+          <FunctionImportMapping FunctionImportName="aspnet_Profile_DeleteProfiles" FunctionName="ChatModel.Store.aspnet_Profile_DeleteProfiles" />
+          <FunctionImportMapping FunctionImportName="aspnet_Profile_GetNumberOfInactiveProfiles" FunctionName="ChatModel.Store.aspnet_Profile_GetNumberOfInactiveProfiles" />
+          <FunctionImportMapping FunctionImportName="aspnet_Profile_GetProfiles" FunctionName="ChatModel.Store.aspnet_Profile_GetProfiles" />
+          <FunctionImportMapping FunctionImportName="aspnet_Profile_GetProperties" FunctionName="ChatModel.Store.aspnet_Profile_GetProperties">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="ChatModel.aspnet_Profile_GetProperties_Result">
+                <ScalarProperty Name="PropertyNames" ColumnName="PropertyNames" />
+                <ScalarProperty Name="PropertyValuesString" ColumnName="PropertyValuesString" />
+                <ScalarProperty Name="PropertyValuesBinary" ColumnName="PropertyValuesBinary" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="aspnet_Profile_SetProperties" FunctionName="ChatModel.Store.aspnet_Profile_SetProperties" />
+          <FunctionImportMapping FunctionImportName="aspnet_RegisterSchemaVersion" FunctionName="ChatModel.Store.aspnet_RegisterSchemaVersion" />
+          <FunctionImportMapping FunctionImportName="aspnet_Roles_CreateRole" FunctionName="ChatModel.Store.aspnet_Roles_CreateRole" />
+          <FunctionImportMapping FunctionImportName="aspnet_Roles_DeleteRole" FunctionName="ChatModel.Store.aspnet_Roles_DeleteRole" />
+          <FunctionImportMapping FunctionImportName="aspnet_Roles_GetAllRoles" FunctionName="ChatModel.Store.aspnet_Roles_GetAllRoles" />
+          <FunctionImportMapping FunctionImportName="aspnet_Roles_RoleExists" FunctionName="ChatModel.Store.aspnet_Roles_RoleExists" />
+          <FunctionImportMapping FunctionImportName="aspnet_Setup_RemoveAllRoleMembers" FunctionName="ChatModel.Store.aspnet_Setup_RemoveAllRoleMembers" />
+          <FunctionImportMapping FunctionImportName="aspnet_Setup_RestorePermissions" FunctionName="ChatModel.Store.aspnet_Setup_RestorePermissions" />
+          <FunctionImportMapping FunctionImportName="aspnet_UnRegisterSchemaVersion" FunctionName="ChatModel.Store.aspnet_UnRegisterSchemaVersion" />
+          <FunctionImportMapping FunctionImportName="aspnet_Users_CreateUser" FunctionName="ChatModel.Store.aspnet_Users_CreateUser" />
+          <FunctionImportMapping FunctionImportName="aspnet_Users_DeleteUser" FunctionName="ChatModel.Store.aspnet_Users_DeleteUser" />
+          <FunctionImportMapping FunctionImportName="aspnet_UsersInRoles_AddUsersToRoles" FunctionName="ChatModel.Store.aspnet_UsersInRoles_AddUsersToRoles" />
+          <FunctionImportMapping FunctionImportName="aspnet_UsersInRoles_FindUsersInRole" FunctionName="ChatModel.Store.aspnet_UsersInRoles_FindUsersInRole" />
+          <FunctionImportMapping FunctionImportName="aspnet_UsersInRoles_GetRolesForUser" FunctionName="ChatModel.Store.aspnet_UsersInRoles_GetRolesForUser" />
+          <FunctionImportMapping FunctionImportName="aspnet_UsersInRoles_GetUsersInRoles" FunctionName="ChatModel.Store.aspnet_UsersInRoles_GetUsersInRoles" />
+          <FunctionImportMapping FunctionImportName="aspnet_UsersInRoles_IsUserInRole" FunctionName="ChatModel.Store.aspnet_UsersInRoles_IsUserInRole" />
+          <FunctionImportMapping FunctionImportName="aspnet_UsersInRoles_RemoveUsersFromRoles" FunctionName="ChatModel.Store.aspnet_UsersInRoles_RemoveUsersFromRoles">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="ChatModel.aspnet_UsersInRoles_RemoveUsersFromRoles_Result">
+                <ScalarProperty Name="Column1" ColumnName="Column1" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="aspnet_WebEvent_LogEvent" FunctionName="ChatModel.Store.aspnet_WebEvent_LogEvent" />
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
