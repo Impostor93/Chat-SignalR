@@ -1,88 +1,43 @@
-﻿function GetElement(Id)
-{
-    return document.getElementById(Id);
-}
-function CreateElement(Type,Ids, ClassName, InnerHtml, Visibility,Attributes) {
-    var elment = document.createElement(Type);
+﻿/// <reference path="Extensions.js" />
+/// <reference path="System.js" />
 
-    if (ClassName != undefined)
-        elment.className = ClassName;
 
-    if (Ids != undefined)
-        elment.id = Ids;
 
-    if (InnerHtml != undefined)
-        elment.innerHTML = InnerHtml;
 
-    if (Visibility != undefined)
-        elment.style.display = Visibility;
-
-    if (Attributes != undefined)
-    {
-        for (var i in Attributes)
-            elment.setAttribute(i, Attributes[i]);
-    }
-
-    return elment;
-}
-function AppendChild(Parent, Child,InserBefore)
-{
-    var parentElment;
-    var childElment;
-
-    if (typeof Parent == "string")
-        parentElment = GetElement(Parent);
-    else if (typeof Parent == "object")
-        parentElment = Parent;
-
-    if (typeof Child == "string")
-        childElment = GetElement(Child);
-    else if (typeof Child == "object")
-        childElment = Child;
-        
-    if (InserBefore != undefined && InserBefore == true) {
-        parentElment.appendChild(childElment)
-        parentElment.insertBefore(childElment, parentElment.lastChild)
-    } if (InserBefore != undefined && InserBefore == false) {
-        parentElment.appendChild(childElment)
-        parentElment.insertBefore(childElment, parentElment.firstChild)
-    }
-    else
-        parentElment.appendChild(childElment);
-}
 function CreateNewRoom(IdRoom,RoomName)
 {
     RoomName = RoomName.replace("|"+CurrentUserName, "");
     RoomName = RoomName.replace('|', '');
     
+    var sys = Chat.system;
     
-    var RoomContent = CreateElement("div", "RoomContent", "RoomContent");
+    var RoomContent = sys.CreateElement("div", "RoomContent", "RoomContent");
 
     var HeaderHtml = "<span>" + RoomName + "</span><div class='CloseButton' onclick='CloseRoom(\"" + IdRoom + "\")' ></div></div>"
-    var RoomHeader = CreateElement("div", "RoomHeader" + IdRoom, "RoomHeader", HeaderHtml, "block")
+    var RoomHeader = sys.CreateElement("div", "RoomHeader" + IdRoom, "RoomHeader", HeaderHtml, "block")
     
-    AppendChild(RoomContent,RoomHeader);
+    sys.AppendChild(RoomContent, RoomHeader);
 
-    var ConversationPart = CreateElement("div", "ConversationPart", "ConversationPart", undefined, "block");
+    var ConversationPart = sys.CreateElement("div", "ConversationPart", "ConversationPart", undefined, "block");
 
     var attr = [];
     attr["onscroll"] = "ScrollHandler(this,'" + IdRoom + "')";
-    var MessageContent = CreateElement("div", "MessageContent"+IdRoom, "MessageContent",undefined,"block",attr);
+    var MessageContent = sys.CreateElement("div", "MessageContent" + IdRoom, "MessageContent", undefined, "block", attr);
     
-    AppendChild(ConversationPart, MessageContent);
+    sys.AppendChild(ConversationPart, MessageContent);
 
     var HTML = "<textarea rows='1' class='TextBox' Id='MessageText" + IdRoom + "'  onkeydown='return TextBoxKeyPress(event,\"" + IdRoom + "\")'></textarea>"
-    var RoomFooter = CreateElement("div", "RoomFooter", "RoomFooter", HTML);
+    var RoomFooter = sys.CreateElement("div", "RoomFooter", "RoomFooter", HTML);
 
-    AppendChild(ConversationPart, RoomFooter);
-    AppendChild(RoomContent, ConversationPart);
+    sys.AppendChild(ConversationPart, RoomFooter);
+    sys.AppendChild(RoomContent, ConversationPart);
 
     var Attr = [];
     Attr["RoomId"] = IdRoom;
     Attr["Visible"] = true;
-    var ChatRoom = CreateElement("div", "Chat-" + IdRoom, "ChatRoom", undefined, "block", Attr);
+    var ChatRoom = sys.CreateElement("div", "Chat-" + IdRoom, "ChatRoom", undefined, "block", Attr);
 
-    AppendChild(ChatRoom, RoomContent);
+    sys.AppendChild(ChatRoom, RoomContent);
 
     return ChatRoom;
 }
@@ -90,66 +45,54 @@ function CreateUserMessageList(SenderIdentifier,Message)
 {
     var Attr = [];
     Attr["User-Identifier"] = SenderIdentifier;
+    var sys = Chat.system;
 
     var additionalClass = SenderIdentifier == CurrentUserIdentifier ? "ownMassage" : "foreignMassage";
     
-    var GlobalDiv = CreateElement("div", "UserMessages", "UserMessages", undefined, undefined, Attr)
+    var GlobalDiv = sys.CreateElement("div", "UserMessages", "UserMessages", undefined, undefined, Attr)
     GlobalDiv.className += (" " + additionalClass)
 
-    var ImageContent = CreateElement("div", "ImageContainer", "ImageContainer", "<img src'" + SenderIdentifier + "_pic.png' class='SenderImg' />")
+    var ImageContent = sys.CreateElement("div", "ImageContainer", "ImageContainer", "<img src'" + SenderIdentifier + "_pic.png' class='SenderImg' />")
 
     var attr = [];
     attr["Container"] = true;
-    var TextMessageContainer = CreateElement("div", "TextMessageContainer", "TextMessageContainer", "<div class='MessageNode'>" + Message + "</div>", "block", attr);
+    var TextMessageContainer = sys.CreateElement("div", "TextMessageContainer", "TextMessageContainer", "<div class='MessageNode'>" + Message + "</div>", "block", attr);
 
-    AppendChild(GlobalDiv, ImageContent);
-    AppendChild(GlobalDiv, TextMessageContainer);
+    sys.AppendChild(GlobalDiv, ImageContent);
+    sys.AppendChild(GlobalDiv, TextMessageContainer);
 
     return GlobalDiv;
 }
 
 function AppendMessage(SenderIdentifier, Message,IdRoom)
 {
-    var MessageContainer = GetElement("MessageContent" + IdRoom);
+    var sys = Chat.system;
+    var MessageContainer = sys.GetElement("MessageContent" + IdRoom);
     var LastUserMessageList = MessageContainer.querySelectorAll("[User-Identifier]");
 
     if (LastUserMessageList.length == 0) {
-        AppendChild(GetElement("MessageContent" + IdRoom), CreateUserMessageList(SenderIdentifier, Message));
+        sys.AppendChild(sys.GetElement("MessageContent" + IdRoom), CreateUserMessageList(SenderIdentifier, Message));
         return;
     }
 
     if (LastUserMessageList[LastUserMessageList.length-1].getAttribute("User-Identifier") == SenderIdentifier){
     
-        var MessageNode = CreateElement("div", undefined, "MessageNode", Message);
-        AppendChild(LastUserMessageList[LastUserMessageList.length - 1].querySelectorAll("[Container=true]")[0], MessageNode);
+        var MessageNode = sys.CreateElement("div", undefined, "MessageNode", Message);
+        sys.AppendChild(LastUserMessageList[LastUserMessageList.length - 1].querySelectorAll("[Container=true]")[0], MessageNode);
     }
     else
-        AppendChild(GetElement("MessageContent" + IdRoom), CreateUserMessageList(SenderIdentifier, Message));
+        sys.AppendChild(sys.GetElement("MessageContent" + IdRoom), CreateUserMessageList(SenderIdentifier, Message));
 }
 
-function RemoveElmenet(Parent, Child)
-{
-    var parentElment;
-    var childElment;
 
-    if (typeof Parent == "string")
-        parentElment = GetElement(Parent);
-    else if (typeof Parent == "object")
-        parentElment = Parent;
-
-    if (typeof Child == "string")
-        childElment = GetElement(Child);
-    else if (typeof Child == "object")
-        childElment = Child;
-
-    parentElment.removeChild(Child);
-}
 function ShowSetting(a)
 {
-    if (GetElement("SettingsDiv").style.display == "block")
-        GetElement("SettingsDiv").style.display = "none";
+    var sys = Chat.system;
+
+    if (sys.GetElement("SettingsDiv").style.display == "block")
+        sys.GetElement("SettingsDiv").style.display = "none";
     else {
-        GetElement("SettingsDiv").style.display = "block";
+        sys.GetElement("SettingsDiv").style.display = "block";
         a.focus()
     }
 }
@@ -169,53 +112,18 @@ function SettingDivOnBlur(currElement)
         currElement.style.display = "none";
 }
 
-function StopTimers(IdRoom)
-{
-    if (UserTimer != 0) {
-        clearInterval(UserTimer);
-        UserTimer = 0;
-    }
-
-    if (RoomTimer != 0) {
-        clearInterval(RoomTimer);
-        RoomTimer = 0;
-    }
-    if (MessageTimer[IdRoom] != 0) {
-        clearInterval(MessageTimer[IdRoom]);
-        MessageTimer[IdRoom] = 0;
-    }
-}
-function StopAllTaimers()
-{
-    if (UserTimer != 0) {
-        clearInterval(UserTimer);
-        UserTimer = 0;
-    }
-
-    if (RoomTimer != 0){
-        clearInterval(RoomTimer);
-        RoomTimer = 0;
-        }
-
-    if (MessageTimer.length > 0) {
-        for (var i in MessageTimer) {
-            clearInterval(MessageTimer[i]);
-            MessageTimer[i] = 0;
-        }
-    }
-}
-
 function AppendHistory(Result)
 {
     var IdRoom = $.trim(Result.RoomIdentifier)
     var FirstElement = CreateUserMessageList(Result.RoomMessages[Result.RoomMessages.length - 1].SenderIdentifier, Result.RoomMessages[Result.RoomMessages.length-1].MessageContent)
+    var sys = Chat.system;
 
     for (var i = Result.RoomMessages.length-2; i >= 0; i--)
     {
         var MessageContainer = GetElement("MessageContent" + IdRoom);
 
         if (FirstElement.getAttribute("User-Identifier") == Result.RoomMessages[i].SenderIdentifier) {
-            var MessageNode = CreateElement("div", undefined, "MessageNode", Result.RoomMessages[i].MessageContent);
+            var MessageNode = sys.CreateElement("div", undefined, "MessageNode", Result.RoomMessages[i].MessageContent);
             AppendChild(FirstElement.querySelectorAll("[container=true]")[0], MessageNode,false)
         } else
         {

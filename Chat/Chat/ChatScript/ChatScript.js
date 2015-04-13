@@ -1,4 +1,7 @@
 ﻿/// <reference path="ChatFunctions.js" />
+/// <reference path="RequestCreator.js" />
+/// <reference path="Extensions.js" />
+/// <reference path="System.js" />
 var Chat = Chat || {};
 
 var UserTimer = 0;
@@ -8,13 +11,11 @@ var CurrentUserIdentifier;
 var CurrentUserName;
 var CurrentUserStatus;
 var chatHub = "";
-//var TimerStartShowing = 0;
-//var StartShowingInterval = 0;
 
 function GetAllUsers(data){
     
     var Users = JSON.parse(data);
-    var ListUser = GetElement("UserInList");
+    var ListUser = Chat.system.GetElement("UserInList");
     ListUser.innerHTML = '';
 
     $.each(Users,function(index,Value)
@@ -28,14 +29,15 @@ function GetAllUsers(data){
 
             var Elment = CreateElement("li",undefined, "ListElment", InnerHtml, undefined, Attributs);
 
-            AppendChild(ListUser, Elment);
+            sys.AppendChild(ListUser, Elment);
         }
     })
 }
 
 function InitializeCurrentUser(data) {
         var CurrentUser = JSON.parse(data);
-            
+        var sys = Chat.system;
+
         CurrentUserIdentifier = CurrentUser.UserIdentifier;
         CurrentUserName = CurrentUser.UserName;
         CurrentUserStatus = CurrentUser.UserStatus;
@@ -44,7 +46,7 @@ function InitializeCurrentUser(data) {
         imgStatus.src = "/ChatImage/" + CurrentUserStatus.StatusImage;
         imgStatus.style.width = "100%";
 
-        AppendChild(GetElement("Status"), imgStatus);
+        sys.AppendChild(sys.GetElement("Status"), imgStatus);
 }
 
 
@@ -93,11 +95,12 @@ function onSuccessrStartChat(ResultString) {
             return;
 
         var Room = JSON.parse(ResultString);
+        var sys = Chat.system;
 
         var NewRoom = CreateNewRoom(Room.RoomIdentifier, Room.RoomName);
 
-        if (GetElement("Conteiner").querySelectorAll("[RoomId='" + Room.RoomIdentifier + "']").length == 0)
-            AppendChild(GetElement("Conteiner"), NewRoom, true);
+        if (sys.GetElement("Conteiner").querySelectorAll("[RoomId='" + Room.RoomIdentifier + "']").length == 0)
+            sys.AppendChild(sys.GetElement("Conteiner"), NewRoom, true);
 
         SessionNextDate[Room.RoomIdentifier] = "";
 
@@ -138,9 +141,10 @@ function onSuccessSending(ResultString) {
             return;
 
         var Messages = JSON.parse(obj[0]);
+        var sys = Chat.system;
 
         var ElementNumber = obj[1];
-        var HtmlElement = document.getElementById('Content' + ElementNumber);
+        var HtmlElement = sys.GetElement('Content' + ElementNumber);
 
         if (HtmlElement == undefined)
             return;
@@ -149,7 +153,7 @@ function onSuccessSending(ResultString) {
 
         $.each(Messages, function (index, item) {
             var DateOfSend = new Date(item.DateOfSend);
-            ResivedMessages += "<p> " + item.Sender.UserName + " Seid: " + item.MessageContent + " <br/> In " + DateOfSend.format("yyyy-MM-dd h:mm:ss") + "</p>"
+            ResivedMessages += "<p> " + item.Sender.UserName + " Said: " + item.MessageContent + " <br/> In " + DateOfSend.format("yyyy-MM-dd h:mm:ss") + "</p>"
         })
         HtmlElement.innerHTML = ResivedMessages
         HtmlElement.scrollTop = HtmlElement.scrollHeight;
@@ -192,9 +196,10 @@ function CheckForRooms(data) {
 
         var Result = JSON.parse(data);
         var NewRoom = CreateNewRoom(Result.RoomIdentifier, Result.RoomName);
+        var sys = Chat.system;
 
-        if (GetElement("Conteiner").querySelectorAll("[RoomId='" + Result.RoomIdentifier + "']").length == 0)
-            AppendChild(GetElement("Conteiner"), NewRoom, true);
+        if (sys.GetElement("Conteiner").querySelectorAll("[RoomId='" + Result.RoomIdentifier + "']").length == 0)
+            sys.AppendChild(sys.GetElement("Conteiner"), NewRoom, true);
 
     } catch (ex)
     {
@@ -207,9 +212,11 @@ function CloseRoom(IdRoom)
 {
     IdRoom = $.trim(IdRoom)
 
-    chatHub.server.closeRoom(IdRoom,CurrentUserIdentifier).done(function () {
-        var Room = GetElement("Chat-" + IdRoom);
-        RemoveElmenet(GetElement("Conteiner"), Room);
+    chatHub.server.closeRoom(IdRoom, CurrentUserIdentifier).done(function () {
+        var sys = Chat.system;
+
+        var Room = sys.GetElement("Chat-" + IdRoom);
+        sys.RemoveElmenet(sys.GetElement("Conteiner"), Room);
     })
 }
 
@@ -219,15 +226,15 @@ function ChangeStatus(currElement) {
         
         if (NewStatus == undefined || NewStatus == null || NewStatus == "[]")
             return;
-
+        var sys = Chat.system;
         NewStatus = JSON.parse(NewStatus);
 
         var imgStatus = CreateElement("img");
         imgStatus.src = "/ChatImage/" + NewStatus.StatusImage;
         imgStatus.style.width = "100%";
 
-        RemoveElmenet(GetElement("Status"), GetElement("Status").lastChild)
-        AppendChild(GetElement("Status"), imgStatus);
+        sys.RemoveElmenet(sys.GetElement("Status"), sys.GetElement("Status").lastChild)
+        sys.AppendChild(sys.GetElement("Status"), imgStatus);
 
     });
 }
