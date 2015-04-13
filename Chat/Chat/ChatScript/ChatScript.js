@@ -32,16 +32,6 @@ function GetAllUsers(data){
         }
     })
 }
-    //$.RequestCreator({
-    //    Methods: "GetAllUsers",
-    //    CreateRequest:,
-    //    Error:function (xhr, status, error) {
-    //        clearInterval(UserTimer);
-    //        sendError(error, "GetAllUsers");
-    //    }
-
-    //});
-
 
 function InitializeCurrentUser(data) {
         var CurrentUser = JSON.parse(data);
@@ -55,19 +45,12 @@ function InitializeCurrentUser(data) {
         imgStatus.style.width = "100%";
 
         AppendChild(GetElement("Status"), imgStatus);
-    }
+}
 
-    //$.RequestCreator({
-    //    Methods: "InitializeUser",
-    //    CreateRequest: ,
-    //    Error: function (xhr, status, error) {
-    //        clearInterval(UserTimer);
-    //        sendError(error, "GetUsers");
-    //    }
 
-    //});
-
-$(document).ready(function () {
+Chat.Start = function Start(currentUserIdentifier)
+{
+    CurrentUserIdentifier = currentUserIdentifier;
 
     registrateClientEvents($.connection.chatHubs);
 
@@ -75,21 +58,6 @@ $(document).ready(function () {
         chatHub = $.connection.chatHubs;
         registrateServerEvents(chatHub);
     });
-
-    //RoomTimers = setInterval(function () {
-    //    CheckForRooms();
-    //}, 10000);
-});
-
-Chat.Start = function Start(CurrentUserIdentifier)
-{
-    chatHub.server.initializeUser(CurrentUserIdentifier).done(function (Data) {
-        InitializeCurrentUser(Data)
-    })
-
-    chatHub.server.getAllUsers(CurrentUserIdentifier).done(function (Data) {
-        GetAllUsers(Data)
-    })
 }
 
 function registrateClientEvents(chatHubAsParam)
@@ -101,6 +69,9 @@ function registrateClientEvents(chatHubAsParam)
 }
 function registrateServerEvents(chatHubAsParam) {
     chatHubAsParam.server.connect();
+    chatHubAsParam.server.initializeUser(CurrentUserIdentifier).done(function (Data) { InitializeCurrentUser(Data)})
+
+    chatHubAsParam.server.getAllUsers(CurrentUserIdentifier).done(function (Data) { GetAllUsers(Data) })
 }
 
 function StartChat() {

@@ -4,22 +4,12 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title </title>
-    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/Site.css")
     @Scripts.Render("~/bundles/modernizr")
 
-    <script>
-        function onLoadBody(){
-            sizeListOfUsers()
-            documentReady();
-        }
-        function sizeListOfUsers() {
-            document.getElementById("UserInList").style.maxHeight = (document.documentElement.clientHeight - 50) + "px"
-            document.getElementById("listContent").style.maxHeight = (document.documentElement.clientHeight - 55) + "px"
-        }
-    </script>
 
 </head>
-<body onload="onLoadBody">
+<body>
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -57,5 +47,23 @@
     @Scripts.Render("~/ChatScript/RequestCreator.js")
     @Scripts.Render("~/ChatScript/ChatScript.js")
     @Scripts.Render("~/ChatScript/ChatFunctions.js")
+
+    
 </body>
+<script>
+    $(document).ready(function(){
+
+        if ("@(User.Identity.IsAuthenticated == true && Session["UserIdentifier"] != null)" == "True"){
+            Chat.Start("@Session["UserIdentifier"]");
+            document.getElementById("Chat").style.display = "block";
+        }
+
+        sizeListOfUsers()
+    });
+    function sizeListOfUsers() {
+        document.getElementById("UserInList").style.maxHeight = (document.documentElement.clientHeight - 50) + "px"
+        document.getElementById("listContent").style.maxHeight = (document.documentElement.clientHeight - 55) + "px"
+    }
+</script>
+
 </html>

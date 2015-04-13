@@ -1,12 +1,11 @@
-﻿@model Chat.Models.HomeModels
-@{
+﻿@{
     ViewBag.Title = "Chat";
 }
 
 <div class="jumbotron" style="min-height: 500px;">
     <div class="GlobalContentDiv">
     </div>
-    <div id="Chat" class="Chat">
+    <div id="Chat" class="Chat" style="display:none">
         <div id="UserList" class="UserListContent">
             <div id="listContent" style="float: left;padding-top: 15px;">
                 <ul id="UserInList" class="UserInList"></ul>
@@ -72,10 +71,4 @@
         }
         
     </style>
-<script>
-    function documentReady(){
-        if("@(Model == null?false:Model.IsAutorized)" == "True")
-            Chat.Start("@Model.UserIdentifier")
-    }
-</script>
    

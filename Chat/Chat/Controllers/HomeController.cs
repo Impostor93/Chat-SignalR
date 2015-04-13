@@ -11,13 +11,7 @@ namespace Chat.Controllers
     {
         public ActionResult Index()
         {
-            HomeModels model = new HomeModels();
-
-            model.IsAutorized = User.Identity.IsAuthenticated;
-            if (model.IsAutorized)
-                model.UserIdentifier = Session["UserIdentifier"].ToString();
-
-            return View(model);
+            return View();
         }
 
         public ActionResult About()
