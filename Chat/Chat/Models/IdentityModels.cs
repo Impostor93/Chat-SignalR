@@ -21,7 +21,7 @@ namespace Chat.Models
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext()
-            : base("ChatEntities", throwIfV1Schema: false)
+            : base("ChatApplication", throwIfV1Schema: false)
         {
         }
 

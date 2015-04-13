@@ -1,4 +1,5 @@
-﻿@{
+﻿@model Chat.Models.HomeModels
+@{
     ViewBag.Title = "Chat";
 }
 
@@ -71,11 +72,10 @@
         }
         
     </style>
-
-    <script type="text/javascript">
-        function SizeListOfUsers() {
-            document.getElementById("UserInList").style.maxHeight = (document.documentElement.clientHeight - 50) + "px"
-            document.getElementById("listContent").style.maxHeight = (document.documentElement.clientHeight - 55) + "px"
-        }
-    </script>
-    
+<script>
+    function documentReady(){
+        if("@(Model == null?false:Model.IsAutorized)" == "True")
+            Chat.Start("@Model.UserIdentifier")
+    }
+</script>
+   

@@ -4,7 +4,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 
-namespace Chat.App_Code
+namespace Chat.Infrastructure
 {
     class ChatSqlException:Exception
     {

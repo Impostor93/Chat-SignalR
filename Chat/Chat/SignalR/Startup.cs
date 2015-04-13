@@ -7,7 +7,6 @@ using System.Web.SessionState;
 using Microsoft.AspNet.SignalR;
 using Microsoft.Owin;
 using Owin;
-using System.Web;
 using Chat.SignalR;
 
 [assembly: OwinStartup(typeof(Chat.SignalR.Startup))]
@@ -18,6 +17,8 @@ namespace Chat.SignalR
         public void Configuration(IAppBuilder app)
         {
             app.MapSignalR();
+            var startUp = new Chat.Startup();
+            startUp.ConfigureAuth(app);
         }
     }
 }

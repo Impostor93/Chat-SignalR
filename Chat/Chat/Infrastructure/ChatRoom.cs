@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using Chat.DAL;
 using Newtonsoft.Json;
 
-namespace Chat.App_Code
+namespace Chat.Infrastructure
 {
     public class ChatRoom
     {
@@ -263,14 +264,13 @@ namespace Chat.App_Code
             {
                 try
                 {
-                    DBfile Function = new DBfile();
+                    DataBaseFunctions Function = new DataBaseFunctions();
                     if (Function == null)
-                        throw new NullReferenceException("Function si null in GetDataForRoom");
+                        throw new NullReferenceException("Function is null in GetDataForRoom");
                     
-                    DataSet dsRoomData = new DataSet();
-                    Function.SelectRoomByHashIdentifier(HashCode,ref dsRoomData);
+                    var room = Function.SelectRoomByHashIdentifier(HashCode);
 
-                    FillRoomData(dsRoomData, ListOfUsers);
+                    FillRoomData(room, ListOfUsers);
 
                 }
                 catch (ChatSqlException ex)
@@ -281,36 +281,35 @@ namespace Chat.App_Code
                 return true;
             }
 
-            protected void FillRoomData(DataSet dsRoomData,Dictionary<Guid,ChatUser> ListOfUsers)
+            protected void FillRoomData(IEnumerable<tblChatRoom> rooms, Dictionary<Guid, ChatUser> ListOfUsers)
             {
-                if (dsRoomData.Tables["tblRoom"].Rows.Count == 1)
+                if (rooms.Count() == 1)
                 {
-                    FillRoom(dsRoomData.Tables["tblRoom"].Rows[0], ListOfUsers);
+                    FillRoom(rooms.First(), ListOfUsers);
                 }
-                else if (dsRoomData.Tables["tblRoom"].Rows.Count > 1)
+                else if (rooms.Count() > 1)
                 {
-                    foreach (DataRow Row in dsRoomData.Tables["tblRoom"].Rows)
+                    foreach (var room in rooms)
                     {
-                        var roomsUsers = JsonConvert.DeserializeObject<HashSet<Guid>>(Row["UserInRoom"].ToString());
+                        var roomsUsers = JsonConvert.DeserializeObject<HashSet<Guid>>(room.UserInRoom.ToString());
                         if (!roomsUsers.Equals(this.userInRoom))
                             continue;
 
-                        FillRoom(Row, ListOfUsers);
+                        FillRoom(room, ListOfUsers);
                     }
                 }
                 else
                     FillRoom(0, Guid.Empty, 0);
                 
             }
-            private void FillRoom(DataRow ChatRoomRow, IDictionary<Guid,ChatUser> listOfUsers)
+            private void FillRoom(tblChatRoom room, IDictionary<Guid,ChatUser> listOfUsers)
             {
-                FillRoom(Convert.ToInt32(ChatRoomRow["IdRoom"]),
-                            new Guid(ChatRoomRow["RoomIdentifier"].ToString()), Convert.ToInt32(ChatRoomRow["HashIdentifier"]));
+                FillRoom(room.IdRoom, room.RoomIdentifier, room.HashIdentifier.Value);
 
-                var listOfUsersInRoom = JsonConvert.DeserializeObject<HashSet<Guid>>(ChatRoomRow["UserInRoom"].ToString());
+                var listOfUsersInRoom = JsonConvert.DeserializeObject<HashSet<Guid>>(room.UserInRoom);
 
-                this.roomName = String.Empty;
-                foreach (Guid User in listOfUsersInRoom)
+                this.roomName = string.Empty;
+                foreach (var User in listOfUsersInRoom)
                 {
                     this.roomName += String.Format("|{0}", listOfUsers[User].UserName);
                     if (!this.UsersInRoom.Contains(User))
@@ -318,7 +317,7 @@ namespace Chat.App_Code
                 }
                 this.roomName.TrimStart('|');
             }
-            private void FillRoom(int idRoom,Guid roomIdentifier,Int32 roomHashIdentifier)
+            private void FillRoom(int idRoom,Guid roomIdentifier,int roomHashIdentifier)
             {
                 this._IdRoom = idRoom;
                 this.roomIdentifier = roomIdentifier;
@@ -329,13 +328,13 @@ namespace Chat.App_Code
             {
                 try
                 {
-                    DBfile Function = new DBfile();
+                    DataBaseFunctions Function = new DataBaseFunctions();
                     
                     if (Function == null)
                         throw new ChatException("Function is null in SaveRoomState()");
 
-                    Function.InsertRoom(this.roomIdentifier, this.roomHashIdentifier, 
-                                            JsonConvert.SerializeObject(this.userInRoom), this.roomCreator.UserName, ref ReturnValue);
+                    ReturnValue = Function.InsertRoom(this.roomIdentifier, this.roomHashIdentifier, 
+                                            JsonConvert.SerializeObject(this.userInRoom), this.roomCreator.UserName);
                 }
                 catch (ChatSqlException Ex)
                 {

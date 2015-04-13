@@ -1,11 +1,11 @@
-﻿using Chat.App_Code;
+﻿using Chat.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 
-namespace Chat.App_Code
+namespace Chat.Infrastructure
 {
     [JsonObject]
     public class Message

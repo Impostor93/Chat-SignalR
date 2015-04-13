@@ -29,7 +29,7 @@ namespace Chat.DAL
         public Nullable<System.DateTime> DateCreated { get; set; }
         public Nullable<System.DateTime> DateChange { get; set; }
     
-        public virtual tblChatUserStatu tblChatUserStatu { get; set; }
+        public virtual tblChatUserStatus tblChatUserStatu { get; set; }
         public virtual tblUserLogin tblUserLogin { get; set; }
         public virtual ICollection<tblRoomUser> tblRoomUsers { get; set; }
     }

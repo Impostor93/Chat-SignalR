@@ -5,7 +5,7 @@ using System.Linq;
 using System.Web;
 using Newtonsoft.Json;
 
-namespace Chat.App_Code
+namespace Chat.Infrastructure
 {
     public class ChatSessions
     {
@@ -113,7 +113,7 @@ namespace Chat.App_Code
                 {
                     this.SessionEndDate = DateTime.Now;
 
-                    DBfile Function = new DBfile();
+                    DataBaseFunctions Function = new DataBaseFunctions();
                     if (Function == null)
                         throw new ChatException("Function in SaveSession is null");
 
@@ -135,7 +135,7 @@ namespace Chat.App_Code
             {
                 try
                 {
-                    DBfile Function = new DBfile();
+                    DataBaseFunctions Function = new DataBaseFunctions();
                     if (Function == null)
                         throw new ChatException("Function in GetSession is null");
 

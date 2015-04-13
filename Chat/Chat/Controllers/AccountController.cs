@@ -9,6 +9,8 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Chat.Models;
+using Chat.Infrastructure;
+using Chat.DAL;
 
 namespace Chat.Controllers
 {
@@ -22,7 +24,7 @@ namespace Chat.Controllers
         {
         }
 
-        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
+        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
         {
             UserManager = userManager;
             SignInManager = signInManager;
@@ -34,9 +36,9 @@ namespace Chat.Controllers
             {
                 return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
             }
-            private set 
-            { 
-                _signInManager = value; 
+            private set
+            {
+                _signInManager = value;
             }
         }
 
@@ -79,6 +81,10 @@ namespace Chat.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
+                    var user = SignInManager.UserManager.FindByEmail(model.Email);
+                    if(user != null)
+                        InitializeChatUser(user.Id);
+
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");
@@ -89,6 +95,20 @@ namespace Chat.Controllers
                     ModelState.AddModelError("", "Invalid login attempt.");
                     return View(model);
             }
+        }
+
+        private void InitializeChatUser(string currentUserId)
+        {
+            var chatUser = ChatUserManager.InitializrChatUserByAspNetAuthenticationToken(currentUserId);
+
+            if (chatUser == null)
+                throw new InvalidOperationException("Chat user initialization field");
+
+            System.Web.HttpContext.Current.Session["UserIdentifier"] = chatUser.UserIdentifier;
+            System.Web.HttpContext.Current.Session["IdUser"] = chatUser.IdUser;
+
+            var idProvider = new Chat.SignalR.CustomIdUserProvider(chatUser.UserIdentifier);
+            Microsoft.AspNet.SignalR.GlobalHost.DependencyResolver.Register(typeof(Microsoft.AspNet.SignalR.IUserIdProvider), () => idProvider);
         }
 
         //
@@ -120,7 +140,7 @@ namespace Chat.Controllers
             // If a user enters incorrect codes for a specified amount of time then the user account 
             // will be locked out for a specified amount of time. 
             // You can configure the account lockout settings in IdentityConfig
-            var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent:  model.RememberMe, rememberBrowser: model.RememberBrowser);
+            var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent: model.RememberMe, rememberBrowser: model.RememberBrowser);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -155,8 +175,22 @@ namespace Chat.Controllers
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    
+                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                    using(var repo = new Chat.DAL.Infrastructure.Repositories.ChatRepositories.ChatUserLoginRepository(new ChatEntities()))
+                    {
+                        repo.Add(new tblUserLogin()
+                        {
+                            AspAuthenticationUserId = user.Id,
+                            DateChanged = DateTime.Now,
+                            DateCreated = DateTime.Now,
+                            UserName = user.UserName.Split('@')[0]
+                        });
+
+                        repo.Save();
+                    }
+
+                    InitializeChatUser(user.Id);
+
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
                     // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);

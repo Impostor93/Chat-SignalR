@@ -57,7 +57,11 @@ D:\Vs2012 Project\Chat SignalR\WebApplication1\WebApplication1\bin\Microsoft.Owi
 D:\Vs2012 Project\Chat SignalR\WebApplication1\WebApplication1\obj\Debug\Chat.csprojResolveAssemblyReference.cache
 D:\Vs2012 Project\Chat SignalR\WebApplication1\WebApplication1\obj\Debug\WebApplication1.dll
 D:\Vs2012 Project\Chat SignalR\WebApplication1\WebApplication1\obj\Debug\WebApplication1.pdb
+D:\Vs2012 Project\Chat SignalR\Chat\Chat\bin\Chat.dll.config
+D:\Vs2012 Project\Chat SignalR\Chat\Chat\bin\Chat.dll
+D:\Vs2012 Project\Chat SignalR\Chat\Chat\bin\Chat.pdb
 D:\Vs2012 Project\Chat SignalR\Chat\Chat\bin\Antlr3.Runtime.dll
+D:\Vs2012 Project\Chat SignalR\Chat\Chat\bin\Chat.DAL.dll
 D:\Vs2012 Project\Chat SignalR\Chat\Chat\bin\EntityFramework.dll
 D:\Vs2012 Project\Chat SignalR\Chat\Chat\bin\EntityFramework.SqlServer.dll
 D:\Vs2012 Project\Chat SignalR\Chat\Chat\bin\Microsoft.AspNet.Identity.Core.dll
@@ -85,6 +89,7 @@ D:\Vs2012 Project\Chat SignalR\Chat\Chat\bin\System.Web.WebPages.Deployment.dll
 D:\Vs2012 Project\Chat SignalR\Chat\Chat\bin\System.Web.WebPages.dll
 D:\Vs2012 Project\Chat SignalR\Chat\Chat\bin\System.Web.WebPages.Razor.dll
 D:\Vs2012 Project\Chat SignalR\Chat\Chat\bin\WebGrease.dll
+D:\Vs2012 Project\Chat SignalR\Chat\Chat\bin\Chat.DAL.pdb
 D:\Vs2012 Project\Chat SignalR\Chat\Chat\bin\Microsoft.AspNet.SignalR.Core.xml
 D:\Vs2012 Project\Chat SignalR\Chat\Chat\bin\Microsoft.AspNet.SignalR.SystemWeb.xml
 D:\Vs2012 Project\Chat SignalR\Chat\Chat\bin\System.Web.Helpers.xml
@@ -111,10 +116,5 @@ D:\Vs2012 Project\Chat SignalR\Chat\Chat\bin\Microsoft.Owin.Security.Google.xml
 D:\Vs2012 Project\Chat SignalR\Chat\Chat\bin\Microsoft.Owin.Security.Twitter.xml
 D:\Vs2012 Project\Chat SignalR\Chat\Chat\bin\Microsoft.Owin.Security.MicrosoftAccount.xml
 D:\Vs2012 Project\Chat SignalR\Chat\Chat\obj\Debug\Chat.csprojResolveAssemblyReference.cache
-D:\Vs2012 Project\Chat SignalR\Chat\Chat\bin\Chat.DAL.dll
-D:\Vs2012 Project\Chat SignalR\Chat\Chat\bin\Chat.DAL.pdb
-D:\Vs2012 Project\Chat SignalR\Chat\Chat\bin\Chat.dll.config
-D:\Vs2012 Project\Chat SignalR\Chat\Chat\bin\Chat.dll
-D:\Vs2012 Project\Chat SignalR\Chat\Chat\bin\Chat.pdb
 D:\Vs2012 Project\Chat SignalR\Chat\Chat\obj\Debug\Chat.dll
 D:\Vs2012 Project\Chat SignalR\Chat\Chat\obj\Debug\Chat.pdb

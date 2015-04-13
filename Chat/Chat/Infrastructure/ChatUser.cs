@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using Chat.DAL;
 
-namespace Chat.App_Code
+namespace Chat.Infrastructure
 {
     public class ChatUser
     {
@@ -161,7 +162,7 @@ namespace Chat.App_Code
                {
                    try
                    {
-                       DBfile Function = new DBfile();
+                       DataBaseFunctions Function = new DataBaseFunctions();
 
                        if (Function == null)
                            throw new NullReferenceException("Function in SaveUser is null");
@@ -178,10 +179,10 @@ namespace Chat.App_Code
                        if (this.userStatus == null)
                            throw new ChatException("UserStatus is null in SaveUserState");
 
-
+                       //TODO:Remove this Dataset
                        DataSet dsUser = new DataSet();
                        if (this.IdUser == 0)
-                           Function.InsertChatUser(this.idLogin, this.userIdentifier, this.userName, this.userStatus.IdStaut, this.lastLogIn,this.userName, ref this.idUser);
+                           this.idUser = Function.InsertChatUser(this.idLogin, this.userIdentifier, this.userName, this.userStatus.IdStaut, this.lastLogIn, this.userName);
                        else
                            Function.UpdateChatUser(this.IdUser, this.userName, this.userStatus.IdStaut,this.LastLogIn, "System");
                    }
@@ -197,13 +198,13 @@ namespace Chat.App_Code
                {
                    try
                    {
-                       DBfile Function = new DBfile();
+                       DataBaseFunctions Function = new DataBaseFunctions();
 
                        if (Function == null)
                            throw new NullReferenceException("Function in SaveUser is null");
 
                        DataSet dsUser = new DataSet();
-                       Function.InsertChatUser(IdLogin, UserIdentifier, UserName, (int)UserStatus,this.lastLogIn, UserName,ref this.idUser);
+                       this.idUser = Function.InsertChatUser(IdLogin, UserIdentifier, UserName, (int)UserStatus, this.lastLogIn, UserName);
                    }
                    catch (ChatSqlException ex)
                    {
@@ -230,15 +231,8 @@ namespace Chat.App_Code
             {
                 try
                 {
-                    DBfile Function = new DBfile();
-
-                    if (Function == null)
-                        throw new NullReferenceException("Function in GetDataForUser is null");
-
-                    DataSet dsUser = new DataSet();
-                    Function.SelectUserByIdLogin(IdLogin, ref dsUser);
-
-                    FillData(dsUser);
+                    DataBaseFunctions Function = new DataBaseFunctions();
+                    FillData(Function.SelectUserByIdLoginOrDefault(IdLogin));
                 }
                 catch (ChatSqlException ex)
                 {
@@ -252,15 +246,12 @@ namespace Chat.App_Code
             {
                 try
                 {
-                    DBfile Function = new DBfile();
+                    DataBaseFunctions Function = new DataBaseFunctions();
 
                     if (Function == null)
                         throw new NullReferenceException("Function in GetDataForUserByUserIdentifier is null");
 
-                    DataSet dsUser = new DataSet();
-                    Function.SelectUserByGuid(UserIdentifier, ref dsUser);
-
-                    FillData(dsUser);
+                    FillData(Function.SelectUserByGuidOrDefault(UserIdentifier));
                 }
                 catch (ChatSqlException ex)
                 {
@@ -270,17 +261,15 @@ namespace Chat.App_Code
                 return true;
             }
 
-            protected void FillData(DataSet dsUser)
+            protected void FillData(tblChatUser user)
             {
-                if(dsUser.Tables["tblUser"].Rows.Count > 0)
+                if(user != null)
                 {
-                    DataRow Row = dsUser.Tables["tblUser"].Rows[0];
-
-                    this.idUser = Convert.ToInt32(Row["IdUser"]);
-                    this.idLogin = Convert.ToInt32(Row["IdLogin"]);
-                    this.userIdentifier = new Guid(Row["ChatUserIdentifier"].ToString());
-                    this.userName = Row["ChatUserName"].ToString();
-                    this.userStatus = new ChatStatus((IdTypeStatus)Convert.ToInt32(Row["IdChatUserStatus"]));
+                    this.idUser = user.IdUser;
+                    this.idLogin = user.IdLogin;
+                    this.userIdentifier = user.ChatUserIdentifier;
+                    this.userName = user.ChatUserName;
+                    this.userStatus = new ChatStatus((IdTypeStatus)user.IdChatUserStatus);
                 }
                 else
                 {

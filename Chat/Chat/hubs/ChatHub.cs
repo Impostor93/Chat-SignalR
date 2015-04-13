@@ -6,13 +6,14 @@ using System.Web.Security;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using Newtonsoft.Json;
-using Chat.App_Code;
+using Chat.Infrastructure;
 using Chat.SignalR;
+using System.Web.SessionState;
 
 namespace Chat.Hubs
 {
     [HubName("chatHubs")]
-    public class ChatHub:Hub
+    public class ChatHub : Hub, IRequiresSessionState
     {
 
         public void Connect()
@@ -174,14 +175,12 @@ namespace Chat.Hubs
             }
         }
 
-        public String InitializeUser()
+        public String InitializeUser(string strCurrentUserIdentifier)
         {
             try
             {
-                if (HttpContext.Current.Session["UserIdentifier"] == null)
+                if (string.IsNullOrEmpty(strCurrentUserIdentifier))
                     return "[]";
-
-                String strCurrentUserIdentifier = HttpContext.Current.Session["UserIdentifier"].ToString();
 
                 Guid CurrentUserIdentifier = new Guid();
                 if (!Guid.TryParse(strCurrentUserIdentifier, out CurrentUserIdentifier))

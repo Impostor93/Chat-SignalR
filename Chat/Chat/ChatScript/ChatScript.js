@@ -1,4 +1,6 @@
 ﻿/// <reference path="ChatFunctions.js" />
+var Chat = Chat || {};
+
 var UserTimer = 0;
 var RoomTimers = 0;
 var MessageTimer = [];
@@ -9,68 +11,63 @@ var chatHub = "";
 //var TimerStartShowing = 0;
 //var StartShowingInterval = 0;
 
-function GetAllUsers()
-{
-    $.RequestCreator({
-        Methods: "GetAllUsers",
-        CreateRequest:function(data)
-        {
-            var Users = JSON.parse(data.d);
-            var ListUser = GetElement("UserInList");
-            ListUser.innerHTML = '';
+function GetAllUsers(data){
+    
+    var Users = JSON.parse(data);
+    var ListUser = GetElement("UserInList");
+    ListUser.innerHTML = '';
 
-            $.each(Users,function(index,Value)
-            {
-                var Attributs = [];
-                Attributs["onclick"] = "StartChat('" + Value.UserIdentifier + "')";
+    $.each(Users,function(index,Value)
+    {
+        var Attributs = [];
+        Attributs["onclick"] = "StartChat('" + Value.UserIdentifier + "')";
 
-                if (Value.UserStatus.CanMakeOperation) {
-                    var InnerHtml = "<div id='ListGlobalElment' class='ListGlobalElment'><div id='UserImageContent' class='UserImageContent'></div>"
-                    InnerHtml += "<div id='UserNameDiv' class='UserNameDiv'><span class='UserNameText'>" + Value.UserName + "</span></div><div id='UserStatusDiv' class='UserStatusDiv'><img style='width:100%;margin-top: 4px;' src='/ChatImage/" + Value.UserStatus.StatusImage + "'/></div></div>"
+        if (Value.UserStatus.CanMakeOperation) {
+            var InnerHtml = "<div id='ListGlobalElment' class='ListGlobalElment'><div id='UserImageContent' class='UserImageContent'></div>"
+            InnerHtml += "<div id='UserNameDiv' class='UserNameDiv'><span class='UserNameText'>" + Value.UserName + "</span></div><div id='UserStatusDiv' class='UserStatusDiv'><img style='width:100%;margin-top: 4px;' src='/ChatImage/" + Value.UserStatus.StatusImage + "'/></div></div>"
 
-                    var Elment = CreateElement("li",undefined, "ListElment", InnerHtml, undefined, Attributs);
+            var Elment = CreateElement("li",undefined, "ListElment", InnerHtml, undefined, Attributs);
 
-                    AppendChild(ListUser, Elment);
-                }
-            })
-        },
-        Error:function (xhr, status, error) {
-            clearInterval(UserTimer);
-            sendError(error, "GetAllUsers");
+            AppendChild(ListUser, Elment);
         }
-
-    });
+    })
 }
+    //$.RequestCreator({
+    //    Methods: "GetAllUsers",
+    //    CreateRequest:,
+    //    Error:function (xhr, status, error) {
+    //        clearInterval(UserTimer);
+    //        sendError(error, "GetAllUsers");
+    //    }
 
-function InitializeCurrentUser()
-{
-    $.RequestCreator({
-        Methods: "InitializeUser",
-        CreateRequest: function (data) {
-            var CurrentUser = JSON.parse(data.d);
+    //});
+
+
+function InitializeCurrentUser(data) {
+        var CurrentUser = JSON.parse(data);
             
-            CurrentUserIdentifier = CurrentUser.UserIdentifier;
-            CurrentUserName = CurrentUser.UserName;
-            CurrentUserStatus = CurrentUser.UserStatus;
+        CurrentUserIdentifier = CurrentUser.UserIdentifier;
+        CurrentUserName = CurrentUser.UserName;
+        CurrentUserStatus = CurrentUser.UserStatus;
 
-            var imgStatus = CreateElement("img");
-            imgStatus.src = "/ChatImage/" + CurrentUserStatus.StatusImage;
-            imgStatus.style.width = "100%";
+        var imgStatus = CreateElement("img");
+        imgStatus.src = "/ChatImage/" + CurrentUserStatus.StatusImage;
+        imgStatus.style.width = "100%";
 
-            AppendChild(GetElement("Status"), imgStatus);
-        },
-        Error: function (xhr, status, error) {
-            clearInterval(UserTimer);
-            sendError(error, "GetUsers");
-        }
+        AppendChild(GetElement("Status"), imgStatus);
+    }
 
-    });
-}
+    //$.RequestCreator({
+    //    Methods: "InitializeUser",
+    //    CreateRequest: ,
+    //    Error: function (xhr, status, error) {
+    //        clearInterval(UserTimer);
+    //        sendError(error, "GetUsers");
+    //    }
+
+    //});
 
 $(document).ready(function () {
-
-    InitializeCurrentUser()
-    GetAllUsers();
 
     registrateClientEvents($.connection.chatHubs);
 
@@ -83,6 +80,17 @@ $(document).ready(function () {
     //    CheckForRooms();
     //}, 10000);
 });
+
+Chat.Start = function Start(CurrentUserIdentifier)
+{
+    chatHub.server.initializeUser(CurrentUserIdentifier).done(function (Data) {
+        InitializeCurrentUser(Data)
+    })
+
+    chatHub.server.getAllUsers(CurrentUserIdentifier).done(function (Data) {
+        GetAllUsers(Data)
+    })
+}
 
 function registrateClientEvents(chatHubAsParam)
 {

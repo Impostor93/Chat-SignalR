@@ -6,7 +6,7 @@ using System.Linq;
 using System.Net.Mail;
 using System.Text;
 
-namespace Chat.App_Code
+namespace Chat.Infrastructure
 {
     class SendErrorEmail
     {

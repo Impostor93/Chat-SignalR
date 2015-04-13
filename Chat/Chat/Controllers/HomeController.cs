@@ -4,7 +4,6 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Chat.Models;
-using Chat.Models;
 
 namespace Chat.Controllers
 {
@@ -14,7 +13,11 @@ namespace Chat.Controllers
         {
             HomeModels model = new HomeModels();
 
-            return View();
+            model.IsAutorized = User.Identity.IsAuthenticated;
+            if (model.IsAutorized)
+                model.UserIdentifier = Session["UserIdentifier"].ToString();
+
+            return View(model);
         }
 
         public ActionResult About()

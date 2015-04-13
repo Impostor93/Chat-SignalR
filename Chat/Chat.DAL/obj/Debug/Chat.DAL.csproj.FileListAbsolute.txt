@@ -7,4 +7,3 @@ D:\Vs2012 Project\Chat SignalR\Chat\Chat.DAL\bin\Debug\EntityFramework.xml
 D:\Vs2012 Project\Chat SignalR\Chat\Chat.DAL\bin\Debug\EntityFramework.SqlServer.xml
 D:\Vs2012 Project\Chat SignalR\Chat\Chat.DAL\obj\Debug\Chat.DAL.dll
 D:\Vs2012 Project\Chat SignalR\Chat\Chat.DAL\obj\Debug\Chat.DAL.pdb
-D:\Vs2012 Project\Chat SignalR\Chat\Chat.DAL\obj\Debug\Chat.DAL.csprojResolveAssemblyReference.cache

@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
-using Chat.App_Code;
+using Chat.DAL;
+using Chat.Infrastructure;
 
-namespace Chat.App_Code
+namespace Chat.Infrastructure
 {
     class ChatUserManager
     {
@@ -20,16 +21,13 @@ namespace Chat.App_Code
                 {
                     if (listOfUsers.Count <= 0)
                     {
-                        DBfile Function = new DBfile();
-                        DataSet dsUsers = new DataSet();
+                        DataBaseFunctions Function = new DataBaseFunctions();
+                        var users = Function.SelectChatUsers();
 
-                        Function.SelectChatUsers(ref dsUsers);
-
-                        if (dsUsers.Tables["tblUsers"].Rows.Count == 0)
+                        if (users.Count() == 0)
                             return new Dictionary<Guid, ChatUser>();
-
                         else
-                            FillListOfUsers(dsUsers.Tables["tblUsers"].Rows);
+                            FillListOfUsers(users);
                     }
                                             
                     return listOfUsers;
@@ -44,6 +42,50 @@ namespace Chat.App_Code
         #endregion
 
         #region Methods
+
+            public static ChatUser InitializrChatUserByAspNetAuthenticationToken(string aspNetAuthenticationToken)
+            {
+                try
+                {
+                    var Function = new DataBaseFunctions();
+                    var userLogin = Function.SelectUserLogin(aspNetAuthenticationToken);
+
+                    ChatUser chatUser = new ChatUser();
+
+                    if (userLogin != null && userLogin.tblChatUsers != null && userLogin.tblChatUsers.Count > 0)
+                    {
+                        if (ChatUserManager.ListOfUsers.ContainsKey(userLogin.tblChatUsers.First().ChatUserIdentifier))
+                        {
+                            chatUser = ChatUserManager.FindUser(userLogin.tblChatUsers.First().ChatUserIdentifier);
+                            chatUser.UserStatus.ChangeStatus((IdTypeStatus)userLogin.tblChatUsers.First().IdChatUserStatus);
+                        }
+                    }
+                    else
+                    {
+                        chatUser.LoadUserByIdLogin(userLogin.IdLogin, userLogin.UserName);
+
+                        if (!ChatUserManager.ListOfUsers.ContainsKey(chatUser.UserIdentifier))
+                            ChatUserManager.AddUserToList(chatUser);
+                    }
+
+                    return chatUser;
+                }
+                catch (ChatSqlException Ex)
+                {
+                    SendErrorEmail.SendError(Ex, "InitializrChatUserByAspNetAuthenticationToken");
+                    return null;
+                }
+                catch (ChatException ChatEx)
+                {
+                    SendErrorEmail.SendError(ChatEx, "InitializrChatUserByAspNetAuthenticationToken");
+                    return null;
+                }
+                catch (Exception ex)
+                {
+                    SendErrorEmail.SendError(ex, "InitializrChatUserByAspNetAuthenticationToken");
+                    return null;
+                }
+            }
 
             public static void RemoveRoom(Guid UserIdentifier,Guid RoomIdentifier)
             {
@@ -120,17 +162,18 @@ namespace Chat.App_Code
                     return null;
             }
 
-            private static void FillListOfUsers(DataRowCollection dataRowCollection)
+            private static void FillListOfUsers(IEnumerable<tblChatUser> users)
             {
-                Dictionary<Guid, ChatUser> TemporaryListChatUser = new Dictionary<Guid, ChatUser>();
-                foreach (DataRow Row in dataRowCollection)
+                var temporaryListChatUser = new Dictionary<Guid, ChatUser>();
+                foreach (var user in users)
                 {
-                    TemporaryListChatUser.Add(new Guid(Row["ChatUserIdentifier"].ToString()), new ChatUser(Row["ChatUserName"].ToString(), Convert.ToInt32(Row["IdUser"]),
-                                                    Convert.ToInt32(Row["IdLogin"]), new Guid(Row["ChatUserIdentifier"].ToString())));
+                    temporaryListChatUser.Add(user.ChatUserIdentifier,
+                        new ChatUser(user.ChatUserName, user.IdUser, user.IdLogin, user.ChatUserIdentifier));
                 }
+
                 lock (listOfUsers)
                 {
-                    listOfUsers = new Dictionary<Guid, ChatUser>(TemporaryListChatUser);
+                    listOfUsers = new Dictionary<Guid, ChatUser>(temporaryListChatUser);
                 }
             }
 

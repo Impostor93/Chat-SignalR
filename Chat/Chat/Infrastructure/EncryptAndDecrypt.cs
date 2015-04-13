@@ -5,7 +5,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Web;
 
-namespace Chat.App_Code
+namespace Chat.Infrastructure
 {
     public class EncryptAndDecrypt
     {

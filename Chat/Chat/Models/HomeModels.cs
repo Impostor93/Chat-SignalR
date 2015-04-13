@@ -1,7 +1,7 @@
 ﻿
 namespace Chat.Models
 {
-    using Chat.App_Code;
+    using Chat.Infrastructure;
 
     public class HomeModels
     {

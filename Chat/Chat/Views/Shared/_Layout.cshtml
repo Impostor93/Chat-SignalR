@@ -7,8 +7,19 @@
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 
+    <script>
+        function onLoadBody(){
+            sizeListOfUsers()
+            documentReady();
+        }
+        function sizeListOfUsers() {
+            document.getElementById("UserInList").style.maxHeight = (document.documentElement.clientHeight - 50) + "px"
+            document.getElementById("listContent").style.maxHeight = (document.documentElement.clientHeight - 55) + "px"
+        }
+    </script>
+
 </head>
-<body>
+<body onload="onLoadBody">
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">

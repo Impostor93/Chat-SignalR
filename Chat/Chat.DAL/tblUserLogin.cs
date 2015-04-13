@@ -23,9 +23,9 @@ namespace Chat.DAL
         public string UserName { get; set; }
         public Nullable<System.DateTime> DateCreated { get; set; }
         public Nullable<System.DateTime> DateChanged { get; set; }
-        public System.Guid AspAuthenticationUserId { get; set; }
+        public string AspAuthenticationUserId { get; set; }
     
+        public virtual AspNetUser AspNetUser { get; set; }
         public virtual ICollection<tblChatUser> tblChatUsers { get; set; }
-        public virtual aspnet_Users aspnet_Users { get; set; }
     }
 }
