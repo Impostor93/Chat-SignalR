@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Web;
+using Chat.DAL;
 using Newtonsoft.Json;
 
 namespace Chat.Infrastructure
@@ -138,15 +139,8 @@ namespace Chat.Infrastructure
                     DataBaseFunctions Function = new DataBaseFunctions();
                     if (Function == null)
                         throw new ChatException("Function in GetSession is null");
-
-                    DataSet dsChatSession = new DataSet();
-
-                    Function.SelectSession(SessionStartDate, this.IdRoom, ref dsChatSession);
-
-                    ChatSessions oldSession = new ChatSessions();
-                    FillSessionData(dsChatSession, ref oldSession);
-
-                    return oldSession;
+                    
+                    return FillSessionData(Function.SelectSession(SessionStartDate, this.IdRoom));
                 }
                 catch (ChatSqlException Ex)
                 {
@@ -155,20 +149,23 @@ namespace Chat.Infrastructure
                 }
             }
 
-            private void FillSessionData(DataSet dsChatSession,ref ChatSessions oldSession)
+            private ChatSessions FillSessionData(IEnumerable<tblRoomMessageSession> chatSession)
             {
-                if (dsChatSession.Tables["tblRoomMessage"].Rows.Count > 0)
+                var oldSession = new ChatSessions();
+                if (chatSession.Count() > 0)
                 {
-                    DataRow Row = dsChatSession.Tables["tblRoomMessage"].Rows[0];
+                    var firstChatSession = chatSession.First();
 
-                    List<Message> SessionMessages = JsonConvert.DeserializeObject<List<Message>>(Row["SessionMessages"].ToString());
-                    oldSession.RoomMessages.AddRange(SessionMessages);
+                    List<Message> sessionMessages = JsonConvert.DeserializeObject<List<Message>>(firstChatSession.SessionMessages);
+                    oldSession.RoomMessages.AddRange(sessionMessages);
 
-                    oldSession.SessionStartDate = Convert.ToDateTime(Row["SessionStartDate"]);
-                    oldSession.SessionEndDate = Convert.ToDateTime(Row["SessionEndDate"]);
+                    oldSession.SessionStartDate = firstChatSession.SessionStartDate;
+                    oldSession.SessionEndDate = firstChatSession.SessionEndDate;
                     oldSession.IdRoom = this.idRoom;
                     oldSession.RoomIdentifier = this.roomIdentifier;
                 }
+
+                return oldSession;
             }
 
             public Boolean IsEmpty() 

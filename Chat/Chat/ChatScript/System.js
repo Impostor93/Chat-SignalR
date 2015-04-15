@@ -5,15 +5,16 @@ Chat.system = Chat.system || {}
 Chat.system.isNullOrEmptyObject = function (object) { return this.isNull(object) || this.isEmptyObject(object); }
 Chat.system.isNull = function (object) { return object == null; }
 Chat.system.isEmptyObject = function (object) {
-	if (!this.isNullOrUndefined(Object.keys) && this.isFunction(Object.keys)) {
-		return Object.keys(object).length === 0;
-	} else {
-		for (var prop in object) {
-			if (object.hasOwnProperty(prop))
-				return false;
-		}
-		return true;
-	}
+    if (object == null) return true;
+
+    if (object.length > 0) return false;
+    if (object.length === 0 || object === "[]" || object === "{}") return true;
+
+    for (var key in object) {
+        if (hasOwnProperty.call(object, key)) return false;
+    }
+
+    return true;
 }
 
 Chat.system.isUndefined = function (object) { return typeof (object) == "undefined"; }
@@ -22,7 +23,7 @@ Chat.system.isNullOrUndefinedOrEmptyObject = function (object) { return this.isN
 
 Chat.system.isFunction = function (object) { return typeof (object) === "function"; }
 
-Chat.system.CreateElement = function (Type, Ids, ClassName, InnerHtml, Visibility, Attributes) {
+Chat.system.createElement = function (Type, Ids, ClassName, InnerHtml, Visibility, Attributes) {
 	var elment = document.createElement(Type);
 
 	if (ClassName != undefined)
@@ -38,8 +39,11 @@ Chat.system.CreateElement = function (Type, Ids, ClassName, InnerHtml, Visibilit
 		elment.style.display = Visibility;
 
 	if (Attributes != undefined) {
-		for (var i in Attributes)
-			elment.setAttribute(i, Attributes[i]);
+	    for (var key in Attributes) {
+	        if (Attributes.hasOwnProperty(key)) {
+	            elment.setAttribute(key, Attributes[key]);
+	        }
+	    }
 	}
 
 	return elment;
@@ -87,4 +91,10 @@ Chat.system.AppendChild = function(Parent, Child, InserBefore) {
     }
     else
         parentElment.appendChild(childElment);
+}
+
+Chat.system.logError = function (error) {
+    console.log(error);
+    //alert(error);
+    //debugger;
 }

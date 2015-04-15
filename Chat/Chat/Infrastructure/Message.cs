@@ -35,6 +35,7 @@ namespace Chat.Infrastructure
                  senderIdentifier = Sender.UserIdentifier;
                  UserName = Sender.UserName;
                  dateOfSend = DateTime.Now;
+                 CurrentSendreStatus = Sender.UserStatus;
             }
            public Message(String MessageContent, Guid SenderIdentifier)
            {
@@ -73,6 +74,7 @@ namespace Chat.Infrastructure
                 get { return UserName; }
                 set { UserName = value; }
             }
+            public ChatStatus CurrentSendreStatus { get; set; }
 
         #endregion
     }

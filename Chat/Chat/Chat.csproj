@@ -210,7 +210,7 @@
     <Content Include="ChatImage\offline.png" />
     <Content Include="ChatImage\online.png" />
     <Content Include="ChatImage\settingsButton.png" />
-    <Content Include="ChatScript\ChatFunctions.js" />
+    <Content Include="ChatScript\ChatObjects.js" />
     <Content Include="ChatScript\ChatScript.js" />
     <Content Include="ChatScript\Extensions.js" />
     <Content Include="ChatScript\RequestCreator.js" />

@@ -18,7 +18,7 @@ namespace Chat.Hubs
 
         public void Connect()
         {
-            Clients.Others.GetAllUsers();
+           // Clients.Others.GetAllUsers(JsonConvert.SerializeObject(ChatUserManager.ListOfUsers));
         }
 
         public String OpenRoom(string roomCreator, String[] roomRecipientUserIdentifiers)
@@ -216,7 +216,7 @@ namespace Chat.Hubs
                 var user = ChatUserManager.FindUser(CurrentUserIdentifier);
                 user.UserStatus.ChangeStatus((IdTypeStatus)idNewStatus);
 
-                Clients.Others.ChangeUserStatus();
+                Clients.Others.ChangeUserStatus(JsonConvert.SerializeObject(ChatUserManager.ListOfUsers));
 
                 return JsonConvert.SerializeObject(user.UserStatus);
             }

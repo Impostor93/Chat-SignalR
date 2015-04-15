@@ -1,4 +1,4 @@
-﻿/// <reference path="ChatFunctions.js" />
+﻿/// <reference path="ChatObjects.js" />
 /// <reference path="RequestCreator.js" />
 /// <reference path="Extensions.js" />
 /// <reference path="System.js" />
@@ -12,22 +12,25 @@ var CurrentUserName;
 var CurrentUserStatus;
 var chatHub = "";
 
+Chat.currentUserIdentifier = "";
+Chat.currentUser = {};
+Chat.openedRoom = [];
+
 function GetAllUsers(data){
     
     var Users = JSON.parse(data);
-    var ListUser = Chat.system.GetElement("UserInList");
+    var sys = Chat.system;
+    var ListUser = sys.GetElement("UserInList");
+
     ListUser.innerHTML = '';
 
     $.each(Users,function(index,Value)
     {
-        var Attributs = [];
-        Attributs["onclick"] = "StartChat('" + Value.UserIdentifier + "')";
-
         if (Value.UserStatus.CanMakeOperation) {
             var InnerHtml = "<div id='ListGlobalElment' class='ListGlobalElment'><div id='UserImageContent' class='UserImageContent'></div>"
             InnerHtml += "<div id='UserNameDiv' class='UserNameDiv'><span class='UserNameText'>" + Value.UserName + "</span></div><div id='UserStatusDiv' class='UserStatusDiv'><img style='width:100%;margin-top: 4px;' src='/ChatImage/" + Value.UserStatus.StatusImage + "'/></div></div>"
 
-            var Elment = CreateElement("li",undefined, "ListElment", InnerHtml, undefined, Attributs);
+            var Elment = sys.createElement("li", undefined, "ListElment", InnerHtml, undefined, { "onclick": "StartChat('" + Value.UserIdentifier + "')" });
 
             sys.AppendChild(ListUser, Elment);
         }
@@ -35,45 +38,37 @@ function GetAllUsers(data){
 }
 
 function InitializeCurrentUser(data) {
-        var CurrentUser = JSON.parse(data);
+
+        var currentUserData = JSON.parse(data);
         var sys = Chat.system;
+        var chatObject = Chat.Objects;
+        
+        Chat.currentUser = new chatObject.ChatUser(currentUserData.UserIdentifier, currentUserData.UserName, currentUserData.UserStatus)
 
-        CurrentUserIdentifier = CurrentUser.UserIdentifier;
-        CurrentUserName = CurrentUser.UserName;
-        CurrentUserStatus = CurrentUser.UserStatus;
-
-        var imgStatus = CreateElement("img");
-        imgStatus.src = "/ChatImage/" + CurrentUserStatus.StatusImage;
-        imgStatus.style.width = "100%";
-
-        sys.AppendChild(sys.GetElement("Status"), imgStatus);
+        sys.AppendChild(sys.GetElement("Status"), Chat.currentUser.getStatus().getImageElement());
 }
 
 
 Chat.Start = function Start(currentUserIdentifier)
 {
-    CurrentUserIdentifier = currentUserIdentifier;
-
     registrateClientEvents($.connection.chatHubs);
 
     $.connection.hub.start().done(function () {
         chatHub = $.connection.chatHubs;
-        registrateServerEvents(chatHub);
+        registrateServerEvents(chatHub, currentUserIdentifier);
     });
 }
 
 function registrateClientEvents(chatHubAsParam)
 {
-    chatHubAsParam.client.GetAllUsers = function () { GetAllUsers() }
-    chatHubAsParam.client.ChangeUserStatus = function () { GetAllUsers() }
+    chatHubAsParam.client.ChangeUserStatus = function (data) { GetAllUsers(data) }
     chatHubAsParam.client.createRoom = function (data) { CheckForRooms(data) }
     chatHubAsParam.client.showingMassages = function (data, idRoom) { showingMassages(data, idRoom) }
 }
-function registrateServerEvents(chatHubAsParam) {
+function registrateServerEvents(chatHubAsParam, currentUserIdentifier) {
     chatHubAsParam.server.connect();
-    chatHubAsParam.server.initializeUser(CurrentUserIdentifier).done(function (Data) { InitializeCurrentUser(Data)})
-
-    chatHubAsParam.server.getAllUsers(CurrentUserIdentifier).done(function (Data) { GetAllUsers(Data) })
+    chatHubAsParam.server.initializeUser(currentUserIdentifier).done(function (Data) { InitializeCurrentUser(Data)})
+    chatHubAsParam.server.getAllUsers(currentUserIdentifier).done(function (Data) { GetAllUsers(Data) })
 }
 
 function StartChat() {
@@ -83,48 +78,65 @@ function StartChat() {
     if (userIdentifiers == "")
         return;
 
-    chatHub.server.openRoom(CurrentUserIdentifier, userIdentifiers).done(function (Data) {
+    chatHub.server.openRoom(Chat.currentUser.getUserIdentifier(), userIdentifiers).done(function (Data) {
         onSuccessrStartChat(Data)
     })
 
 }
-function onSuccessrStartChat(ResultString) {
+function onSuccessrStartChat(resultString) {
     try {
 
-        if (ResultString == "" || ResultString == "[]")
+        if (resultString == "" || resultString == "[]")
             return;
 
-        var Room = JSON.parse(ResultString);
+        var room = JSON.parse(resultString);
         var sys = Chat.system;
 
-        var NewRoom = CreateNewRoom(Room.RoomIdentifier, Room.RoomName);
+        var chatRoom = new Chat.Objects.ChatRoom(room.RoomIdentifier, room.RoomName)
 
-        if (sys.GetElement("Conteiner").querySelectorAll("[RoomId='" + Room.RoomIdentifier + "']").length == 0)
-            sys.AppendChild(sys.GetElement("Conteiner"), NewRoom, true);
+        if (!Chat._isRoomExist(chatRoom)) {
+            Chat.openedRoom[chatRoom.getRoomIdentifier()] = chatRoom;
 
-        SessionNextDate[Room.RoomIdentifier] = "";
+            sys.AppendChild(sys.GetElement("Conteiner"), chatRoom.getRoomHtmlObject(), true);
+        }
+
+        SessionNextDate[chatRoom.getRoomIdentifier()] = "";
 
     } catch (exception) {
         clearInterval(TimerStartShowing);
         sendError(exception.message, "onSuccessrStartChat");
     }
 }
+Chat._isRoomExist = function (room) {
+    var sys = Chat.system;
+    return !sys.isNullOrUndefinedOrEmptyObject(Chat.openedRoom[room.getRoomIdentifier()])
+}
 
 function showingMassages(data, idRoom) {
     try {
 
-        if (data == "[]")
+        var sys = Chat.system;
+
+        if (sys.isEmptyObject(data))
             return;
 
         data = JSON.parse(data);
-        var Result = data[CurrentUserIdentifier];
+        var result = data[Chat.currentUser.getUserIdentifier()];
 
-        if (Result == null)
+        if (sys.isNull(result))
             return;
 
-        for(var i in Result)
-            AppendMessage(Result[i].SenderIdentifier, Result[i].MessageContent, idRoom);
+        var room = Chat.openedRoom[idRoom];
 
+        for (var i = 0; i < result.length; i++) {
+
+            var messageSenderUser = Chat.currentUser;
+            if (messageSenderUser.getUserIdentifier() != result[i].SenderIdentifier)
+                messageSenderUser = new Chat.Objects.ChatUser(result[i].SenderIdentifier, result[i].SenderName, result[i].CurrentSendreStatus);
+
+            var chatMessage = new Chat.Objects.ChatMessage(result[i].MessageContent, messageSenderUser);
+            room.appendMessageElementToContent(chatMessage)
+        }
     }
     catch (exception) {
         sendError(exception.message, "StartShowingMassages");
@@ -132,10 +144,10 @@ function showingMassages(data, idRoom) {
     }
 }
 
-function onSuccessSending(ResultString) {
+function onSuccessSending(resultString) {
     try {
-
-        var obj = ResultString.split('|');
+        debugger;
+        var obj = resultString.split('|');
 
         if (obj[0] == '' || obj[0] == "[]")
             return;
@@ -165,23 +177,31 @@ function onSuccessSending(ResultString) {
 
 }
 
-function TextBoxKeyPress(e, IdRoom)
+function TextBoxKeyPress(e, idRoom)
 {
+    var sys = Chat.system;
+
     if(e.keyCode == 13){
         
         var EventElment = e.srcElement ? e.srcElement : e.currentTarget
-        var Message = EventElment.value;
+        var message = EventElment.value;
         EventElment.value = "";
 
-        if(Message == "")
+        if(String.isEmpty(message))
             return;
 
-        chatHub.server.sendMessages(CurrentUserIdentifier, Message, IdRoom).done(function (data) {
-            if (data == "[]")
+        chatHub.server.sendMessages(Chat.currentUser.getUserIdentifier(), message, idRoom).done(function (data) {
+            if (sys.isEmptyObject(data))
                 return;
 
-            var Result = JSON.parse(data);
-            AppendMessage(Result.SenderIdentifier, Result.MessageContent, IdRoom);
+            var result = JSON.parse(data);
+            var room = Chat.openedRoom[idRoom];
+            if (sys.isNullOrUndefinedOrEmptyObject(room))
+                return;
+
+            var chatUser = new Chat.Objects.ChatUser(result.SenderIdentifier,result.SenderName,result.CurrentSendreStatus)
+            var chatMessage = new Chat.Objects.ChatMessage(result.MessageContent, chatUser);
+            room.appendMessageElementToContent(chatMessage)
         })
         
         return false;
@@ -189,21 +209,23 @@ function TextBoxKeyPress(e, IdRoom)
 }
 
 function CheckForRooms(data) {
+    var sys = Chat.system;
     try
     {
-        if (data == "[]")
+        if (sys.isEmptyObject(data))
             return;
 
-        var Result = JSON.parse(data);
-        var NewRoom = CreateNewRoom(Result.RoomIdentifier, Result.RoomName);
-        var sys = Chat.system;
+        var result = JSON.parse(data);
+        var room = new Chat.Objects.ChatRoom(result.RoomIdentifier, result.RoomName)
 
-        if (sys.GetElement("Conteiner").querySelectorAll("[RoomId='" + Result.RoomIdentifier + "']").length == 0)
-            sys.AppendChild(sys.GetElement("Conteiner"), NewRoom, true);
+        if (!Chat._isRoomExist(room)) {
+            sys.AppendChild(sys.GetElement("Conteiner"), room.getRoomHtmlObject(), true);
+            Chat.openedRoom[result.RoomIdentifier] = room;
+        }
 
     } catch (ex)
     {
-        sendError(ex.message, "CheckForRooms");
+        sys.logError(ex.message +" - CheckForRooms");
         return;
     }
 }
@@ -212,29 +234,28 @@ function CloseRoom(IdRoom)
 {
     IdRoom = $.trim(IdRoom)
 
-    chatHub.server.closeRoom(IdRoom, CurrentUserIdentifier).done(function () {
+    chatHub.server.closeRoom(IdRoom, Chat.currentUser.getUserIdentifier()).done(function () {
         var sys = Chat.system;
 
-        var Room = sys.GetElement("Chat-" + IdRoom);
-        sys.RemoveElmenet(sys.GetElement("Conteiner"), Room);
+        var room = Chat.openedRoom[IdRoom];
+        delete Chat.openedRoom[IdRoom];
+        sys.RemoveElmenet(sys.GetElement("Conteiner"), room.getRoomHtmlObject());
     })
 }
 
 function ChangeStatus(currElement) {
 
-    chatHub.server.changUserStatus(currElement.getAttribute("Status"), CurrentUserIdentifier).done(function (NewStatus) {
-        
-        if (NewStatus == undefined || NewStatus == null || NewStatus == "[]")
-            return;
-        var sys = Chat.system;
-        NewStatus = JSON.parse(NewStatus);
+    chatHub.server.changUserStatus(currElement.getAttribute("Status"), Chat.currentUser.getUserIdentifier()).done(function (newStatus) {
 
-        var imgStatus = CreateElement("img");
-        imgStatus.src = "/ChatImage/" + NewStatus.StatusImage;
-        imgStatus.style.width = "100%";
+        var sys = Chat.system;
+        if (sys.isNullOrUndefinedOrEmptyObject(newStatus))
+            return;
+
+        newStatus = JSON.parse(newStatus);
+        var status = new Chat.Objects.ChatUserStatus(newStatus.StatusImage)
 
         sys.RemoveElmenet(sys.GetElement("Status"), sys.GetElement("Status").lastChild)
-        sys.AppendChild(sys.GetElement("Status"), imgStatus);
+        sys.AppendChild(sys.GetElement("Status"), status.getImageElement());
 
     });
 }
@@ -277,37 +298,15 @@ function LoadHistory(IdRoom) {
     })
 }
 
-//error functions 
-function error(error) {
-
-    //if (UserTimer != 0) {
-    //    clearInterval(UserTimer);
-    //    UserTimer = 0;
-    //}
-
-    //if (RoomTimer != 0){
-    //    clearInterval(RoomTimer);
-    //    RoomTimer = 0;
-    //    }
-
-    //if (MessageTimer.length > 0) {
-    //    for (var i in MessageTimer) {
-    //        clearInterval(MessageTimer[i]);
-    //        MessageTimer[i] = 0;
-    //    }
-    //}
-
-    //sendError(error._message, "Requests")
-}
-
 function sendError(text, MethodName) {
-    $.ajax({
-        url: "SendErrorMessagesHandler.ashx?excText=" + text + "&MethodName=" + MethodName,
-        contentType: "application/json;",
-        data: "{}",
-        type: "GET",
-        success: function () { },
-        error: function () { alert("error") },
-    })
+    //$.ajax({
+    //    url: "SendErrorMessagesHandler.ashx?excText=" + text + "&MethodName=" + MethodName,
+    //    contentType: "application/json;",
+    //    data: "{}",
+    //    type: "GET",
+    //    success: function () { },
+    //    error: function () { alert("error") },
+    //})
+    console.log(text + "--" + MethodName);
 }
 

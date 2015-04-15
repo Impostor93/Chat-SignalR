@@ -41,7 +41,7 @@ namespace Chat.Infrastructure
             }
         }
 
-        public IEnumerable<tblRoomMessageSession> SelectSession(DateTime startDate, int idRoom, ref DataSet dsRooms)
+        public IEnumerable<tblRoomMessageSession> SelectSession(DateTime startDate, int idRoom)
         {
             try
             {
