@@ -1,0 +1,44 @@
+﻿.uiTooltipX {
+  position: relative;
+  zoom: 1;
+}
+.uiContextualLayerAboveLeft .uiTooltipX, .uiContextualLayerAboveRight .uiTooltipX, .uiContextualLayerAboveCenter .uiTooltipX {
+  margin-bottom: 1px;
+  padding-bottom: 4px;
+}
+.uiTooltipX .tooltipContent {
+  background-color: #282828;
+  -webkit-border-radius: 2px;
+  color: #fff;
+  padding: 6px 8px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.sp_v4HEoI_3W-k.sx_5b152b {
+  width: 7px;
+  height: 14px;
+  background-position: -300px -5px;
+}
+.sp_v4HEoI_3W-k {
+  background-size: auto;
+  background-repeat: no-repeat;
+  display: inline-block;
+}
+
+.uiContextualLayerAboveLeft .uiTooltipX i.arrow, .uiContextualLayerBelowLeft .uiTooltipX i.arrow {
+  left: 12px;
+}
+.uiContextualLayerAboveLeft .uiTooltipX i.arrow, .uiContextualLayerAboveRight .uiTooltipX i.arrow, .uiContextualLayerAboveCenter .uiTooltipX i.arrow {
+  border-bottom: 0;
+  border-top-color: #282828;
+  bottom: 0;
+}
+.uiTooltipX i.arrow {
+  border: 4px solid transparent;
+  font-size: 0;
+  height: 0;
+  line-height: 0;
+  position: absolute;
+  width: 0;
+}
