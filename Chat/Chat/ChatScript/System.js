@@ -68,6 +68,12 @@ Chat.system.RemoveElmenet = function (Parent, Child)
 Chat.system.GetElement = function (Id) {
     return document.getElementById(Id);
 }
+Chat.system.getElementsByAttribute = function (attributeName) {
+    return document.querySelectorAll("[" + attributeName + "]");
+}
+Chat.system.getElementsByAttributeAndValue = function (attributeName,value) {
+    return document.querySelectorAll("[" + attributeName + "='" + value + "']");
+}
 Chat.system.AppendChild = function(Parent, Child, InserBefore) {
     var parentElment;
     var childElment;

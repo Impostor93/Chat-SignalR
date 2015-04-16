@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title </title>
     @Styles.Render("~/Content/Site.css")
+    @Styles.Render("~/ChatStyle/FBPopUp.css")
+
     @Scripts.Render("~/bundles/modernizr")
 
 
@@ -57,7 +59,6 @@
 
         if ("@(User.Identity.IsAuthenticated == true && Session["UserIdentifier"] != null)" == "True"){
             Chat.Start("@Session["UserIdentifier"]");
-            document.getElementById("Chat").style.display = "block";
         }
 
         sizeListOfUsers()

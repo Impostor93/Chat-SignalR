@@ -179,8 +179,6 @@ namespace Chat.Infrastructure
                        if (this.userStatus == null)
                            throw new ChatException("UserStatus is null in SaveUserState");
 
-                       //TODO:Remove this Dataset
-                       DataSet dsUser = new DataSet();
                        if (this.IdUser == 0)
                            this.idUser = Function.InsertChatUser(this.idLogin, this.userIdentifier, this.userName, this.userStatus.IdStaut, this.lastLogIn, this.userName);
                        else

@@ -68,6 +68,7 @@ namespace Chat.Infrastructure
                 SmtpServer.EnableSsl = true;
                 SmtpServer.Send(Massage);
         #endif
+                WriteErrorOnServer(new Exception(Error));
             }
             catch (SmtpException ex)
             {
@@ -84,9 +85,13 @@ namespace Chat.Infrastructure
         public static void WriteErrorOnServer(Exception ex)
         {
             String path = Path.Combine(@"C:\Errors\", String.Format("{0} - {1}a.{2}", "ErrorOnSendingMail", DateTime.Now.ToString().Replace('.', ' ').Replace(':', '-'), "txt"));
-            String[] content = { String.Format("{0}\n\n\n{1}", ex.Message, ex.StackTrace) };
+            var content = new List<string>(){ String.Format("{0}\n\n\n{1}", ex.Message, ex.StackTrace) };
+            for (var error = ex.InnerException; error != null; error = error.InnerException )
+            {
+                content.Add(String.Format("{0}\n\n\n{1}", error.Message, error.StackTrace));
+            }
 
-            File.WriteAllLines(path, content);
+                File.WriteAllLines(path, content);
         }
     }
 }

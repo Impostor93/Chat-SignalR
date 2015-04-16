@@ -206,3 +206,13 @@ cursor: pointer;
 .SettigsElment:hover {
     background-color:gray;
 }
+.balloonDiv {
+    width: 100px;
+    min-height: 100px;
+    background: black;
+    position:absolute;
+}
+.linkList-with-users-in-room {
+  width: 100%;
+  float: left;
+}
