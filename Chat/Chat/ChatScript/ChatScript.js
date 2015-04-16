@@ -109,7 +109,7 @@ Chat.Engine.prototype.openRoomChat = function ()
                 sys.AppendChild(sys.GetElement("Conteiner"), chatRoom.getRoomHtmlObject(), true);
             }
 
-            Chat.Engine.SessionNextDate[chatRoom.getRoomIdentifier()] = "";
+            Chat.Engine.SessionNextDate[Chat.Engine.openedRoom[roomInJsonFormat.RoomIdentifier].getRoomIdentifier()] = "";
 
         } catch (exception) {
             sys.logError(exception.message + " - openRoomChat");
@@ -285,48 +285,3 @@ Chat.Engine.users = [];
 Chat.Engine.openedRoom = [];
 Chat.Engine.SessionNextDate = [];
 
-
-//TODO: to be delete
-function onSuccessSending(resultString) {
-    try {
-        debugger;
-        var obj = resultString.split('|');
-
-        if (obj[0] == '' || obj[0] == "[]")
-            return;
-
-        var Messages = JSON.parse(obj[0]);
-        var sys = Chat.system;
-
-        var ElementNumber = obj[1];
-        var HtmlElement = sys.GetElement('Content' + ElementNumber);
-
-        if (HtmlElement == undefined)
-            return;
-
-        var ResivedMessages = "";
-
-        $.each(Messages, function (index, item) {
-            var DateOfSend = new Date(item.DateOfSend);
-            ResivedMessages += "<p> " + item.Sender.UserName + " Said: " + item.MessageContent + " <br/> In " + DateOfSend.format("yyyy-MM-dd h:mm:ss") + "</p>"
-        })
-        HtmlElement.innerHTML = ResivedMessages
-        HtmlElement.scrollTop = HtmlElement.scrollHeight;
-    }
-    catch (exception) {
-        sendError(exception.message, "onSuccessSending");
-        return;
-    }
-
-}
-function sendError(text, MethodName) {
-    //$.ajax({
-    //    url: "SendErrorMessagesHandler.ashx?excText=" + text + "&MethodName=" + MethodName,
-    //    contentType: "application/json;",
-    //    data: "{}",
-    //    type: "GET",
-    //    success: function () { },
-    //    error: function () { alert("error") },
-    //})
-    console.log(text + "--" + MethodName);
-}

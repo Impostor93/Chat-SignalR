@@ -13,6 +13,7 @@ Chat.Objects.ChatRoom = function ChatRoom(roomIdentifier, roomName, engine) {
 	this.engine = engine;
 	this.chatRoomElement = this._createNewRoomElement();
 	this.currentMessageSession = new Chat.Objects.ChatMessageSession(roomIdentifier);
+	this.isRoomVisible = true;
 }
 Chat.Objects.ChatRoom.prototype._parseRoomName = function (roomName) {
     var splitedRoomName = roomName.split('|');
@@ -68,10 +69,19 @@ Chat.Objects.ChatRoom.prototype._createNewRoomElement = function () {
 	this.roomContentElement = sys.createElement("div", "RoomContent", "RoomContent");
 
 	this.roomHeaderElement = sys.createElement("div", "RoomHeader" + this.getRoomIdentifier(), "RoomHeader", undefined, "block")
+	this.roomHeaderElement.onclick = function () {
+	    if (chatRoom.isRoomVisible) {
+	        chatRoom._minimizeRoom();
+	        chatRoom.isRoomVisible = false;
+	    } else {
+	        chatRoom._maximizeRoom();
+	        chatRoom.isRoomVisible = true;
+	    }
+	}
 	sys.AppendChild(this.roomHeaderElement, this._definedRoomNameElement(this.getRoomName()));
 	
 	var closeButton = sys.createElement("div", undefined, "CloseButton");
-	closeButton.onclick = function () { chatRoom.engine.closeRoom(chatRoom.getRoomIdentifier()) };
+	closeButton.onclick = function (event) { event.stopPropagation(); chatRoom.engine.closeRoom(chatRoom.getRoomIdentifier()) };
 	sys.AppendChild(this.roomHeaderElement,closeButton)
 	
 	sys.AppendChild(this.roomContentElement, this.roomHeaderElement);
@@ -97,6 +107,14 @@ Chat.Objects.ChatRoom.prototype._createNewRoomElement = function () {
 	sys.AppendChild(chatRoomElement, this.roomContentElement);
 
 	return chatRoomElement;
+}
+Chat.Objects.ChatRoom.prototype._minimizeRoom = function () {
+    this.conversationPartElement.style.display = "none";
+    this.chatRoomElement.className = this.chatRoomElement.className = this.chatRoomElement.className + " hidenRoom"
+}
+Chat.Objects.ChatRoom.prototype._maximizeRoom = function () {
+    this.conversationPartElement.style.display = "block";
+    this.chatRoomElement.className = this.chatRoomElement.className.replace(" hidenRoom", "")
 }
 
 Chat.Objects.ChatRoom.prototype.getRoomHtml = function () { return this.chatRoomElement.outerHTML }
@@ -383,13 +401,6 @@ function TextAreaOnFocus(currElement)
 function TextAreaOnBlur(currElement)
 {
 	currElement.value = "Search";
-}
-
-function SettingDivOnBlur(currElement)
-{
-	alert("GootTry")
-	if (currElement.style.display == "block")
-		currElement.style.display = "none";
 }
 
 function scrollHandler(currElement, IdRoom)

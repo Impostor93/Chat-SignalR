@@ -216,6 +216,8 @@
     <Content Include="ChatScript\RequestCreator.js" />
     <Content Include="ChatStyle\ChatStyle.css" />
     <Content Include="ChatStyle\FBPopUp.css" />
+    <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\bootstrap.min.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />

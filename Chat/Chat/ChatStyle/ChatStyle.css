@@ -5,6 +5,20 @@
 right: 0;
 bottom: 0;
 height: 30px;
+line-height: normal!important;
+box-sizing: initial!important;
+}
+.Chat div, .Chat textarea, .Chat img {
+    vertical-align: initial;
+    line-height: normal !important;
+    box-sizing: initial !important;
+}
+.SettigsElment span{
+    font-family: 'verdana,tahoma';
+    font-size: initial;
+    vertical-align: initial;
+    line-height: normal !important;
+    box-sizing: initial !important;
 }
 .UserListContent {
     border: 1px solid silver;
@@ -44,6 +58,8 @@ height: 30px;
     float: left;
     border: none;
     color: gray;
+    font-family: inherit!important;
+  font-size: initial;
 }
 .ListElment {
     list-style: none;
@@ -215,4 +231,13 @@ cursor: pointer;
 .linkList-with-users-in-room {
   width: 100%;
   float: left;
+}
+.link-with-users-in-room, .link-with-users-in-room a, .link-with-users-in-room:hover {
+text-decoration:none;
+color:white;
+}
+.hidenRoom {
+  margin-top: 5px;
+  width: initial;
+  min-width: 150px;
 }
