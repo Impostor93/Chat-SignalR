@@ -11,9 +11,85 @@ Chat.Objects.ChatRoom = function ChatRoom(roomIdentifier, roomName, engine) {
 	this.roomIdentifier = roomIdentifier;
 	this.roomName = this._parseRoomName(roomName);
 	this.engine = engine;
+	this.conversationPartElement = "";
+	this.roomContentElement = "";
+	this.roomHeaderElement = "";
+
 	this.chatRoomElement = this._createNewRoomElement();
 	this.currentMessageSession = new Chat.Objects.ChatMessageSession(roomIdentifier);
 	this.isRoomVisible = true;
+
+}
+Chat.Objects.ChatRoom.prototype._createNewRoomElement = function () {
+    var sys = Chat.system;
+    var chatRoom = this;
+
+    this.roomUnreadedMessageIdentifier = sys.createElement("i");
+
+    this.roomContentElement = sys.createElement("div", "RoomContent", "RoomContent");
+
+    this.roomHeaderElement = sys.createElement("div", "RoomHeader" + this.getRoomIdentifier(), "RoomHeader", undefined, "block")
+    this.roomHeaderElement.onclick = function () {
+        if (chatRoom.isRoomVisible) {
+            chatRoom._minimizeRoom();
+            chatRoom.isRoomVisible = false;
+        } else {
+            chatRoom._maximizeRoom();
+            chatRoom.isRoomVisible = true;
+        }
+    }
+
+    sys.AppendChild(this.roomHeaderElement, this.roomUnreadedMessageIdentifier);
+    sys.AppendChild(this.roomHeaderElement, this._definedRoomNameElement(this.getRoomName()));
+
+    var closeButton = sys.createElement("div", undefined, "CloseButton");
+    closeButton.onclick = function (event) { event.stopPropagation(); chatRoom.engine.closeRoom(chatRoom.getRoomIdentifier()) };
+    sys.AppendChild(this.roomHeaderElement, closeButton)
+
+    sys.AppendChild(this.roomContentElement, this.roomHeaderElement);
+
+    this.conversationPartElement = sys.createElement("div", "ConversationPart", "ConversationPart", undefined, "block");
+
+    this.messageContent = sys.createElement("div", "MessageContent" + this.getRoomIdentifier(), "MessageContent", undefined, "block");
+    this.messageContent.onscroll = function () {
+        if (this.scrollTop == 0){
+            chatRoom.engine.loadHistory(chatRoom.getRoomIdentifier());
+        }
+        chatRoom._showOrHideUnreadSing();
+    }
+
+    sys.AppendChild(this.conversationPartElement, this.messageContent);
+
+    this.textAreaOfRoom = sys.createElement("textarea", "MessageText" + this.getRoomIdentifier(), "TextBox", undefined, "block", { "rows": "1" })
+    this.textAreaOfRoom.onkeydown = function (event) { chatRoom.engine.sendMessage(event, chatRoom.getRoomIdentifier()); };
+
+    this.roomFooterElement = sys.createElement("div", "RoomFooter", "RoomFooter");
+    sys.AppendChild(this.roomFooterElement, this.textAreaOfRoom);
+
+    sys.AppendChild(this.conversationPartElement, this.roomFooterElement);
+    sys.AppendChild(this.roomContentElement, this.conversationPartElement);
+
+    var chatRoomElement = sys.createElement("div", "Chat-" + this.getRoomIdentifier(), "ChatRoom", undefined, "block", { "RoomId": this.getRoomIdentifier(), "Visible": true });
+
+    sys.AppendChild(chatRoomElement, this.roomContentElement);
+
+    return chatRoomElement;
+}
+Chat.Objects.ChatRoom.prototype._putUnreadSing = function () {
+    this.roomUnreadedMessageIdentifier.style.backgroundImage = "url(/ChatImage/unreadedMessageIcon.png)";
+}
+Chat.Objects.ChatRoom.prototype._removeUnreadSing = function () {
+    this.roomUnreadedMessageIdentifier.style.backgroundImage = "";
+}
+Chat.Objects.ChatRoom.prototype._minimizeRoom = function () {
+    this.conversationPartElement.style.display = "none";
+    this.chatRoomElement.className = this.chatRoomElement.className = this.chatRoomElement.className + " hidenRoom"
+}
+Chat.Objects.ChatRoom.prototype._maximizeRoom = function () {
+    this.conversationPartElement.style.display = "block";
+    this.chatRoomElement.className = this.chatRoomElement.className.replace(" hidenRoom", "")
+    this._removeUnreadSing();
+    this.messageContent.scrollTop = this.messageContent.scrollHeight;
 }
 Chat.Objects.ChatRoom.prototype._parseRoomName = function (roomName) {
     var splitedRoomName = roomName.split('|');
@@ -35,7 +111,7 @@ Chat.Objects.ChatRoom.prototype._definedRoomNameElement = function (roomName)
     var spanElement = sys.createElement("span", undefined, undefined);
 
     if (roomName.length <= Chat.Objects.ChatRoom.roomNameLength){
-        spanElement.innerText = roomName;
+        spanElement.innerHTML = roomName;
         return spanElement;
     } else {
         var link = sys.createElement("a", undefined, "link-with-users-in-room", (roomName.substring(0, Chat.Objects.ChatRoom.roomNameLength) + "..."))
@@ -62,66 +138,18 @@ Chat.Objects.ChatRoom.prototype._createHeaderBalloonWithUserNames = function (ro
 
     return balloonDiv;
 }
-Chat.Objects.ChatRoom.prototype._createNewRoomElement = function () {
-	var sys = Chat.system;
-	var chatRoom = this;
-
-	this.roomContentElement = sys.createElement("div", "RoomContent", "RoomContent");
-
-	this.roomHeaderElement = sys.createElement("div", "RoomHeader" + this.getRoomIdentifier(), "RoomHeader", undefined, "block")
-	this.roomHeaderElement.onclick = function () {
-	    if (chatRoom.isRoomVisible) {
-	        chatRoom._minimizeRoom();
-	        chatRoom.isRoomVisible = false;
-	    } else {
-	        chatRoom._maximizeRoom();
-	        chatRoom.isRoomVisible = true;
-	    }
-	}
-	sys.AppendChild(this.roomHeaderElement, this._definedRoomNameElement(this.getRoomName()));
-	
-	var closeButton = sys.createElement("div", undefined, "CloseButton");
-	closeButton.onclick = function (event) { event.stopPropagation(); chatRoom.engine.closeRoom(chatRoom.getRoomIdentifier()) };
-	sys.AppendChild(this.roomHeaderElement,closeButton)
-	
-	sys.AppendChild(this.roomContentElement, this.roomHeaderElement);
-
-	this.conversationPartElement = sys.createElement("div", "ConversationPart", "ConversationPart", undefined, "block");
-
-	this.messageContent = sys.createElement("div", "MessageContent" + this.getRoomIdentifier(), "MessageContent", undefined, "block");
-	this.messageContent.onscroll = function () { if (this.scrollTop == 0) chatRoom.engine.loadHistory(chatRoom.getRoomIdentifier()); }
-
-	sys.AppendChild(this.conversationPartElement, this.messageContent);
-
-	this.textAreaOfRoom = sys.createElement("textarea", "MessageText" + this.getRoomIdentifier(), "TextBox", undefined, "block", { "rows": "1" })
-	this.textAreaOfRoom.onkeydown = function (event) { chatRoom.engine.sendMessage(event, chatRoom.getRoomIdentifier());};
-
-	this.roomFooterElement = sys.createElement("div", "RoomFooter", "RoomFooter");
-	sys.AppendChild(this.roomFooterElement, this.textAreaOfRoom);
-
-	sys.AppendChild(this.conversationPartElement, this.roomFooterElement);
-	sys.AppendChild(this.roomContentElement, this.conversationPartElement);
-
-	var chatRoomElement = sys.createElement("div", "Chat-" + this.getRoomIdentifier(), "ChatRoom", undefined, "block", { "RoomId": this.getRoomIdentifier(), "Visible": true });
-
-	sys.AppendChild(chatRoomElement, this.roomContentElement);
-
-	return chatRoomElement;
+Chat.Objects.ChatRoom.prototype._showOrHideUnreadSing = function(){
+    if (this.messageContent.scrollHeight > Chat.Objects.ChatRoom.initialRoomScrollHight
+            && this.messageContent.scrollTop < (this.messageContent.scrollHeight - Chat.Objects.ChatRoom.newMessageMaxArea)) {
+        this._putUnreadSing();
+        return;
+    }
+    if (!this.isRoomVisible) {
+        this._putUnreadSing();
+        return;
+    }
+    this._removeUnreadSing();
 }
-Chat.Objects.ChatRoom.prototype._minimizeRoom = function () {
-    this.conversationPartElement.style.display = "none";
-    this.chatRoomElement.className = this.chatRoomElement.className = this.chatRoomElement.className + " hidenRoom"
-}
-Chat.Objects.ChatRoom.prototype._maximizeRoom = function () {
-    this.conversationPartElement.style.display = "block";
-    this.chatRoomElement.className = this.chatRoomElement.className.replace(" hidenRoom", "")
-}
-
-Chat.Objects.ChatRoom.prototype.getRoomHtml = function () { return this.chatRoomElement.outerHTML }
-Chat.Objects.ChatRoom.prototype.getRoomHtmlObject = function () { return this.chatRoomElement }
-
-Chat.Objects.ChatRoom.prototype.getRoomIdentifier = function () { return this.roomIdentifier; }
-Chat.Objects.ChatRoom.prototype.getRoomName = function () { return this.roomName; }
 
 Chat.Objects.ChatRoom.prototype._convertElementArrayToHtmlString = function (arr) {
 	var html = "";
@@ -134,31 +162,6 @@ Chat.Objects.ChatRoom.prototype._convertElementArrayToHtmlString = function (arr
 	}
 
 	return html;
-}
-Chat.Objects.ChatRoom.prototype.appendMessageElementToContent = function(message)
-{
-	var sys = Chat.system;
-
-	if (this.messageContent.childNodes.length == 0) {
-
-		this._appendMessageElementToContent(message);
-		return;
-	}
-
-	var lastUserMessage = this.currentMessageSession.getListOfMessages().lastOrDefault();
-
-	if (sys.isNullOrUndefined(lastUserMessage))
-		throw Error("There is no message in the array");
-
-	if (lastUserMessage.getMessageSenderIdentifier() == message.getMessageSenderIdentifier()) {
-		lastUserMessage._appendMessageNode(message.getMessageText())
-
-	} else {
-		this._appendMessageElementToContent(message);
-	}
-}
-Chat.Objects.ChatRoom.prototype.loadHistory = function (result) {
-	this._appendHistoryToMessageContainerElement(result)
 }
 Chat.Objects.ChatRoom.prototype._appendHistoryToMessageContainerElement = function (chatRoomMessageSession) {
 	var idRoom = chatRoomMessageSession.getRoomIdentifier();
@@ -207,8 +210,44 @@ Chat.Objects.ChatRoom.prototype._appendMessageElementToContent = function (messa
 		this.currentMessageSession.insertOnTheTopOfMessageList(message);
 }
 
+Chat.Objects.ChatRoom.prototype.appendMessageElementToContent = function (message) {
+    var sys = Chat.system;
+
+    if (this.messageContent.childNodes.length == 0) {
+
+        this._appendMessageElementToContent(message);
+        return;
+    }
+
+    var lastUserMessage = this.currentMessageSession.getListOfMessages().lastOrDefault();
+
+    if (sys.isNullOrUndefined(lastUserMessage))
+        throw Error("There is no message in the array");
+
+    if (lastUserMessage.getMessageSenderIdentifier() == message.getMessageSenderIdentifier()) {
+        lastUserMessage._appendMessageNode(message.getMessageText())
+
+    } else {
+        this._appendMessageElementToContent(message);
+    }
+
+    this._showOrHideUnreadSing();
+}
+Chat.Objects.ChatRoom.prototype.loadHistory = function (result) {
+    this._appendHistoryToMessageContainerElement(result)
+}
+
+// Room getters 
+Chat.Objects.ChatRoom.prototype.getRoomHtml = function () { return this.chatRoomElement.outerHTML }
+Chat.Objects.ChatRoom.prototype.getRoomHtmlObject = function () { return this.chatRoomElement }
+
+Chat.Objects.ChatRoom.prototype.getRoomIdentifier = function () { return this.roomIdentifier; }
+Chat.Objects.ChatRoom.prototype.getRoomName = function () { return this.roomName; }
+
 //Room constants
 Chat.Objects.ChatRoom.roomNameLength = 25;
+Chat.Objects.ChatRoom.newMessageMaxArea = 100;
+Chat.Objects.ChatRoom.initialRoomScrollHight = 238
 
 //End ChatRoom Object
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -287,8 +326,9 @@ Chat.Objects.ChatMessageSession.parseFromJsonResult = function(result){
 	var chatMessageSession = new Chat.Objects.ChatMessageSession(result.RoomIdentifier);
 	var listOfMessages = []
 	for (var i = 0; i < result.RoomMessages.length; i++) {
-		var currentMessage = result.RoomMessages[i];
-		var chatUser = new Chat.Objects.ChatUser(currentMessage.SenderIdentifier, currentMessage.SenderName, currentMessage.CurrentSendreStatus);
+	    var currentMessage = result.RoomMessages[i];
+	    var status = Chat.Objects.ChatUserStatus.parseStatusFromJson(currentMessage.CurrentSendreStatus)
+	    var chatUser = new Chat.Objects.ChatUser(currentMessage.SenderIdentifier, currentMessage.SenderName, status);
 		listOfMessages.push(new Chat.Objects.ChatMessage(currentMessage.MessageContent, currentMessage.DateOfSend, chatUser));
 	}
 
@@ -319,11 +359,11 @@ Chat.Objects.ChatMessageSession.prototype.getMessageAtIndex = function (index) {
 //---------------------------------------------------------------------------------------------------------------------------------
 
 //Start ChatUser Object
-Chat.Objects.ChatUser = function (userIndentifier, userName, currentUserStatus)
+Chat.Objects.ChatUser = function (userIndentifier, userName,chatStatus)
 {
 	this.chatUserName = userName;
 	this.userIndentifier = userIndentifier;
-	this.chatUserStatus = new Chat.Objects.ChatUserStatus(currentUserStatus.StatusImage);
+	this.chatUserStatus = chatStatus;
 	this.userInListOfUsersHtmlObject = "";
 }
 Chat.Objects.ChatUser.prototype.createUserListElement = function (chatEngine) {
@@ -356,79 +396,331 @@ Chat.Objects.ChatUser.prototype.createUserListElement = function (chatEngine) {
 Chat.Objects.ChatUser.prototype.getUserIdentifier = function(){ return this.userIndentifier;}
 Chat.Objects.ChatUser.prototype.getUserName = function () { return this.chatUserName; }
 Chat.Objects.ChatUser.prototype.getStatus = function () { return this.chatUserStatus; }
-Chat.Objects.ChatUser.prototype.changeStatus = function (statusImage) {
-	this.imageElement.src = ("/ChatImage/" + statusImage);
-	this.getStatus().setStatusImage(statusImage);
+Chat.Objects.ChatUser.prototype.changeStatus = function (statusId) {
+
+    this.getStatus().changeStatus(statusId);
+    var oldStatusImage = this.imageElement;
+    this.imageElement = this.getStatus().getImageElement();
+
+    this.userStatusContainer.replaceChild(this.imageElement, oldStatusImage);
 }
 
 //End ChatUser Object
 //---------------------------------------------------------------------------------------------------------------------------------
 
 // Start Chat status object
-Chat.Objects.ChatUserStatus = function (statusImage) {
-	this.statusImage = statusImage;
+Chat.Objects.ChatUserStatus = function () {
+    this.statusImage = "offline.png";
+    this.statusName = Chat.Objects.ChatUserStatus.statusesName.OffLine;
+    this.canMakeOperation = true;
+    this.status = Chat.Objects.ChatUserStatus.statuses.OffLine;
 }
+
+Chat.Objects.ChatUserStatus.prototype.changeStatus = function (statusId) {
+    switch (statusId) {
+        case Chat.Objects.ChatUserStatus.statuses.OnLine:
+            this.statusImage = Chat.Objects.ChatUserStatus.statusesImages.Online;
+            this.statusName = Chat.Objects.ChatUserStatus.statusesName.Online
+            this.canMakeOperation = true;
+            this.status = Chat.Objects.ChatUserStatus.statuses.OnLine;
+            break;
+        case Chat.Objects.ChatUserStatus.statuses.OffLine:
+            this.statusImage = Chat.Objects.ChatUserStatus.statusesImages.OffLine;
+            this.statusName = Chat.Objects.ChatUserStatus.statusesName.OffLine
+            this.canMakeOperation = true;
+            this.status = Chat.Objects.ChatUserStatus.statuses.OffLine;
+            break;
+        default:
+            this.statusImage = Chat.Objects.ChatUserStatus.statusesImages.OffLine;
+            this.statusName = Chat.Objects.ChatUserStatus.statusesName.OffLine
+            this.canMakeOperation = true;
+            this.status = Chat.Objects.ChatUserStatus.statuses.OffLine;
+            break;
+    }
+}
+
+//Getters 
 Chat.Objects.ChatUserStatus.prototype.getStatusImage = function () { return this.statusImage; }
+Chat.Objects.ChatUserStatus.prototype.getCanMakeOperation = function () { return this.canMakeOperation; }
+Chat.Objects.ChatUserStatus.prototype.getStatus = function () { return this.status; }
+Chat.Objects.ChatUserStatus.prototype.getStatusName = function () { return this.statusName; }
+
 Chat.Objects.ChatUserStatus.prototype.getImageElement = function () {
 	var sys = Chat.system;
 	var imgStatus = sys.createElement("img");
-	imgStatus.src = "/ChatImage/" + this.getStatusImage();
+	imgStatus.src = this.getStatusImage();
 	imgStatus.style.width = "100%";
 
 	return imgStatus;
 }
 Chat.Objects.ChatUserStatus.prototype.getImageElementAsHtml = function () { return this.getImageElement().outerHTML; }
-Chat.Objects.ChatUserStatus.prototype.setStatusImage = function(statusImage){ this.statusImage = statusImage; }
+
+//Setters
+Chat.Objects.ChatUserStatus.prototype.setStatusImage = function (statusImage) { this.statusImage = statusImage; }
+
+//Chat user status static methods
+Chat.Objects.ChatUserStatus.parseStatusFromJson = function(jsonStatus)
+{
+    var status = new Chat.Objects.ChatUserStatus();
+    status.changeStatus(jsonStatus.IdStaut)
+
+    return status;
+}
+
+//Chat user status static variables
+Chat.Objects.ChatUserStatus.statuses = { "OnLine": 1, "OffLine": 2 };
+Chat.Objects.ChatUserStatus.statusesImages = { "Online": "/ChatImage/online.png", "OffLine": "/ChatImage/offline.png" };
+Chat.Objects.ChatUserStatus.statusesName = { "Online": "OnLine", "OffLine": "OffLine" };
+
 
 // End Chat status object
 //---------------------------------------------------------------------------------------------------------------------------------
 
-function ShowSetting(a)
-{
-	var sys = Chat.system;
+//Start Chat Room Container object
+Chat.Objects.ChatRoomContainer = function (containerElement, engine) {
+    this.chatRoomContainer = containerElement;
+    this.chatEngine = engine;
+    this.roomCount = 0;
+    this.isRoomListVisible = false;
+    this.openedRoom = [];
 
-	if (sys.GetElement("SettingsDiv").style.display == "block")
-		sys.GetElement("SettingsDiv").style.display = "none";
-	else {
-		sys.GetElement("SettingsDiv").style.display = "block";
-		a.focus()
-	}
-}
-function TextAreaOnFocus(currElement)
-{
-	currElement.value = "";
-}
-function TextAreaOnBlur(currElement)
-{
-	currElement.value = "Search";
-}
+    this.maxVisibleRoomsCount = 1;this.calculateMaximumVisibleRoom();
+    
+    this.spanCountOfInvisibleRoom = "";
+    this.hiddenListOfRoomsHtmlObject = this._createListOfHiddenRoom();
+    this.listContainer = "";
 
-function scrollHandler(currElement, IdRoom)
-{
-	if (currElement.scrollTop == 0)
-		LoadHistory(IdRoom);
+    this.visibleRoomsIdentifiers = [];
+    this.hiddenRoomsIdentifiers = [];
 }
+Chat.Objects.ChatRoomContainer.prototype._createListOfHiddenRoom = function(){
+    var sys = Chat.system;
+    var roomContainer = this;
 
-Chat.HtmlHalpers.generateCoolPopUpHtml = function (userNames) {
-    var bodyOfPopUp = "";
-    for(var i = 0; i < userNames.length;i++)
-    {
-        bodyOfPopUp += '<div><div>'+ userNames[i] +'</div></div>'
+    var hiddenListOfRoomsHtmlObject = sys.createElement("div", undefined, "hidden-list-room-menu", undefined, "none");
+
+    this.menuButton = sys.createElement("a", "menuButton", "list-menu-button");
+    this.menuButton.onclick = function () {
+        if (roomContainer.isRoomListVisible) {
+            roomContainer._minimizeHiddenList();
+            roomContainer.isRoomListVisible = false;
+        } else {
+            roomContainer._maximizeHiddenList();
+            roomContainer.isRoomListVisible = true;
+        }
+    }
+    var iPicture = sys.createElement("i");
+    this.spanCountOfInvisibleRoom = sys.createElement("span", undefined, undefined, this.roomCount - this.maxVisibleRoomsCount)
+
+    sys.AppendChild(this.menuButton, iPicture);
+    sys.AppendChild(this.menuButton, this.spanCountOfInvisibleRoom);
+
+    this.listContainerWrapper = sys.createElement("div", undefined, "list-container-hidden-wrapper",undefined,"none");
+    var scrollableWrapper = sys.createElement("div", undefined, "scrollable-wrapper");
+
+    sys.AppendChild(this.listContainerWrapper, scrollableWrapper);
+
+    this.listContainer = sys.createElement("div", undefined, "list-container-hidden");
+    var menuWrapper = sys.createElement("div", undefined, "menu-wrapper");
+    var menu = sys.createElement("div", undefined, "menu");
+
+    sys.AppendChild(this.listContainer, menuWrapper);
+    sys.AppendChild(menuWrapper, menu);
+
+    this.listOfHiddenRoomElement = sys.createElement("ul", undefined, "list-hidden-rooms");
+
+    sys.AppendChild(menu, this.listOfHiddenRoomElement);
+    sys.AppendChild(scrollableWrapper, this.listContainer);
+
+    sys.AppendChild(hiddenListOfRoomsHtmlObject, this.menuButton);
+    sys.AppendChild(hiddenListOfRoomsHtmlObject, this.listContainerWrapper);
+
+    sys.AppendChild(this.chatRoomContainer, hiddenListOfRoomsHtmlObject)
+
+    return hiddenListOfRoomsHtmlObject;
+}
+Chat.Objects.ChatRoomContainer.prototype._appendHiddenRoom = function (room) {
+    var sys = Chat.system;
+    var chatEngine = this.chatEngine;
+    var currentContainer = this;
+
+    var listItem = sys.createElement("li", undefined, "hidden-room-list-element");
+    listItem.onclick = function () { currentContainer._showHiddenRoomAndHideLastVisibleRoom(room,this) }
+
+    var aTag = sys.createElement("a", undefined, "hidden-room-list-item", undefined, undefined, { "href": "javascript:;" });
+    var span = sys.createElement("span", undefined, "span-wrapper");
+    var divClearFix = sys.createElement("div", undefined, "clear-fix");
+    
+    var closeButtonLabel = sys.createElement("label", undefined, "close-button-label", undefined, undefined, { "for": room.getRoomIdentifier() });
+    var closeButton = sys.createElement("input", room.getRoomIdentifier(), "close-button", undefined, undefined, { "type": "button" });
+    
+    closeButton.onclick = function () {
+        sys.RemoveElmenet(currentContainer.listOfHiddenRoomElement, listItem);
+        chatEngine.closeRoom(room.getRoomIdentifier());
     }
 
-    var popUp = '<div class="uiContextualLayerPositioner uiLayer" style="width: 70%;top: 8px; left: 10px;">' +
-        '<div class="uiContextualLayer uiContextualLayerAboveLeft" style="bottom: 0px;">'+
-            '<div class="uiTooltipX">'+
-                '<div class="tooltipContent">'+
-                    '<div>'+
-                        '<div>'+
-                            bodyOfPopUp+
-                        '</div>'+
-                    '</div>'+
-                '</div><i class="arrow"></i>'+
-            '</div>'+
-        '</div>'+
-    '</div>'
+    sys.AppendChild(closeButtonLabel, closeButton);
+    sys.AppendChild(divClearFix, closeButtonLabel);
 
-    return popUp;
+    var divRoomNameWrapper = sys.createElement("div", undefined, "room-name-wrapper");
+    var spanRoomName = sys.createElement("span", undefined, "room-name", room.getRoomName());
+
+    sys.AppendChild(divRoomNameWrapper, spanRoomName);
+    sys.AppendChild(divClearFix, divRoomNameWrapper);
+    
+    sys.AppendChild(span, divClearFix);
+    sys.AppendChild(aTag, span);
+    sys.AppendChild(listItem, aTag);
+
+    sys.AppendChild(this.listOfHiddenRoomElement, listItem);
 }
+
+Chat.Objects.ChatRoomContainer.prototype._updateCounterOfInvisibleRooms = function () {
+    this.spanCountOfInvisibleRoom.innerHTML = this.roomCount - this.maxVisibleRoomsCount;
+}
+
+Chat.Objects.ChatRoomContainer.prototype._minimizeHiddenList = function () {
+    this.listContainerWrapper.style.display = "none"
+}
+Chat.Objects.ChatRoomContainer.prototype._maximizeHiddenList = function () {
+    this.listContainerWrapper.style.display = "block"
+}
+
+Chat.Objects.ChatRoomContainer.prototype._showHiddenListOfRoomsMenu = function () { this.hiddenListOfRoomsHtmlObject.style.display = "block" }
+Chat.Objects.ChatRoomContainer.prototype._hideHiddenListOfRoomsMenu = function () { this.hiddenListOfRoomsHtmlObject.style.display = "none" }
+
+Chat.Objects.ChatRoomContainer.prototype._deleteRoomIdentifierFromHiddenList = function (roomIdentifier) {
+    this.hiddenRoomsIdentifiers.splice(this.hiddenRoomsIdentifiers.indexOf(roomIdentifier), 1);
+}
+Chat.Objects.ChatRoomContainer.prototype._deleteRoomIdentifierFromVisibleList = function (roomIdentifier) {
+    this.visibleRoomsIdentifiers.splice(this.visibleRoomsIdentifiers.indexOf(roomIdentifier), 1);
+}
+
+Chat.Objects.ChatRoomContainer.prototype._showHiddenRoomAndHideLastVisibleRoom = function (hiddenRoom,clickedHtmlListItem) {
+    var sys = Chat.system;
+    sys.RemoveElmenet(this.listOfHiddenRoomElement, clickedHtmlListItem)
+    var lastVisibleRoom = this.getRoomByIdentifier(this.visibleRoomsIdentifiers.lastOrDefault())
+
+    this._deleteRoomIdentifierFromHiddenList(hiddenRoom.getRoomIdentifier());
+    this._deleteRoomIdentifierFromVisibleList(lastVisibleRoom.getRoomIdentifier())
+
+    this.hiddenRoomsIdentifiers.push(lastVisibleRoom.getRoomIdentifier());
+
+    this._appendHiddenRoom(lastVisibleRoom);
+    sys.RemoveElmenet(this.getRoomContainer(), lastVisibleRoom.getRoomHtmlObject());
+    this.addRoom(hiddenRoom, true);
+}
+
+Chat.Objects.ChatRoomContainer.prototype.getRoomContainer = function () { return this.chatRoomContainer; }
+Chat.Objects.ChatRoomContainer.prototype.calculateMaximumVisibleRoom = function () {
+    var freeSpace = (document.body.clientWidth - Chat.Objects.ChatRoomContainer.userListWidth - Chat.Objects.ChatRoomContainer.hiddenRoomListMenu);
+    var count = parseInt(freeSpace / Chat.Objects.ChatRoomContainer.roomWidth);
+
+    return count;
+}
+
+Chat.Objects.ChatRoomContainer.prototype.addRoom = function (room, insertAtTheEnd) {
+    var sys = Chat.system;
+
+    if (this.visibleRoomsIdentifiers.length < this.maxVisibleRoomsCount) {
+        insertBefore = sys.isNullOrUndefined(insertAtTheEnd) ? true : insertAtTheEnd;
+        sys.AppendChild(this.chatRoomContainer, room.getRoomHtmlObject(), insertBefore);
+        this.visibleRoomsIdentifiers.push(room.getRoomIdentifier())
+    } else {
+        this._appendHiddenRoom(room);
+        this.hiddenRoomsIdentifiers.push(room.getRoomIdentifier())
+        this._showHiddenListOfRoomsMenu();
+    }
+
+    if (!this.listOfRoomContains(room.getRoomIdentifier())) {
+        this.openedRoom[room.getRoomIdentifier()] = room;
+        this.roomCount++;
+    }
+    this._updateCounterOfInvisibleRooms();
+}
+Chat.Objects.ChatRoomContainer.prototype.removeRoom = function (room) {
+    var sys = Chat.system;
+
+    if (this.visibleRoomsIdentifiers.contains(room.getRoomIdentifier())) {
+        sys.RemoveElmenet(this.chatRoomContainer, room.getRoomHtmlObject());
+        this._deleteRoomIdentifierFromVisibleList(room.getRoomIdentifier())
+        
+        if (this.hiddenRoomsIdentifiers.length > 0)
+        {
+            var firstRoomFromHiddenList = this.getRoomByIdentifier(this.hiddenRoomsIdentifiers.firstOrDefault())
+            sys.AppendChild(this.chatRoomContainer, firstRoomFromHiddenList.getRoomHtmlObject(), false);
+            sys.RemoveElmenet(this.listOfHiddenRoomElement, this.listOfHiddenRoomElement.firstChild);
+
+            this._deleteRoomIdentifierFromHiddenList(firstRoomFromHiddenList.getRoomIdentifier())
+            this.visibleRoomsIdentifiers.push(firstRoomFromHiddenList.getRoomIdentifier())
+        }
+    } else {
+        this._deleteRoomIdentifierFromHiddenList(room.getRoomIdentifier())
+    }
+
+    this.roomCount--;
+    delete this.openedRoom[room.getRoomIdentifier()];
+    this._updateCounterOfInvisibleRooms();
+
+    if(0 >= (this.roomCount - this.maxVisibleRoomsCount))
+        this._hideHiddenListOfRoomsMenu()
+}
+Chat.Objects.ChatRoomContainer.prototype.listOfRoomContains = function (roomIdentifier) {
+    var sys = Chat.system;
+    return !sys.isNullOrUndefinedOrEmptyObject(this.openedRoom[roomIdentifier])
+}
+//Getters
+Chat.Objects.ChatRoomContainer.prototype.getMaxVisibleRoomsCount = function () { return this.maxVisibleRoomsCount; }
+Chat.Objects.ChatRoomContainer.prototype.getOpenRoomList = function () { return this.openedRoom; }
+Chat.Objects.ChatRoomContainer.prototype.getRoomByIdentifier = function (roomIdentifier) { return this.openedRoom[roomIdentifier]; }
+
+//Chat room container static variables
+Chat.Objects.ChatRoomContainer.roomWidth = 275;
+Chat.Objects.ChatRoomContainer.userListWidth = 240;
+Chat.Objects.ChatRoomContainer.hiddenRoomListMenu = 42;
+
+//End Chat Room Container object
+
+    function ShowSetting(a)
+    {
+        var sys = Chat.system;
+
+        if (sys.GetElement("SettingsDiv").style.display == "block")
+            sys.GetElement("SettingsDiv").style.display = "none";
+        else {
+            sys.GetElement("SettingsDiv").style.display = "block";
+            a.focus()
+        }
+    }
+    function TextAreaOnFocus(currElement)
+    {
+        currElement.value = "";
+    }
+    function TextAreaOnBlur(currElement)
+    {
+        currElement.value = "Search";
+    }
+
+    Chat.HtmlHalpers.generateCoolPopUpHtml = function (userNames) {
+        var bodyOfPopUp = "";
+        for(var i = 0; i < userNames.length;i++)
+        {
+            bodyOfPopUp += '<div><div>'+ userNames[i] +'</div></div>'
+        }
+
+        var popUp = '<div class="uiContextualLayerPositioner uiLayer" style="width: 70%;top: 8px; left: 10px;">' +
+            '<div class="uiContextualLayer uiContextualLayerAboveLeft" style="bottom: 0px;">'+
+                '<div class="uiTooltipX">'+
+                    '<div class="tooltipContent">'+
+                        '<div>'+
+                            '<div>'+
+                                bodyOfPopUp+
+                            '</div>'+
+                        '</div>'+
+                    '</div><i class="arrow"></i>'+
+                '</div>'+
+            '</div>'+
+        '</div>'
+
+        return popUp;
+    }

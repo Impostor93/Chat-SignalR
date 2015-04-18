@@ -27,6 +27,7 @@ Chat.Hide = function () { var sys = Chat.system; sys.GetElement("Chat").style.di
 Chat.Engine = function (currentUserIdentifier)
 {
     var chatEngin = this;
+    this.roomContainer = new Chat.Objects.ChatRoomContainer(Chat.system.GetElement("Conteiner"), chatEngin)
     
     chatEngin._registrateClientEvents($.connection.chatHubs, chatEngin, currentUserIdentifier);
 
@@ -54,10 +55,10 @@ Chat.Engine.prototype.initializeCurrentUser = function (data) {
     var currentUserData = JSON.parse(data);
     var sys = Chat.system;
     var chatObject = Chat.Objects;
+    var status = Chat.Objects.ChatUserStatus.parseStatusFromJson(currentUserData.UserStatus)
 
-    Chat.Engine.currentUser = new chatObject.ChatUser(currentUserData.UserIdentifier, currentUserData.UserName, currentUserData.UserStatus)
-
-    sys.AppendChild(sys.GetElement("Status"), Chat.Engine.currentUser.getStatus().getImageElement());
+    Chat.Engine.currentUser = new chatObject.ChatUser(currentUserData.UserIdentifier, currentUserData.UserName, status)
+    sys.AppendChild(sys.GetElement("Status"), status.getImageElement());
 }
 Chat.Engine.prototype.loadAllUserList = function (data, currentUserIdentifier) {
 
@@ -77,8 +78,8 @@ Chat.Engine.prototype.loadAllUserList = function (data, currentUserIdentifier) {
                 var userIdentifierToSkip = sys.isNullOrUndefinedOrEmptyObject(Chat.Engine.currentUser) ? currentUserIdentifier : Chat.Engine.currentUser.getUserIdentifier();
                 if (userInJsonFormat.UserIdentifier == currentUserIdentifier)
                     continue;
-
-                var user = new Chat.Objects.ChatUser(userInJsonFormat.UserIdentifier, userInJsonFormat.UserName, userInJsonFormat.UserStatus);
+                var status = Chat.Objects.ChatUserStatus.parseStatusFromJson(userInJsonFormat.UserStatus)
+                var user = new Chat.Objects.ChatUser(userInJsonFormat.UserIdentifier, userInJsonFormat.UserName, status);
                 Chat.Engine.users[userInJsonFormat.UserIdentifier] = user;
                 sys.AppendChild(listUser, user.createUserListElement(chatEngine));
             }
@@ -101,15 +102,13 @@ Chat.Engine.prototype.openRoomChat = function ()
                 return;
 
             var roomInJsonFormat = JSON.parse(data);
-            if (!Chat.Engine._isRoomExist(roomInJsonFormat.RoomIdentifier)) {
+            if (!chatEngine.roomContainer.listOfRoomContains(roomInJsonFormat.RoomIdentifier)) {
 
                 var chatRoom = new Chat.Objects.ChatRoom(roomInJsonFormat.RoomIdentifier, roomInJsonFormat.RoomName, chatEngine)
-                Chat.Engine.openedRoom[chatRoom.getRoomIdentifier()] = chatRoom;
-
-                sys.AppendChild(sys.GetElement("Conteiner"), chatRoom.getRoomHtmlObject(), true);
+                chatEngine.roomContainer.addRoom(chatRoom);
             }
 
-            Chat.Engine.SessionNextDate[Chat.Engine.openedRoom[roomInJsonFormat.RoomIdentifier].getRoomIdentifier()] = "";
+            Chat.Engine.SessionNextDate[roomInJsonFormat.RoomIdentifier] = "";
 
         } catch (exception) {
             sys.logError(exception.message + " - openRoomChat");
@@ -118,12 +117,14 @@ Chat.Engine.prototype.openRoomChat = function ()
 }
 Chat.Engine.prototype.closeRoom = function (roomIdentifier)
 {
+    var engine = this;
+
     this.chatHub.server.closeRoom(roomIdentifier.trim(), Chat.Engine.currentUser.getUserIdentifier()).done(function () {
         var sys = Chat.system;
 
-        var room = Chat.Engine.openedRoom[roomIdentifier];
-        delete Chat.Engine.openedRoom[roomIdentifier];
-        sys.RemoveElmenet(sys.GetElement("Conteiner"), room.getRoomHtmlObject());
+        if (engine.roomContainer.listOfRoomContains(roomIdentifier)) {
+            engine.roomContainer.removeRoom(engine.roomContainer.getRoomByIdentifier(roomIdentifier));
+        }
     })
 }
 Chat.Engine.prototype.createRoom = function (data) {
@@ -134,11 +135,10 @@ Chat.Engine.prototype.createRoom = function (data) {
 
         var result = JSON.parse(data);
         
-        if (!Chat.Engine._isRoomExist(result.RoomIdentifier)) {
+        if (!this.roomContainer.listOfRoomContains(result.RoomIdentifier)) {
 
             var room = new Chat.Objects.ChatRoom(result.RoomIdentifier, result.RoomName, this);
-            sys.AppendChild(sys.GetElement("Conteiner"), room.getRoomHtmlObject(), true);
-            Chat.Engine.openedRoom[result.RoomIdentifier] = room;
+            this.roomContainer.addRoom(room);
         }
 
     } catch (ex) {
@@ -148,8 +148,10 @@ Chat.Engine.prototype.createRoom = function (data) {
 }
 
 Chat.Engine.prototype.sendMessage = function (e, idRoom) {
-    var sys = Chat.system;
     if (e.keyCode == 13) {
+
+        var sys = Chat.system;
+        var chatEngine = this;
         e.preventDefault();
 
         var EventElment = e.srcElement ? e.srcElement : e.currentTarget
@@ -164,11 +166,12 @@ Chat.Engine.prototype.sendMessage = function (e, idRoom) {
                 return;
 
             var result = JSON.parse(data);
-            var room = Chat.Engine.openedRoom[idRoom];
+            var room = chatEngine.roomContainer.getRoomByIdentifier(idRoom);
             if (sys.isNullOrUndefinedOrEmptyObject(room))
                 return;
 
-            var chatUser = new Chat.Objects.ChatUser(result.SenderIdentifier, result.SenderName, result.CurrentSendreStatus)
+            var status = Chat.Objects.ChatUserStatus.parseStatusFromJson(result.CurrentSendreStatus);
+            var chatUser = new Chat.Objects.ChatUser(result.SenderIdentifier, result.SenderName, status)
             var chatMessage = new Chat.Objects.ChatMessage(result.MessageContent, result.DateOfSend, chatUser);
             room.appendMessageElementToContent(chatMessage)
         })
@@ -190,15 +193,17 @@ Chat.Engine.prototype.showingMassages = function (data, idRoom) {
         if (sys.isNull(result))
             return;
 
-        var room = Chat.Engine.openedRoom[idRoom];
+        var room = this.roomContainer.getRoomByIdentifier(idRoom);
 
         for (var i = 0; i < result.length; i++) {
 
             var currentJSONMessage = result[i];
 
             var messageSenderUser = Chat.Engine.currentUser;
-            if (messageSenderUser.getUserIdentifier() != currentJSONMessage.SenderIdentifier)
-                messageSenderUser = new Chat.Objects.ChatUser(currentJSONMessage.SenderIdentifier, currentJSONMessage.SenderName, currentJSONMessage.CurrentSendreStatus);
+            if (messageSenderUser.getUserIdentifier() != currentJSONMessage.SenderIdentifier) {
+                var status = Chat.Objects.ChatUserStatus.parseStatusFromJson(currentJSONMessage.CurrentSendreStatus);
+                messageSenderUser = new Chat.Objects.ChatUser(currentJSONMessage.SenderIdentifier, currentJSONMessage.SenderName, status);
+            }
 
             var chatMessage = new Chat.Objects.ChatMessage(currentJSONMessage.MessageContent, currentJSONMessage.DateOfSend, messageSenderUser);
             room.appendMessageElementToContent(chatMessage)
@@ -210,9 +215,45 @@ Chat.Engine.prototype.showingMassages = function (data, idRoom) {
     }
 }
 
+Chat.Engine.prototype.changeStatus = function (currElement) {
+
+    this.chatHub.server.changUserStatus(currElement.getAttribute("Status"), Chat.Engine.currentUser.getUserIdentifier()).done(function (newStatus) {
+
+        var sys = Chat.system;
+        if (sys.isNullOrUndefinedOrEmptyObject(newStatus))
+            return;
+
+        newStatus = JSON.parse(newStatus);
+        var status = Chat.Objects.ChatUserStatus.parseStatusFromJson(newStatus);
+
+        sys.RemoveElmenet(sys.GetElement("Status"), sys.GetElement("Status").lastChild)
+        sys.AppendChild(sys.GetElement("Status"), status.getImageElement());
+
+    });
+}
+Chat.Engine.prototype.chageStatusToUser = function (data) {
+    var sys = Chat.system;
+    if (sys.isNullOrUndefined(data))
+        return;
+
+    var userInJsonFormat = data;
+    var storedUser = Chat.Engine.users[userInJsonFormat.UserIdentifier];
+    if (sys.isNullOrUndefined(storedUser) && Chat.Engine.currentUser.getUserIdentifier() != userInJsonFormat.UserIdentifier) {
+
+        var status = Chat.Objects.ChatUserStatus.parseStatusFromJson(userInJsonFormat.UserStatus)
+        var user = new Chat.Objects.ChatUser(userInJsonFormat.UserIdentifier, userInJsonFormat.UserName, status);
+        Chat.Engine.users[userInJsonFormat.UserIdentifier] = user;
+        sys.AppendChild(listUser, user.createUserListElement(chatEngine));
+    }
+    if (!sys.isNullOrUndefined(storedUser)) {
+        storedUser.changeStatus(userInJsonFormat.UserStatus.IdStaut)
+    }
+}
+
 Chat.Engine.prototype.loadHistory = function (idRoom) {
 
     var sys = Chat.system;
+    var chatContainer = this.roomContainer;
 
     if (sys.isUndefined(Chat.Engine.SessionNextDate[idRoom]))
         Chat.Engine.SessionNextDate[idRoom] = "";
@@ -231,52 +272,12 @@ Chat.Engine.prototype.loadHistory = function (idRoom) {
             return;
         }
 
-        var room = Chat.Engine.openedRoom[idRoom];
+        var room = chatContainer.getRoomByIdentifier(idRoom);
         room.loadHistory(Chat.Objects.ChatMessageSession.parseFromJsonResult(result));
 
         Chat.Engine.SessionNextDate[idRoom] = result.SessionStartDate;
 
     });
-}
-
-Chat.Engine.prototype.changeStatus = function (currElement) {
-
-    this.chatHub.server.changUserStatus(currElement.getAttribute("Status"), Chat.Engine.currentUser.getUserIdentifier()).done(function (newStatus) {
-
-        var sys = Chat.system;
-        if (sys.isNullOrUndefinedOrEmptyObject(newStatus))
-            return;
-
-        newStatus = JSON.parse(newStatus);
-        var status = new Chat.Objects.ChatUserStatus(newStatus.StatusImage)
-
-        sys.RemoveElmenet(sys.GetElement("Status"), sys.GetElement("Status").lastChild)
-        sys.AppendChild(sys.GetElement("Status"), status.getImageElement());
-
-    });
-}
-
-Chat.Engine.prototype.chageStatusToUser = function (data) {
-    var sys = Chat.system;
-    if (sys.isNullOrUndefined(data))
-        return;
-
-    var userInJsonFormat = data;
-    var storedUser = Chat.Engine.users[userInJsonFormat.UserIdentifier];
-    if (sys.isNullOrUndefined(storedUser) && Chat.Engine.currentUser.getUserIdentifier() != userInJsonFormat.UserIdentifier) {
-
-        var user = new Chat.Objects.ChatUser(userInJsonFormat.UserIdentifier, userInJsonFormat.UserName, userInJsonFormat.UserStatus);
-        Chat.Engine.users[userInJsonFormat.UserIdentifier] = user;
-        sys.AppendChild(listUser, user.createUserListElement(chatEngine));
-    }
-    if (!sys.isNullOrUndefined(storedUser)) {
-        storedUser.changeStatus(userInJsonFormat.UserStatus.StatusImage)
-    }
-}
-
-Chat.Engine._isRoomExist = function (roomIdentifier) {
-    var sys = Chat.system;
-    return !sys.isNullOrUndefinedOrEmptyObject(Chat.Engine.openedRoom[roomIdentifier])
 }
 
 // Chat engine static variables

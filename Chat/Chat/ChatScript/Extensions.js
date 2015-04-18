@@ -60,3 +60,12 @@ if (!Object.keys) Object.keys = function(o) {
     for (p in o) if (Object.prototype.hasOwnProperty.call(o,p)) k.push(p);
     return k;
 }
+if (!Array.prototype.indexOf) {
+    Array.prototype.indexOf = function (obj)
+    {
+        for (var i = 0; i < this.length; i++) {
+            if (obj == this[i])
+                return i;
+        }
+    }
+}

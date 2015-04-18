@@ -107,8 +107,8 @@ namespace Chat.Controllers
             System.Web.HttpContext.Current.Session["UserIdentifier"] = chatUser.UserIdentifier;
             System.Web.HttpContext.Current.Session["IdUser"] = chatUser.IdUser;
 
-            var idProvider = new Chat.SignalR.CustomIdUserProvider(chatUser.UserIdentifier);
-            Microsoft.AspNet.SignalR.GlobalHost.DependencyResolver.Register(typeof(Microsoft.AspNet.SignalR.IUserIdProvider), () => idProvider);
+            var iProvider = new Chat.SignalR.CustomIdUserProvider(chatUser.UserIdentifier);
+            Microsoft.AspNet.SignalR.GlobalHost.DependencyResolver.Register(typeof(Microsoft.AspNet.SignalR.IUserIdProvider), () => iProvider);
         }
 
         //

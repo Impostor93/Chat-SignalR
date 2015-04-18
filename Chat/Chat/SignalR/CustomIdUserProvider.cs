@@ -9,6 +9,7 @@ namespace Chat.SignalR
     public class CustomIdUserProvider : IUserIdProvider
     {
         public Guid UserId { get; set; }
+        public CustomIdUserProvider(){}
         public CustomIdUserProvider(Guid userId)
         {
             UserId = userId;

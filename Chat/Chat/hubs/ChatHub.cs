@@ -15,7 +15,6 @@ namespace Chat.Hubs
     [HubName("chatHubs")]
     public class ChatHub : Hub, IRequiresSessionState
     {
-
         public void Connect()
         {
             Clients.Others.GetAllUsers(JsonConvert.SerializeObject(ChatUserManager.ListOfUsers));
@@ -99,10 +98,11 @@ namespace Chat.Hubs
                         keyValuePaireFromIdentifierAndUnreadedMessage.Add(userIdentifier, ChatRoomManager.GetUserMessage(userIdentifier, roomIdentifier));
                     }
                 }
-
-                Clients.Users(listOfAllMembersOfRoom).createRoom(JsonConvert.SerializeObject(ChatRoomManager.listOfRooms[roomIdentifier]));
-                Clients.Users(listOfAllMembersOfRoom).showingMassages(JsonConvert.SerializeObject(keyValuePaireFromIdentifierAndUnreadedMessage),roomIdentifier);
-
+                foreach (var user in listOfAllMembersOfRoom)
+                {
+                    Clients.User(user).createRoom(JsonConvert.SerializeObject(ChatRoomManager.listOfRooms[roomIdentifier]));
+                    Clients.User(user).showingMassages(JsonConvert.SerializeObject(keyValuePaireFromIdentifierAndUnreadedMessage), roomIdentifier);
+                }
                 return JsonConvert.SerializeObject(new Message(HttpContext.Current.Server.HtmlEncode(Messages), ChatUserManager.FindUser(currentUserIdentifier)));
             }
             catch (Exception Ex)

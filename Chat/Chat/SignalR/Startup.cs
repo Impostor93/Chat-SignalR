@@ -8,6 +8,7 @@ using Microsoft.AspNet.SignalR;
 using Microsoft.Owin;
 using Owin;
 using Chat.SignalR;
+using Chat.Infrastructure;
 
 [assembly: OwinStartup(typeof(Chat.SignalR.Startup))]
 namespace Chat.SignalR
