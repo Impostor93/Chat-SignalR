@@ -400,3 +400,6 @@ color:black;
   vertical-align: middle;
   margin-top: 2px;
 }
+.blink {
+    background-color:darkorange;
+}

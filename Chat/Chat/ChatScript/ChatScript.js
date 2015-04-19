@@ -173,7 +173,9 @@ Chat.Engine.prototype.sendMessage = function (e, idRoom) {
             var status = Chat.Objects.ChatUserStatus.parseStatusFromJson(result.CurrentSendreStatus);
             var chatUser = new Chat.Objects.ChatUser(result.SenderIdentifier, result.SenderName, status)
             var chatMessage = new Chat.Objects.ChatMessage(result.MessageContent, result.DateOfSend, chatUser);
+
             room.appendMessageElementToContent(chatMessage)
+            room.scrollToTheBottonOfMessageContent();
         })
 
         return false;
@@ -193,6 +195,7 @@ Chat.Engine.prototype.showingMassages = function (data, idRoom) {
         if (sys.isNull(result))
             return;
 
+        var isHaveAddedNewMessage = false;
         var room = this.roomContainer.getRoomByIdentifier(idRoom);
 
         for (var i = 0; i < result.length; i++) {
@@ -206,8 +209,12 @@ Chat.Engine.prototype.showingMassages = function (data, idRoom) {
             }
 
             var chatMessage = new Chat.Objects.ChatMessage(currentJSONMessage.MessageContent, currentJSONMessage.DateOfSend, messageSenderUser);
-            room.appendMessageElementToContent(chatMessage)
+            room.appendMessageElementToContent(chatMessage);
+            isHaveAddedNewMessage = true;
         }
+        
+        if (isHaveAddedNewMessage && this.roomContainer.isRoomInHiddenList(room.getRoomIdentifier()))
+            this.roomContainer.showSingForUnreadMessage(room.getRoomIdentifier());
     }
     catch (exception) {
         sys.logError(exception.message + " - showingMassages");

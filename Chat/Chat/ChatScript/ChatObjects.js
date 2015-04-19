@@ -17,139 +17,164 @@ Chat.Objects.ChatRoom = function ChatRoom(roomIdentifier, roomName, engine) {
 
 	this.chatRoomElement = this._createNewRoomElement();
 	this.currentMessageSession = new Chat.Objects.ChatMessageSession(roomIdentifier);
+
 	this.isRoomVisible = true;
+	this.hasUnreadMessage = false;
 
 }
 Chat.Objects.ChatRoom.prototype._createNewRoomElement = function () {
-    var sys = Chat.system;
-    var chatRoom = this;
+	var sys = Chat.system;
+	var chatRoom = this;
 
-    this.roomUnreadedMessageIdentifier = sys.createElement("i");
+	this.roomUnreadedMessageIdentifier = sys.createElement("i");
 
-    this.roomContentElement = sys.createElement("div", "RoomContent", "RoomContent");
+	this.roomContentElement = sys.createElement("div", "RoomContent", "RoomContent");
 
-    this.roomHeaderElement = sys.createElement("div", "RoomHeader" + this.getRoomIdentifier(), "RoomHeader", undefined, "block")
-    this.roomHeaderElement.onclick = function () {
-        if (chatRoom.isRoomVisible) {
-            chatRoom._minimizeRoom();
-            chatRoom.isRoomVisible = false;
-        } else {
-            chatRoom._maximizeRoom();
-            chatRoom.isRoomVisible = true;
-        }
-    }
+	this.roomHeaderElement = sys.createElement("div", "RoomHeader" + this.getRoomIdentifier(), "RoomHeader", undefined, "block")
+	this.roomHeaderElement.onclick = function () {
+		if (chatRoom.isRoomVisible) {
+			chatRoom._minimizeRoom();
+			chatRoom.isRoomVisible = false;
+		} else {
+			chatRoom._maximizeRoom();
+			chatRoom.isRoomVisible = true;
+		}
+	}
 
-    sys.AppendChild(this.roomHeaderElement, this.roomUnreadedMessageIdentifier);
-    sys.AppendChild(this.roomHeaderElement, this._definedRoomNameElement(this.getRoomName()));
+	sys.AppendChild(this.roomHeaderElement, this.roomUnreadedMessageIdentifier);
+	sys.AppendChild(this.roomHeaderElement, this._definedRoomNameElement(this.getRoomName()));
 
-    var closeButton = sys.createElement("div", undefined, "CloseButton");
-    closeButton.onclick = function (event) { event.stopPropagation(); chatRoom.engine.closeRoom(chatRoom.getRoomIdentifier()) };
-    sys.AppendChild(this.roomHeaderElement, closeButton)
+	var closeButton = sys.createElement("div", undefined, "CloseButton");
+	closeButton.onclick = function (event) { event.stopPropagation(); chatRoom.engine.closeRoom(chatRoom.getRoomIdentifier()) };
+	sys.AppendChild(this.roomHeaderElement, closeButton)
 
-    sys.AppendChild(this.roomContentElement, this.roomHeaderElement);
+	sys.AppendChild(this.roomContentElement, this.roomHeaderElement);
 
-    this.conversationPartElement = sys.createElement("div", "ConversationPart", "ConversationPart", undefined, "block");
+	this.conversationPartElement = sys.createElement("div", "ConversationPart", "ConversationPart", undefined, "block");
 
-    this.messageContent = sys.createElement("div", "MessageContent" + this.getRoomIdentifier(), "MessageContent", undefined, "block");
-    this.messageContent.onscroll = function () {
-        if (this.scrollTop == 0){
-            chatRoom.engine.loadHistory(chatRoom.getRoomIdentifier());
-        }
-        chatRoom._showOrHideUnreadSing();
-    }
+	this.messageContent = sys.createElement("div", "MessageContent" + this.getRoomIdentifier(), "MessageContent", undefined, "block");
+	var timer = null;
+	this.messageContent.onscroll = function () {
+		if (this.scrollTop == 0) {
+			chatRoom.engine.loadHistory(chatRoom.getRoomIdentifier());
+		} else {
+			if (chatRoom.isMessageNotSeen()) {
+				chatRoom._showOrHideUnreadSing();
+			} else {
+				chatRoom.currentMessageSession.clearUnreadMessage()
+				chatRoom._showOrHideUnreadSing();
+			}
+		}
+	}
 
-    sys.AppendChild(this.conversationPartElement, this.messageContent);
+	sys.AppendChild(this.conversationPartElement, this.messageContent);
 
-    this.textAreaOfRoom = sys.createElement("textarea", "MessageText" + this.getRoomIdentifier(), "TextBox", undefined, "block", { "rows": "1" })
-    this.textAreaOfRoom.onkeydown = function (event) { chatRoom.engine.sendMessage(event, chatRoom.getRoomIdentifier()); };
+	this.textAreaOfRoom = sys.createElement("textarea", "MessageText" + this.getRoomIdentifier(), "TextBox", undefined, "block", { "rows": "1" })
+	this.textAreaOfRoom.onkeydown = function (event) { chatRoom.engine.sendMessage(event, chatRoom.getRoomIdentifier()); };
 
-    this.roomFooterElement = sys.createElement("div", "RoomFooter", "RoomFooter");
-    sys.AppendChild(this.roomFooterElement, this.textAreaOfRoom);
+	this.roomFooterElement = sys.createElement("div", "RoomFooter", "RoomFooter");
+	sys.AppendChild(this.roomFooterElement, this.textAreaOfRoom);
 
-    sys.AppendChild(this.conversationPartElement, this.roomFooterElement);
-    sys.AppendChild(this.roomContentElement, this.conversationPartElement);
+	sys.AppendChild(this.conversationPartElement, this.roomFooterElement);
+	sys.AppendChild(this.roomContentElement, this.conversationPartElement);
 
-    var chatRoomElement = sys.createElement("div", "Chat-" + this.getRoomIdentifier(), "ChatRoom", undefined, "block", { "RoomId": this.getRoomIdentifier(), "Visible": true });
+	var chatRoomElement = sys.createElement("div", "Chat-" + this.getRoomIdentifier(), "ChatRoom", undefined, "block", { "RoomId": this.getRoomIdentifier(), "Visible": true });
 
-    sys.AppendChild(chatRoomElement, this.roomContentElement);
+	sys.AppendChild(chatRoomElement, this.roomContentElement);
 
-    return chatRoomElement;
+	return chatRoomElement;
 }
+
 Chat.Objects.ChatRoom.prototype._putUnreadSing = function () {
-    this.roomUnreadedMessageIdentifier.style.backgroundImage = "url(/ChatImage/unreadedMessageIcon.png)";
+	this.roomUnreadedMessageIdentifier.style.backgroundImage = "url(/ChatImage/unreadedMessageIcon.png)";
 }
 Chat.Objects.ChatRoom.prototype._removeUnreadSing = function () {
-    this.roomUnreadedMessageIdentifier.style.backgroundImage = "";
+	this.roomUnreadedMessageIdentifier.style.backgroundImage = "";
 }
+
 Chat.Objects.ChatRoom.prototype._minimizeRoom = function () {
-    this.conversationPartElement.style.display = "none";
-    this.chatRoomElement.className = this.chatRoomElement.className = this.chatRoomElement.className + " hidenRoom"
+	this.conversationPartElement.style.display = "none";
+	this.chatRoomElement.className = this.chatRoomElement.className = this.chatRoomElement.className + " hidenRoom"
 }
 Chat.Objects.ChatRoom.prototype._maximizeRoom = function () {
-    this.conversationPartElement.style.display = "block";
-    this.chatRoomElement.className = this.chatRoomElement.className.replace(" hidenRoom", "")
-    this._removeUnreadSing();
-    this.messageContent.scrollTop = this.messageContent.scrollHeight;
+	this.conversationPartElement.style.display = "block";
+	this.chatRoomElement.className = this.chatRoomElement.className.replace(" hidenRoom", "")
+
+	this._removeUnreadSing();
+	this.currentMessageSession.clearUnreadMessage();
+	this.scrollToTheBottonOfMessageContent();
 }
 Chat.Objects.ChatRoom.prototype._parseRoomName = function (roomName) {
-    var splitedRoomName = roomName.split('|');
-    var roomName = ""
-    for (var i = 0; i < splitedRoomName.length;i++)
-    {
-        if (Chat.Engine.currentUser.getUserName() != splitedRoomName[i]) {
-            if (!String.isEmpty(splitedRoomName[i]))
-                roomName += (splitedRoomName[i] + ", ")
-        }
-    }
+	var splitedRoomName = roomName.split('|');
+	var roomName = ""
+	for (var i = 0; i < splitedRoomName.length;i++)
+	{
+		if (Chat.Engine.currentUser.getUserName() != splitedRoomName[i]) {
+			if (!String.isEmpty(splitedRoomName[i]))
+				roomName += (splitedRoomName[i] + ", ")
+		}
+	}
 
-    return roomName.substring(0, roomName.length - (", ").length);
+	return roomName.substring(0, roomName.length - (", ").length);
 }
 Chat.Objects.ChatRoom.prototype._definedRoomNameElement = function (roomName)
 {
-    var sys = Chat.system;
+	var sys = Chat.system;
 
-    var spanElement = sys.createElement("span", undefined, undefined);
+	var spanElement = sys.createElement("span", undefined, undefined);
 
-    if (roomName.length <= Chat.Objects.ChatRoom.roomNameLength){
-        spanElement.innerHTML = roomName;
-        return spanElement;
-    } else {
-        var link = sys.createElement("a", undefined, "link-with-users-in-room", (roomName.substring(0, Chat.Objects.ChatRoom.roomNameLength) + "..."))
-        var room = this;
-        var balloonDiv = sys.createElement("div",undefined,undefined, this._createHeaderBalloonWithUserNames(this.getRoomName()))
-        balloonDiv.style.display = "none";
+	if (roomName.length <= Chat.Objects.ChatRoom.roomNameLength){
+		spanElement.innerHTML = roomName;
+		return spanElement;
+	} else {
+		var link = sys.createElement("a", undefined, "link-with-users-in-room", (roomName.substring(0, Chat.Objects.ChatRoom.roomNameLength) + "..."))
+		var room = this;
+		var balloonDiv = sys.createElement("div",undefined,undefined, this._createHeaderBalloonWithUserNames(this.getRoomName()))
+		balloonDiv.style.display = "none";
 
-        link.onmouseover = function (event) {
-            balloonDiv.style.display = "block"
-            balloonDiv.style.marginTop = ("-" + (balloonDiv.clientHeight + 20) + "px");
-        }
-        link.onmouseout = function () {
-            balloonDiv.style.display = "none"
-        }
-        sys.AppendChild(link, balloonDiv)
+		link.onmouseover = function (event) {
+			balloonDiv.style.display = "block"
+			balloonDiv.style.marginTop = ("-" + (balloonDiv.clientHeight + 20) + "px");
+		}
+		link.onmouseout = function () {
+			balloonDiv.style.display = "none"
+		}
+		sys.AppendChild(link, balloonDiv)
 
-        return link;
-    }
+		return link;
+	}
 }
 Chat.Objects.ChatRoom.prototype._createHeaderBalloonWithUserNames = function (roomName) {
-    var sys = Chat.system;
-    var roomNames = roomName.split(", ");
-    var balloonDiv = Chat.HtmlHalpers.generateCoolPopUpHtml(roomNames);
+	var sys = Chat.system;
+	var roomNames = roomName.split(", ");
+	var balloonDiv = Chat.HtmlHalpers.generateCoolPopUpHtml(roomNames);
 
-    return balloonDiv;
+	return balloonDiv;
 }
-Chat.Objects.ChatRoom.prototype._showOrHideUnreadSing = function(){
-    if (this.messageContent.scrollHeight > Chat.Objects.ChatRoom.initialRoomScrollHight
-            && this.messageContent.scrollTop < (this.messageContent.scrollHeight - Chat.Objects.ChatRoom.newMessageMaxArea)) {
-        this._putUnreadSing();
-        return;
-    }
-    if (!this.isRoomVisible) {
-        this._putUnreadSing();
-        return;
-    }
-    this._removeUnreadSing();
+
+Chat.Objects.ChatRoom.prototype.isMessageNotSeen = function(){
+
+	if (!this.isRoomVisible) {
+		return true;
+	}
+
+	if (this.messageContent.scrollHeight > this.messageContent.clientHeight
+			&& Chat.Objects.ChatRoom.newMessageMaxArea < (this.messageContent.scrollHeight - this.messageContent.scrollTop - this.messageContent.clientHeight)) {
+		return true;
+	}
+	
+	return false;
 }
+Chat.Objects.ChatRoom.prototype._showOrHideUnreadSing = function () {
+
+	if (this.currentMessageSession.getUnreadMessageCount() > 0) 
+		this._putUnreadSing();
+	else 
+		this._removeUnreadSing();
+	
+}
+
+Chat.Objects.ChatRoom.prototype.scrollToTheBottonOfMessageContent = function () { this.messageContent.scrollTop = this.messageContent.scrollHeight; }
 
 Chat.Objects.ChatRoom.prototype._convertElementArrayToHtmlString = function (arr) {
 	var html = "";
@@ -211,30 +236,35 @@ Chat.Objects.ChatRoom.prototype._appendMessageElementToContent = function (messa
 }
 
 Chat.Objects.ChatRoom.prototype.appendMessageElementToContent = function (message) {
-    var sys = Chat.system;
+	var sys = Chat.system;
 
-    if (this.messageContent.childNodes.length == 0) {
+	if (this.messageContent.childNodes.length == 0) {
 
-        this._appendMessageElementToContent(message);
-        return;
-    }
+		this._appendMessageElementToContent(message);
+		return;
+	}
 
-    var lastUserMessage = this.currentMessageSession.getListOfMessages().lastOrDefault();
+	var lastUserMessage = this.currentMessageSession.getListOfMessages().lastOrDefault();
 
-    if (sys.isNullOrUndefined(lastUserMessage))
-        throw Error("There is no message in the array");
+	if (sys.isNullOrUndefined(lastUserMessage))
+		throw Error("There is no message in the array");
 
-    if (lastUserMessage.getMessageSenderIdentifier() == message.getMessageSenderIdentifier()) {
-        lastUserMessage._appendMessageNode(message.getMessageText())
+	if (lastUserMessage.getMessageSenderIdentifier() == message.getMessageSenderIdentifier()) {
+		lastUserMessage._appendMessageNode(message.getMessageText())
 
-    } else {
-        this._appendMessageElementToContent(message);
-    }
+	} else {
+		this._appendMessageElementToContent(message);
+	}
 
-    this._showOrHideUnreadSing();
+	if (this.isMessageNotSeen()) {
+		this.currentMessageSession.addUnreadMessage(message);
+		this._showOrHideUnreadSing()
+	} else {
+		this.scrollToTheBottonOfMessageContent();
+	}
 }
 Chat.Objects.ChatRoom.prototype.loadHistory = function (result) {
-    this._appendHistoryToMessageContainerElement(result)
+	this._appendHistoryToMessageContainerElement(result)
 }
 
 // Room getters 
@@ -246,8 +276,7 @@ Chat.Objects.ChatRoom.prototype.getRoomName = function () { return this.roomName
 
 //Room constants
 Chat.Objects.ChatRoom.roomNameLength = 25;
-Chat.Objects.ChatRoom.newMessageMaxArea = 100;
-Chat.Objects.ChatRoom.initialRoomScrollHight = 238
+Chat.Objects.ChatRoom.newMessageMaxArea = 70;
 
 //End ChatRoom Object
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -308,7 +337,7 @@ Chat.Objects.ChatMessageSession = function (roomIdentifier)
 {
 	this.roomId = ""
 	this.listOfMessages = [];
-	this.unreadMessages = {};
+	this.unreadMessages = [];
 	this.roomIdentifier = roomIdentifier;
 	this.sessionStartDate = "";
 	this.sessionEndDate = "";
@@ -321,31 +350,19 @@ Chat.Objects.ChatMessageSession.prototype.insertOnTheTopOfMessageList = function
 		this.listOfMessages.insert(0, message);
 }
 
-Chat.Objects.ChatMessageSession.parseFromJsonResult = function(result){
+Chat.Objects.ChatMessageSession.prototype.getMessageAtIndex = function (index) { return this.listOfMessages[index]; }
+Chat.Objects.ChatMessageSession.prototype.addUnreadMessage = function (message) { return this.unreadMessages.push(message); }
+Chat.Objects.ChatMessageSession.prototype.getUnreadMessageCount = function (message) { return this.unreadMessages.length; }
+Chat.Objects.ChatMessageSession.prototype.clearUnreadMessage = function (message) { return this.unreadMessages = []; }
 
-	var chatMessageSession = new Chat.Objects.ChatMessageSession(result.RoomIdentifier);
-	var listOfMessages = []
-	for (var i = 0; i < result.RoomMessages.length; i++) {
-	    var currentMessage = result.RoomMessages[i];
-	    var status = Chat.Objects.ChatUserStatus.parseStatusFromJson(currentMessage.CurrentSendreStatus)
-	    var chatUser = new Chat.Objects.ChatUser(currentMessage.SenderIdentifier, currentMessage.SenderName, status);
-		listOfMessages.push(new Chat.Objects.ChatMessage(currentMessage.MessageContent, currentMessage.DateOfSend, chatUser));
-	}
-
-	chatMessageSession.setListOfMessages(listOfMessages)
-	chatMessageSession.setUnreadMessages(result.UnreadMessages)
-	chatMessageSession.setSessionStartDate(result.SessionStartDate)
-	chatMessageSession.setSessionEndDate(result.SessionEndDate)
-
-	return chatMessageSession;
-}
-
+//Setters
 Chat.Objects.ChatMessageSession.prototype.setListOfMessages = function (list) { this.listOfMessages = list; }
 Chat.Objects.ChatMessageSession.prototype.setIdRoom = function (list) { this.listOfMessages = list; }
 Chat.Objects.ChatMessageSession.prototype.setUnreadMessages = function (unreadMessages) { this.unreadMessages = unreadMessages; }
 Chat.Objects.ChatMessageSession.prototype.setSessionStartDate = function (sessionStartDate) { this.sessionStartDate = sessionStartDate; }
 Chat.Objects.ChatMessageSession.prototype.setSessionEndDate = function (sessionEndDate) { this.sessionEndDate = sessionEndDate; }
 
+//Getters
 Chat.Objects.ChatMessageSession.prototype.getIdRoom = function () { return this.roomId; }
 Chat.Objects.ChatMessageSession.prototype.getListOfMessages = function () { return this.listOfMessages; }
 Chat.Objects.ChatMessageSession.prototype.getUnreadMessages = function () { return this.unreadMessages; }
@@ -353,7 +370,24 @@ Chat.Objects.ChatMessageSession.prototype.getRoomIdentifier = function () { retu
 Chat.Objects.ChatMessageSession.prototype.getSessionStartDate = function () { return this.sessionStartDate; }
 Chat.Objects.ChatMessageSession.prototype.getSessionEndDate = function () { return this.sessionEndDate; }
 
-Chat.Objects.ChatMessageSession.prototype.getMessageAtIndex = function (index) { return this.listOfMessages[index]; }
+//Static methods
+Chat.Objects.ChatMessageSession.parseFromJsonResult = function (result) {
+
+	var chatMessageSession = new Chat.Objects.ChatMessageSession(result.RoomIdentifier);
+	var listOfMessages = []
+	for (var i = 0; i < result.RoomMessages.length; i++) {
+		var currentMessage = result.RoomMessages[i];
+		var status = Chat.Objects.ChatUserStatus.parseStatusFromJson(currentMessage.CurrentSendreStatus)
+		var chatUser = new Chat.Objects.ChatUser(currentMessage.SenderIdentifier, currentMessage.SenderName, status);
+		listOfMessages.push(new Chat.Objects.ChatMessage(currentMessage.MessageContent, currentMessage.DateOfSend, chatUser));
+	}
+
+	chatMessageSession.setListOfMessages(listOfMessages)
+	chatMessageSession.setSessionStartDate(result.SessionStartDate)
+	chatMessageSession.setSessionEndDate(result.SessionEndDate)
+
+	return chatMessageSession;
+}
 
 //End ChatMessageSession Object
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -398,11 +432,11 @@ Chat.Objects.ChatUser.prototype.getUserName = function () { return this.chatUser
 Chat.Objects.ChatUser.prototype.getStatus = function () { return this.chatUserStatus; }
 Chat.Objects.ChatUser.prototype.changeStatus = function (statusId) {
 
-    this.getStatus().changeStatus(statusId);
-    var oldStatusImage = this.imageElement;
-    this.imageElement = this.getStatus().getImageElement();
+	this.getStatus().changeStatus(statusId);
+	var oldStatusImage = this.imageElement;
+	this.imageElement = this.getStatus().getImageElement();
 
-    this.userStatusContainer.replaceChild(this.imageElement, oldStatusImage);
+	this.userStatusContainer.replaceChild(this.imageElement, oldStatusImage);
 }
 
 //End ChatUser Object
@@ -410,33 +444,33 @@ Chat.Objects.ChatUser.prototype.changeStatus = function (statusId) {
 
 // Start Chat status object
 Chat.Objects.ChatUserStatus = function () {
-    this.statusImage = "offline.png";
-    this.statusName = Chat.Objects.ChatUserStatus.statusesName.OffLine;
-    this.canMakeOperation = true;
-    this.status = Chat.Objects.ChatUserStatus.statuses.OffLine;
+	this.statusImage = "offline.png";
+	this.statusName = Chat.Objects.ChatUserStatus.statusesName.OffLine;
+	this.canMakeOperation = true;
+	this.status = Chat.Objects.ChatUserStatus.statuses.OffLine;
 }
 
 Chat.Objects.ChatUserStatus.prototype.changeStatus = function (statusId) {
-    switch (statusId) {
-        case Chat.Objects.ChatUserStatus.statuses.OnLine:
-            this.statusImage = Chat.Objects.ChatUserStatus.statusesImages.Online;
-            this.statusName = Chat.Objects.ChatUserStatus.statusesName.Online
-            this.canMakeOperation = true;
-            this.status = Chat.Objects.ChatUserStatus.statuses.OnLine;
-            break;
-        case Chat.Objects.ChatUserStatus.statuses.OffLine:
-            this.statusImage = Chat.Objects.ChatUserStatus.statusesImages.OffLine;
-            this.statusName = Chat.Objects.ChatUserStatus.statusesName.OffLine
-            this.canMakeOperation = true;
-            this.status = Chat.Objects.ChatUserStatus.statuses.OffLine;
-            break;
-        default:
-            this.statusImage = Chat.Objects.ChatUserStatus.statusesImages.OffLine;
-            this.statusName = Chat.Objects.ChatUserStatus.statusesName.OffLine
-            this.canMakeOperation = true;
-            this.status = Chat.Objects.ChatUserStatus.statuses.OffLine;
-            break;
-    }
+	switch (statusId) {
+		case Chat.Objects.ChatUserStatus.statuses.OnLine:
+			this.statusImage = Chat.Objects.ChatUserStatus.statusesImages.Online;
+			this.statusName = Chat.Objects.ChatUserStatus.statusesName.Online
+			this.canMakeOperation = true;
+			this.status = Chat.Objects.ChatUserStatus.statuses.OnLine;
+			break;
+		case Chat.Objects.ChatUserStatus.statuses.OffLine:
+			this.statusImage = Chat.Objects.ChatUserStatus.statusesImages.OffLine;
+			this.statusName = Chat.Objects.ChatUserStatus.statusesName.OffLine
+			this.canMakeOperation = true;
+			this.status = Chat.Objects.ChatUserStatus.statuses.OffLine;
+			break;
+		default:
+			this.statusImage = Chat.Objects.ChatUserStatus.statusesImages.OffLine;
+			this.statusName = Chat.Objects.ChatUserStatus.statusesName.OffLine
+			this.canMakeOperation = true;
+			this.status = Chat.Objects.ChatUserStatus.statuses.OffLine;
+			break;
+	}
 }
 
 //Getters 
@@ -461,10 +495,10 @@ Chat.Objects.ChatUserStatus.prototype.setStatusImage = function (statusImage) { 
 //Chat user status static methods
 Chat.Objects.ChatUserStatus.parseStatusFromJson = function(jsonStatus)
 {
-    var status = new Chat.Objects.ChatUserStatus();
-    status.changeStatus(jsonStatus.IdStaut)
+	var status = new Chat.Objects.ChatUserStatus();
+	status.changeStatus(jsonStatus.IdStaut)
 
-    return status;
+	return status;
 }
 
 //Chat user status static variables
@@ -478,196 +512,226 @@ Chat.Objects.ChatUserStatus.statusesName = { "Online": "OnLine", "OffLine": "Off
 
 //Start Chat Room Container object
 Chat.Objects.ChatRoomContainer = function (containerElement, engine) {
-    this.chatRoomContainer = containerElement;
-    this.chatEngine = engine;
-    this.roomCount = 0;
-    this.isRoomListVisible = false;
-    this.openedRoom = [];
+	this.chatRoomContainer = containerElement;
+	this.chatEngine = engine;
+	this.roomCount = 0;
+	this.isRoomListVisible = false;
+	this.openedRoom = [];
 
-    this.maxVisibleRoomsCount = 1;this.calculateMaximumVisibleRoom();
-    
-    this.spanCountOfInvisibleRoom = "";
-    this.hiddenListOfRoomsHtmlObject = this._createListOfHiddenRoom();
-    this.listContainer = "";
+	this.maxVisibleRoomsCount = 1;this.calculateMaximumVisibleRoom();
+	
+	this.spanCountOfInvisibleRoom = "";
+	this.hiddenListOfRoomsHtmlObject = this._createListOfHiddenRoom();
+	this.listContainer = "";
 
-    this.visibleRoomsIdentifiers = [];
-    this.hiddenRoomsIdentifiers = [];
+	this.visibleRoomsIdentifiers = [];
+	this.hiddenRoomsIdentifiers = [];
 }
 Chat.Objects.ChatRoomContainer.prototype._createListOfHiddenRoom = function(){
-    var sys = Chat.system;
-    var roomContainer = this;
+	var sys = Chat.system;
+	var roomContainer = this;
 
-    var hiddenListOfRoomsHtmlObject = sys.createElement("div", undefined, "hidden-list-room-menu", undefined, "none");
+	var hiddenListOfRoomsHtmlObject = sys.createElement("div", undefined, "hidden-list-room-menu", undefined, "none");
 
-    this.menuButton = sys.createElement("a", "menuButton", "list-menu-button");
-    this.menuButton.onclick = function () {
-        if (roomContainer.isRoomListVisible) {
-            roomContainer._minimizeHiddenList();
-            roomContainer.isRoomListVisible = false;
-        } else {
-            roomContainer._maximizeHiddenList();
-            roomContainer.isRoomListVisible = true;
-        }
-    }
-    var iPicture = sys.createElement("i");
-    this.spanCountOfInvisibleRoom = sys.createElement("span", undefined, undefined, this.roomCount - this.maxVisibleRoomsCount)
+	this.menuButton = sys.createElement("a", "menuButton", "list-menu-button");
+	this.menuButton.onclick = function () {
+		if (roomContainer.isRoomListVisible) {
+			roomContainer._minimizeHiddenList();
+			roomContainer.isRoomListVisible = false;
+		} else {
+			roomContainer._maximizeHiddenList();
+			roomContainer.isRoomListVisible = true;
+		}
+	}
+	var iPicture = sys.createElement("i");
+	this.spanCountOfInvisibleRoom = sys.createElement("span", undefined, undefined, this.roomCount - this.maxVisibleRoomsCount)
 
-    sys.AppendChild(this.menuButton, iPicture);
-    sys.AppendChild(this.menuButton, this.spanCountOfInvisibleRoom);
+	sys.AppendChild(this.menuButton, iPicture);
+	sys.AppendChild(this.menuButton, this.spanCountOfInvisibleRoom);
 
-    this.listContainerWrapper = sys.createElement("div", undefined, "list-container-hidden-wrapper",undefined,"none");
-    var scrollableWrapper = sys.createElement("div", undefined, "scrollable-wrapper");
+	this.listContainerWrapper = sys.createElement("div", undefined, "list-container-hidden-wrapper",undefined,"none");
+	var scrollableWrapper = sys.createElement("div", undefined, "scrollable-wrapper");
 
-    sys.AppendChild(this.listContainerWrapper, scrollableWrapper);
+	sys.AppendChild(this.listContainerWrapper, scrollableWrapper);
 
-    this.listContainer = sys.createElement("div", undefined, "list-container-hidden");
-    var menuWrapper = sys.createElement("div", undefined, "menu-wrapper");
-    var menu = sys.createElement("div", undefined, "menu");
+	this.listContainer = sys.createElement("div", undefined, "list-container-hidden");
+	var menuWrapper = sys.createElement("div", undefined, "menu-wrapper");
+	var menu = sys.createElement("div", undefined, "menu");
 
-    sys.AppendChild(this.listContainer, menuWrapper);
-    sys.AppendChild(menuWrapper, menu);
+	sys.AppendChild(this.listContainer, menuWrapper);
+	sys.AppendChild(menuWrapper, menu);
 
-    this.listOfHiddenRoomElement = sys.createElement("ul", undefined, "list-hidden-rooms");
+	this.listOfHiddenRoomElement = sys.createElement("ul", undefined, "list-hidden-rooms");
 
-    sys.AppendChild(menu, this.listOfHiddenRoomElement);
-    sys.AppendChild(scrollableWrapper, this.listContainer);
+	sys.AppendChild(menu, this.listOfHiddenRoomElement);
+	sys.AppendChild(scrollableWrapper, this.listContainer);
 
-    sys.AppendChild(hiddenListOfRoomsHtmlObject, this.menuButton);
-    sys.AppendChild(hiddenListOfRoomsHtmlObject, this.listContainerWrapper);
+	sys.AppendChild(hiddenListOfRoomsHtmlObject, this.menuButton);
+	sys.AppendChild(hiddenListOfRoomsHtmlObject, this.listContainerWrapper);
 
-    sys.AppendChild(this.chatRoomContainer, hiddenListOfRoomsHtmlObject)
+	sys.AppendChild(this.chatRoomContainer, hiddenListOfRoomsHtmlObject)
 
-    return hiddenListOfRoomsHtmlObject;
+	return hiddenListOfRoomsHtmlObject;
 }
 Chat.Objects.ChatRoomContainer.prototype._appendHiddenRoom = function (room) {
-    var sys = Chat.system;
-    var chatEngine = this.chatEngine;
-    var currentContainer = this;
+	var sys = Chat.system;
+	var chatEngine = this.chatEngine;
+	var currentContainer = this;
 
-    var listItem = sys.createElement("li", undefined, "hidden-room-list-element");
-    listItem.onclick = function () { currentContainer._showHiddenRoomAndHideLastVisibleRoom(room,this) }
+	var listItem = sys.createElement("li", undefined, "hidden-room-list-element", undefined, undefined, { "id": room.getRoomIdentifier() });
+	listItem.onclick = function (event, param) {
+	    var clickedElement = (this == window ? param : this);
+	    currentContainer._showHiddenRoomAndHideLastVisibleRoom(room, clickedElement)
+	}
 
-    var aTag = sys.createElement("a", undefined, "hidden-room-list-item", undefined, undefined, { "href": "javascript:;" });
-    var span = sys.createElement("span", undefined, "span-wrapper");
-    var divClearFix = sys.createElement("div", undefined, "clear-fix");
-    
-    var closeButtonLabel = sys.createElement("label", undefined, "close-button-label", undefined, undefined, { "for": room.getRoomIdentifier() });
-    var closeButton = sys.createElement("input", room.getRoomIdentifier(), "close-button", undefined, undefined, { "type": "button" });
-    
-    closeButton.onclick = function () {
-        sys.RemoveElmenet(currentContainer.listOfHiddenRoomElement, listItem);
-        chatEngine.closeRoom(room.getRoomIdentifier());
-    }
+	var aTag = sys.createElement("a", undefined, "hidden-room-list-item", undefined, undefined, { "href": "javascript:;" });
+	var span = sys.createElement("span", undefined, "span-wrapper");
+	var divClearFix = sys.createElement("div", undefined, "clear-fix");
+	
+	var closeButtonLabel = sys.createElement("label", undefined, "close-button-label");
+	var closeButton = sys.createElement("input", undefined, "close-button", undefined, undefined, { "type": "button" });
+	
+	closeButton.onclick = function () {
+		sys.RemoveElmenet(currentContainer.listOfHiddenRoomElement, listItem);
+		chatEngine.closeRoom(room.getRoomIdentifier());
+	}
 
-    sys.AppendChild(closeButtonLabel, closeButton);
-    sys.AppendChild(divClearFix, closeButtonLabel);
+	sys.AppendChild(closeButtonLabel, closeButton);
+	sys.AppendChild(divClearFix, closeButtonLabel);
 
-    var divRoomNameWrapper = sys.createElement("div", undefined, "room-name-wrapper");
-    var spanRoomName = sys.createElement("span", undefined, "room-name", room.getRoomName());
+	var divRoomNameWrapper = sys.createElement("div", undefined, "room-name-wrapper");
+	var spanRoomName = sys.createElement("span", undefined, "room-name", room.getRoomName());
 
-    sys.AppendChild(divRoomNameWrapper, spanRoomName);
-    sys.AppendChild(divClearFix, divRoomNameWrapper);
-    
-    sys.AppendChild(span, divClearFix);
-    sys.AppendChild(aTag, span);
-    sys.AppendChild(listItem, aTag);
+	sys.AppendChild(divRoomNameWrapper, spanRoomName);
+	sys.AppendChild(divClearFix, divRoomNameWrapper);
+	
+	sys.AppendChild(span, divClearFix);
+	sys.AppendChild(aTag, span);
+	sys.AppendChild(listItem, aTag);
 
-    sys.AppendChild(this.listOfHiddenRoomElement, listItem);
+	sys.AppendChild(this.listOfHiddenRoomElement, listItem);
 }
 
 Chat.Objects.ChatRoomContainer.prototype._updateCounterOfInvisibleRooms = function () {
-    this.spanCountOfInvisibleRoom.innerHTML = this.roomCount - this.maxVisibleRoomsCount;
+	this.spanCountOfInvisibleRoom.innerHTML = this.roomCount - this.maxVisibleRoomsCount;
 }
 
 Chat.Objects.ChatRoomContainer.prototype._minimizeHiddenList = function () {
-    this.listContainerWrapper.style.display = "none"
+	this.listContainerWrapper.style.display = "none"
 }
 Chat.Objects.ChatRoomContainer.prototype._maximizeHiddenList = function () {
-    this.listContainerWrapper.style.display = "block"
+	this.listContainerWrapper.style.display = "block"
 }
 
 Chat.Objects.ChatRoomContainer.prototype._showHiddenListOfRoomsMenu = function () { this.hiddenListOfRoomsHtmlObject.style.display = "block" }
 Chat.Objects.ChatRoomContainer.prototype._hideHiddenListOfRoomsMenu = function () { this.hiddenListOfRoomsHtmlObject.style.display = "none" }
 
 Chat.Objects.ChatRoomContainer.prototype._deleteRoomIdentifierFromHiddenList = function (roomIdentifier) {
-    this.hiddenRoomsIdentifiers.splice(this.hiddenRoomsIdentifiers.indexOf(roomIdentifier), 1);
+	this.hiddenRoomsIdentifiers.splice(this.hiddenRoomsIdentifiers.indexOf(roomIdentifier), 1);
 }
 Chat.Objects.ChatRoomContainer.prototype._deleteRoomIdentifierFromVisibleList = function (roomIdentifier) {
-    this.visibleRoomsIdentifiers.splice(this.visibleRoomsIdentifiers.indexOf(roomIdentifier), 1);
+	this.visibleRoomsIdentifiers.splice(this.visibleRoomsIdentifiers.indexOf(roomIdentifier), 1);
 }
 
 Chat.Objects.ChatRoomContainer.prototype._showHiddenRoomAndHideLastVisibleRoom = function (hiddenRoom,clickedHtmlListItem) {
-    var sys = Chat.system;
-    sys.RemoveElmenet(this.listOfHiddenRoomElement, clickedHtmlListItem)
-    var lastVisibleRoom = this.getRoomByIdentifier(this.visibleRoomsIdentifiers.lastOrDefault())
+	var sys = Chat.system;
+	sys.RemoveElmenet(this.listOfHiddenRoomElement, clickedHtmlListItem)
+	var lastVisibleRoom = this.getRoomByIdentifier(this.visibleRoomsIdentifiers.lastOrDefault())
 
-    this._deleteRoomIdentifierFromHiddenList(hiddenRoom.getRoomIdentifier());
-    this._deleteRoomIdentifierFromVisibleList(lastVisibleRoom.getRoomIdentifier())
+	this._deleteRoomIdentifierFromHiddenList(hiddenRoom.getRoomIdentifier());
+	this._deleteRoomIdentifierFromVisibleList(lastVisibleRoom.getRoomIdentifier())
 
-    this.hiddenRoomsIdentifiers.push(lastVisibleRoom.getRoomIdentifier());
+	this.hiddenRoomsIdentifiers.push(lastVisibleRoom.getRoomIdentifier());
 
-    this._appendHiddenRoom(lastVisibleRoom);
-    sys.RemoveElmenet(this.getRoomContainer(), lastVisibleRoom.getRoomHtmlObject());
-    this.addRoom(hiddenRoom, true);
+	this._appendHiddenRoom(lastVisibleRoom);
+	sys.RemoveElmenet(this.getRoomContainer(), lastVisibleRoom.getRoomHtmlObject());
+	this.addRoom(hiddenRoom, true);
 }
 
 Chat.Objects.ChatRoomContainer.prototype.getRoomContainer = function () { return this.chatRoomContainer; }
 Chat.Objects.ChatRoomContainer.prototype.calculateMaximumVisibleRoom = function () {
-    var freeSpace = (document.body.clientWidth - Chat.Objects.ChatRoomContainer.userListWidth - Chat.Objects.ChatRoomContainer.hiddenRoomListMenu);
-    var count = parseInt(freeSpace / Chat.Objects.ChatRoomContainer.roomWidth);
+	var freeSpace = (document.body.clientWidth - Chat.Objects.ChatRoomContainer.userListWidth - Chat.Objects.ChatRoomContainer.hiddenRoomListMenu);
+	var count = parseInt(freeSpace / Chat.Objects.ChatRoomContainer.roomWidth);
 
-    return count;
+	return count;
+}
+
+Chat.Objects.ChatRoomContainer.prototype.isRoomInHiddenList = function(roomIdentifier){
+	return this.hiddenRoomsIdentifiers.contains(roomIdentifier);
+}
+Chat.Objects.ChatRoomContainer.prototype.showSingForUnreadMessage = function (roomIdentifier) {
+    var sys = Chat.system;
+    var roomContainer = this;
+
+    var menuButtonOldClassName = this.menuButton.className;
+    if (menuButtonOldClassName.indexOf("blink") < 0)
+        this.menuButton.className = menuButtonOldClassName + " blink";
+    
+    var listElement = sys.getElementsByAttributeAndValueFromElement(this.listOfHiddenRoomElement, "id", roomIdentifier)[0];
+    var oldClasses = listElement.className;
+    listElement.className = oldClasses + " blink"
+
+    var previousClick = listElement.onclick;
+    listElement.onclick = function (event) {
+        listElement.className = oldClasses;
+        var allRoomWithUnreadMessages = roomContainer.listOfHiddenRoomElement.getElementsByClassName("blink");
+        if (sys.isNullOrUndefined(allRoomWithUnreadMessages) || allRoomWithUnreadMessages.length <= 0) {
+            roomContainer.menuButton.className = menuButtonOldClassName;
+        }
+
+        previousClick(event,this);
+    }
 }
 
 Chat.Objects.ChatRoomContainer.prototype.addRoom = function (room, insertAtTheEnd) {
-    var sys = Chat.system;
+	var sys = Chat.system;
 
-    if (this.visibleRoomsIdentifiers.length < this.maxVisibleRoomsCount) {
-        insertBefore = sys.isNullOrUndefined(insertAtTheEnd) ? true : insertAtTheEnd;
-        sys.AppendChild(this.chatRoomContainer, room.getRoomHtmlObject(), insertBefore);
-        this.visibleRoomsIdentifiers.push(room.getRoomIdentifier())
-    } else {
-        this._appendHiddenRoom(room);
-        this.hiddenRoomsIdentifiers.push(room.getRoomIdentifier())
-        this._showHiddenListOfRoomsMenu();
-    }
+	if (this.visibleRoomsIdentifiers.length < this.maxVisibleRoomsCount) {
+		insertBefore = sys.isNullOrUndefined(insertAtTheEnd) ? true : insertAtTheEnd;
+		sys.AppendChild(this.chatRoomContainer, room.getRoomHtmlObject(), insertBefore);
+		this.visibleRoomsIdentifiers.push(room.getRoomIdentifier())
+	} else {
+		this._appendHiddenRoom(room);
+		this.hiddenRoomsIdentifiers.push(room.getRoomIdentifier())
+		this._showHiddenListOfRoomsMenu();
+	}
 
-    if (!this.listOfRoomContains(room.getRoomIdentifier())) {
-        this.openedRoom[room.getRoomIdentifier()] = room;
-        this.roomCount++;
-    }
-    this._updateCounterOfInvisibleRooms();
+	if (!this.listOfRoomContains(room.getRoomIdentifier())) {
+		this.openedRoom[room.getRoomIdentifier()] = room;
+		this.roomCount++;
+	}
+	this._updateCounterOfInvisibleRooms();
 }
 Chat.Objects.ChatRoomContainer.prototype.removeRoom = function (room) {
-    var sys = Chat.system;
+	var sys = Chat.system;
 
-    if (this.visibleRoomsIdentifiers.contains(room.getRoomIdentifier())) {
-        sys.RemoveElmenet(this.chatRoomContainer, room.getRoomHtmlObject());
-        this._deleteRoomIdentifierFromVisibleList(room.getRoomIdentifier())
-        
-        if (this.hiddenRoomsIdentifiers.length > 0)
-        {
-            var firstRoomFromHiddenList = this.getRoomByIdentifier(this.hiddenRoomsIdentifiers.firstOrDefault())
-            sys.AppendChild(this.chatRoomContainer, firstRoomFromHiddenList.getRoomHtmlObject(), false);
-            sys.RemoveElmenet(this.listOfHiddenRoomElement, this.listOfHiddenRoomElement.firstChild);
+	if (this.visibleRoomsIdentifiers.contains(room.getRoomIdentifier())) {
+		sys.RemoveElmenet(this.chatRoomContainer, room.getRoomHtmlObject());
+		this._deleteRoomIdentifierFromVisibleList(room.getRoomIdentifier())
+		
+		if (this.hiddenRoomsIdentifiers.length > 0)
+		{
+			var firstRoomFromHiddenList = this.getRoomByIdentifier(this.hiddenRoomsIdentifiers.firstOrDefault())
+			sys.AppendChild(this.chatRoomContainer, firstRoomFromHiddenList.getRoomHtmlObject(), false);
+			sys.RemoveElmenet(this.listOfHiddenRoomElement, this.listOfHiddenRoomElement.firstChild);
 
-            this._deleteRoomIdentifierFromHiddenList(firstRoomFromHiddenList.getRoomIdentifier())
-            this.visibleRoomsIdentifiers.push(firstRoomFromHiddenList.getRoomIdentifier())
-        }
-    } else {
-        this._deleteRoomIdentifierFromHiddenList(room.getRoomIdentifier())
-    }
+			this._deleteRoomIdentifierFromHiddenList(firstRoomFromHiddenList.getRoomIdentifier())
+			this.visibleRoomsIdentifiers.push(firstRoomFromHiddenList.getRoomIdentifier())
+		}
+	} else {
+		this._deleteRoomIdentifierFromHiddenList(room.getRoomIdentifier())
+	}
 
-    this.roomCount--;
-    delete this.openedRoom[room.getRoomIdentifier()];
-    this._updateCounterOfInvisibleRooms();
+	this.roomCount--;
+	delete this.openedRoom[room.getRoomIdentifier()];
+	this._updateCounterOfInvisibleRooms();
 
-    if(0 >= (this.roomCount - this.maxVisibleRoomsCount))
-        this._hideHiddenListOfRoomsMenu()
+	if(0 >= (this.roomCount - this.maxVisibleRoomsCount))
+		this._hideHiddenListOfRoomsMenu()
 }
 Chat.Objects.ChatRoomContainer.prototype.listOfRoomContains = function (roomIdentifier) {
-    var sys = Chat.system;
-    return !sys.isNullOrUndefinedOrEmptyObject(this.openedRoom[roomIdentifier])
+	var sys = Chat.system;
+	return !sys.isNullOrUndefinedOrEmptyObject(this.openedRoom[roomIdentifier])
 }
 //Getters
 Chat.Objects.ChatRoomContainer.prototype.getMaxVisibleRoomsCount = function () { return this.maxVisibleRoomsCount; }
@@ -681,46 +745,46 @@ Chat.Objects.ChatRoomContainer.hiddenRoomListMenu = 42;
 
 //End Chat Room Container object
 
-    function ShowSetting(a)
-    {
-        var sys = Chat.system;
+	function ShowSetting(a)
+	{
+		var sys = Chat.system;
 
-        if (sys.GetElement("SettingsDiv").style.display == "block")
-            sys.GetElement("SettingsDiv").style.display = "none";
-        else {
-            sys.GetElement("SettingsDiv").style.display = "block";
-            a.focus()
-        }
-    }
-    function TextAreaOnFocus(currElement)
-    {
-        currElement.value = "";
-    }
-    function TextAreaOnBlur(currElement)
-    {
-        currElement.value = "Search";
-    }
+		if (sys.GetElement("SettingsDiv").style.display == "block")
+			sys.GetElement("SettingsDiv").style.display = "none";
+		else {
+			sys.GetElement("SettingsDiv").style.display = "block";
+			a.focus()
+		}
+	}
+	function TextAreaOnFocus(currElement)
+	{
+		currElement.value = "";
+	}
+	function TextAreaOnBlur(currElement)
+	{
+		currElement.value = "Search";
+	}
 
-    Chat.HtmlHalpers.generateCoolPopUpHtml = function (userNames) {
-        var bodyOfPopUp = "";
-        for(var i = 0; i < userNames.length;i++)
-        {
-            bodyOfPopUp += '<div><div>'+ userNames[i] +'</div></div>'
-        }
+	Chat.HtmlHalpers.generateCoolPopUpHtml = function (userNames) {
+		var bodyOfPopUp = "";
+		for(var i = 0; i < userNames.length;i++)
+		{
+			bodyOfPopUp += '<div><div>'+ userNames[i] +'</div></div>'
+		}
 
-        var popUp = '<div class="uiContextualLayerPositioner uiLayer" style="width: 70%;top: 8px; left: 10px;">' +
-            '<div class="uiContextualLayer uiContextualLayerAboveLeft" style="bottom: 0px;">'+
-                '<div class="uiTooltipX">'+
-                    '<div class="tooltipContent">'+
-                        '<div>'+
-                            '<div>'+
-                                bodyOfPopUp+
-                            '</div>'+
-                        '</div>'+
-                    '</div><i class="arrow"></i>'+
-                '</div>'+
-            '</div>'+
-        '</div>'
+		var popUp = '<div class="uiContextualLayerPositioner uiLayer" style="width: 70%;top: 8px; left: 10px;">' +
+			'<div class="uiContextualLayer uiContextualLayerAboveLeft" style="bottom: 0px;">'+
+				'<div class="uiTooltipX">'+
+					'<div class="tooltipContent">'+
+						'<div>'+
+							'<div>'+
+								bodyOfPopUp+
+							'</div>'+
+						'</div>'+
+					'</div><i class="arrow"></i>'+
+				'</div>'+
+			'</div>'+
+		'</div>'
 
-        return popUp;
-    }
+		return popUp;
+	}

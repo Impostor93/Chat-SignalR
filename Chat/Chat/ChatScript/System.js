@@ -71,8 +71,14 @@ Chat.system.GetElement = function (Id) {
 Chat.system.getElementsByAttribute = function (attributeName) {
     return document.querySelectorAll("[" + attributeName + "]");
 }
+Chat.system.getElementsByAttributeFromElement = function (element,attributeName) {
+    return element.querySelectorAll("[" + attributeName + "]");
+}
 Chat.system.getElementsByAttributeAndValue = function (attributeName,value) {
     return document.querySelectorAll("[" + attributeName + "='" + value + "']");
+}
+Chat.system.getElementsByAttributeAndValueFromElement = function (element,attributeName, value) {
+    return element.querySelectorAll("[" + attributeName + "='" + value + "']");
 }
 Chat.system.AppendChild = function(Parent, Child, InserBefore) {
     var parentElment;
