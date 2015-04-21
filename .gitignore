@@ -1,0 +1,7 @@
+/Chat/Chat/bin
+/Chat/Chat.DAL/bin
+/Chat/Chat.DAL/obj
+Chat.DAL.csproj.FileListAbsolute.txt
+*.dll
+obj
+Log

@@ -100,8 +100,7 @@ namespace Chat.Hubs
                 }
                 foreach (var user in listOfAllMembersOfRoom)
                 {
-                    Clients.User(user).createRoom(JsonConvert.SerializeObject(ChatRoomManager.listOfRooms[roomIdentifier]));
-                    Clients.User(user).showingMassages(JsonConvert.SerializeObject(keyValuePaireFromIdentifierAndUnreadedMessage), roomIdentifier);
+                    Clients.User(user).showingMassages(JsonConvert.SerializeObject(keyValuePaireFromIdentifierAndUnreadedMessage), JsonConvert.SerializeObject(ChatRoomManager.listOfRooms[roomIdentifier]));
                 }
                 return JsonConvert.SerializeObject(new Message(HttpContext.Current.Server.HtmlEncode(Messages), ChatUserManager.FindUser(currentUserIdentifier)));
             }

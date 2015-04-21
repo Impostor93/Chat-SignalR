@@ -18,6 +18,7 @@ namespace Chat
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+            ErrorLoger.InitializeLogger();
         }
 
         protected void Session_Start(object sender, EventArgs e)
@@ -36,7 +37,7 @@ namespace Chat
 
         protected void Application_Error(object sender, EventArgs e)
         {
-            SendErrorEmail.SendError(String.Format("Unhandled Exception in {0}", Context.Error.InnerException), "From Global file");
+            ErrorLoger.Log(Context.Error.InnerException);
             System.Web.Security.FormsAuthentication.SignOut();
             //return RedirectToAction("Index", "Home");
         }

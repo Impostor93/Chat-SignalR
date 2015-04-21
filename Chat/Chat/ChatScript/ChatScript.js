@@ -41,7 +41,7 @@ Chat.Engine.prototype._registrateClientEvents = function (chatHubAsParam, chatEn
 
     chatHubAsParam.client.getAllUsers = function (data) { chatEngin.loadAllUserList(data, currentUserIdentifier) }
     chatHubAsParam.client.ChangeUserStatus = function (data) { chatEngin.chageStatusToUser(data) }
-    chatHubAsParam.client.createRoom = function (data) { chatEngin.createRoom(data) }
+    //chatHubAsParam.client.createRoom = function (data) { chatEngin.createRoom(data) }
     chatHubAsParam.client.showingMassages = function (data, idRoom) { chatEngin.showingMassages(data, idRoom) }
 }
 Chat.Engine.prototype._registrateServerEvents = function (currentUserIdentifier, chatEngin) {
@@ -134,6 +134,7 @@ Chat.Engine.prototype.createRoom = function (data) {
             return;
 
         var result = JSON.parse(data);
+        result = (sys.isNullOrUndefined(result.room) ? result : result.room);
         
         if (!this.roomContainer.listOfRoomContains(result.RoomIdentifier)) {
 
@@ -181,13 +182,21 @@ Chat.Engine.prototype.sendMessage = function (e, idRoom) {
         return false;
     }
 }
-Chat.Engine.prototype.showingMassages = function (data, idRoom) {
+Chat.Engine.prototype.showingMassages = function (data, room) {
 
     var sys = Chat.system;
 
     try {
         if (sys.isEmptyObject(data))
             return;
+
+        if (sys.isEmptyObject(room))
+            return;
+
+        var parsedRoomAsJson = JSON.parse(room);
+        idRoom = parsedRoomAsJson.RoomIdentifier;
+        if (!this.roomContainer.listOfRoomContains(idRoom) && parsedRoomAsJson.UsersInRoom.contains(Chat.Engine.currentUser.getUserIdentifier()))
+            this.createRoom(room)
 
         data = JSON.parse(data);
         var result = data[Chat.Engine.currentUser.getUserIdentifier()];
@@ -196,7 +205,8 @@ Chat.Engine.prototype.showingMassages = function (data, idRoom) {
             return;
 
         var isHaveAddedNewMessage = false;
-        var room = this.roomContainer.getRoomByIdentifier(idRoom);
+        
+        chatRoom = this.roomContainer.getRoomByIdentifier(idRoom);
 
         for (var i = 0; i < result.length; i++) {
 
@@ -209,12 +219,12 @@ Chat.Engine.prototype.showingMassages = function (data, idRoom) {
             }
 
             var chatMessage = new Chat.Objects.ChatMessage(currentJSONMessage.MessageContent, currentJSONMessage.DateOfSend, messageSenderUser);
-            room.appendMessageElementToContent(chatMessage);
+            chatRoom.appendMessageElementToContent(chatMessage);
             isHaveAddedNewMessage = true;
         }
         
-        if (isHaveAddedNewMessage && this.roomContainer.isRoomInHiddenList(room.getRoomIdentifier()))
-            this.roomContainer.showSingForUnreadMessage(room.getRoomIdentifier());
+        if (isHaveAddedNewMessage && this.roomContainer.isRoomInHiddenList(chatRoom.getRoomIdentifier()))
+            this.roomContainer.showSingForUnreadMessage(chatRoom.getRoomIdentifier());
     }
     catch (exception) {
         sys.logError(exception.message + " - showingMassages");
