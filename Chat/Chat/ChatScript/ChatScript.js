@@ -17,7 +17,7 @@ Chat.Start = function Start(currentUserIdentifier)
 
     var statusElements = sys.getElementsByAttribute("status");
     for (var i = 0; i < statusElements.length; i++)
-        statusElements[i].onclick = function () { chatEngine.changeStatus(this) }
+        statusElements[i].onclick = function () { document.getElementById("Settings").style.display = "none"; chatEngine.changeStatus(this) }
     
 }
 Chat.Show = function () { var sys = Chat.system; sys.GetElement("Chat").style.display = "block"; }
@@ -41,7 +41,6 @@ Chat.Engine.prototype._registrateClientEvents = function (chatHubAsParam, chatEn
 
     chatHubAsParam.client.getAllUsers = function (data) { chatEngin.loadAllUserList(data, currentUserIdentifier) }
     chatHubAsParam.client.ChangeUserStatus = function (data) { chatEngin.chageStatusToUser(data) }
-    //chatHubAsParam.client.createRoom = function (data) { chatEngin.createRoom(data) }
     chatHubAsParam.client.showingMassages = function (data, idRoom) { chatEngin.showingMassages(data, idRoom) }
 }
 Chat.Engine.prototype._registrateServerEvents = function (currentUserIdentifier, chatEngin) {
@@ -109,6 +108,7 @@ Chat.Engine.prototype.openRoomChat = function ()
             }
 
             Chat.Engine.SessionNextDate[roomInJsonFormat.RoomIdentifier] = "";
+            chatEngine._fillRoomWithHistory(chatEngine.roomContainer.getRoomByIdentifier(roomInJsonFormat.RoomIdentifier));
 
         } catch (exception) {
             sys.logError(exception.message + " - openRoomChat");
@@ -140,12 +140,26 @@ Chat.Engine.prototype.createRoom = function (data) {
 
             var room = new Chat.Objects.ChatRoom(result.RoomIdentifier, result.RoomName, this);
             this.roomContainer.addRoom(room);
+            this._fillRoomWithHistory(room);
         }
 
     } catch (ex) {
         sys.logError(ex.message + " - CheckForRooms");
         return;
     }
+}
+Chat.Engine.prototype._fillRoomWithHistory = function(room){
+    this.loadHistory(room.getRoomIdentifier())
+    var chatEngin = this;
+            
+    var loadHistoryInterval = setInterval(function () {
+        if (Chat.Engine.SessionNextDate[room.getRoomIdentifier()] != "false" || room.getRoomMessageContentScrollHeight() < room.getRoomMessageContentHeight()) {
+            clearInterval(loadHistoryInterval);
+            room.scrollToTheBottonOfMessageContent();
+        }
+
+        chatEngin.loadHistory(room.getRoomIdentifier());
+    }, 100)
 }
 
 Chat.Engine.prototype.sendMessage = function (e, idRoom) {

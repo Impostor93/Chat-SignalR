@@ -209,7 +209,7 @@ Chat.Objects.ChatRoom.prototype._appendHistoryToMessageContainerElement = functi
 
 		if (message.getMessageSenderIdentifier() == currentSessionMessage.getMessageSenderIdentifier()) {
 
-			message._appendMessageNode(currentSessionMessage.getMessageText(), false)
+			message._appendMessageNode(currentSessionMessage, false)
 
 		} else {
 
@@ -249,8 +249,12 @@ Chat.Objects.ChatRoom.prototype.appendMessageElementToContent = function (messag
 	if (sys.isNullOrUndefined(lastUserMessage))
 		throw Error("There is no message in the array");
 
+	//TODO: add this logic in the below if and test it
+	//var difference = Math.abs(Date.now() - Data.tryToParseFromChatFormatString(message.getSendDate()))
+	//&& difference < 1
+
 	if (lastUserMessage.getMessageSenderIdentifier() == message.getMessageSenderIdentifier()) {
-		lastUserMessage._appendMessageNode(message.getMessageText())
+		lastUserMessage._appendMessageNode(message)
 
 	} else {
 		this._appendMessageElementToContent(message);
@@ -264,12 +268,17 @@ Chat.Objects.ChatRoom.prototype.appendMessageElementToContent = function (messag
 	}
 }
 Chat.Objects.ChatRoom.prototype.loadHistory = function (result) {
+	var oldScrollHeight = this.messageContent.scrollHeight;
 	this._appendHistoryToMessageContainerElement(result)
+	this.messageContent.scrollTop = this.messageContent.scrollHeight - oldScrollHeight;
 }
 
 // Room getters 
 Chat.Objects.ChatRoom.prototype.getRoomHtml = function () { return this.chatRoomElement.outerHTML }
 Chat.Objects.ChatRoom.prototype.getRoomHtmlObject = function () { return this.chatRoomElement }
+Chat.Objects.ChatRoom.prototype.getRoomHeaderNameContainerElement = function () { return this._definedRoomNameElement(this.getRoomName()) }
+Chat.Objects.ChatRoom.prototype.getRoomMessageContentScrollHeight = function () { this.messageContent.scrollHeight; }
+Chat.Objects.ChatRoom.prototype.getRoomMessageContentHeight = function () { this.messageContent.clientHeight; }
 
 Chat.Objects.ChatRoom.prototype.getRoomIdentifier = function () { return this.roomIdentifier; }
 Chat.Objects.ChatRoom.prototype.getRoomName = function () { return this.roomName; }
@@ -285,9 +294,12 @@ Chat.Objects.ChatRoom.newMessageMaxArea = 70;
 Chat.Objects.ChatMessage = function (messageText, sendDate, chatUser) {
 	this.message = messageText;
 	this.chatUser = chatUser;
-	this.userMessageElement = this._createMessageElement();
-	this.sendDate = sendDate;
+	this.sendDate = new Date(sendDate);
+	if (this.sendDate.toString() == "Invalid Date")
+		this.sendDate = Date.tryToParseFromChatFormatString(sendDate)
+
 	this.messageNodes = [];
+	this.userMessageElement = this._createMessageElement();
 }
 Chat.Objects.ChatMessage.prototype._createMessageElement = function () {
 	var sys = Chat.system;
@@ -298,18 +310,18 @@ Chat.Objects.ChatMessage.prototype._createMessageElement = function () {
 	var userMessageElement = sys.createElement("div", "UserMessages", "UserMessages " + additionalClass, undefined, undefined, { "User-Identifier": this.chatUser.getUserIdentifier() });
 	this.imageContentElement = sys.createElement("div", "ImageContainer", "ImageContainer", "<img src'" + this.chatUser.getUserIdentifier() + "_pic.png' class='SenderImg' />");
 
-	this.textMessageContainerElement = sys.createElement("div", "TextMessageContainer", "TextMessageContainer", chatMessageObject.createMessageNodeElement(this.message).outerHTML, "block", { "Container": "true" });
+	this.textMessageContainerElement = sys.createElement("div", "TextMessageContainer", "TextMessageContainer", chatMessageObject.createMessageNodeElement(this).outerHTML, "block", { "Container": "true" });
 	
 	sys.AppendChild(userMessageElement, this.imageContentElement);
 	sys.AppendChild(userMessageElement, this.textMessageContainerElement);
 
 	return userMessageElement;
 }
-Chat.Objects.ChatMessage.prototype._appendMessageNode = function (text, addAtTheEnd)
+Chat.Objects.ChatMessage.prototype._appendMessageNode = function (message, addAtTheEnd)
 {
 	var sys = Chat.system;
-	var messageNode = Chat.Objects.ChatMessage.createMessageNodeElement(text);
-	this.messageNodes.push(text);
+	var messageNode = Chat.Objects.ChatMessage.createMessageNodeElement(message);
+	this.messageNodes.push(message.getMessageText());
 
 	sys.AppendChild(this.getTextMessageContainerElement(), messageNode, sys.isNullOrUndefined(addAtTheEnd) ? true : addAtTheEnd);
 }
@@ -320,12 +332,16 @@ Chat.Objects.ChatMessage.prototype.getMessageElementHtml = function () { return 
 Chat.Objects.ChatMessage.prototype.getMessageSenderIdentifier = function(){ return this.chatUser.getUserIdentifier() }
 Chat.Objects.ChatMessage.prototype.getMessageText = function () { return this.message }
 Chat.Objects.ChatMessage.prototype.getTextMessageContainerElement = function () { return this.textMessageContainerElement; }
-Chat.Objects.ChatMessage.prototype.getSendDate = function () { return this.sendDate; }
+Chat.Objects.ChatMessage.prototype.getSendDate = function () { return this.sendDate.chatFormat(); }
 
 //Static methods 
-Chat.Objects.ChatMessage.createMessageNodeElement = function (textOfMessage) {
+Chat.Objects.ChatMessage.createMessageNodeElement = function (message) {
 	var sys = Chat.system;
-	return sys.createElement("div", undefined, "MessageNode", textOfMessage)
+	var messageNode = sys.createElement("div", undefined, "MessageNode", message.getMessageText());
+	var time = sys.createElement("span", undefined, undefined, message.getSendDate(), undefined, { "style": "float:right" });
+	sys.AppendChild(messageNode, time);
+
+	return messageNode;
 }
 
 //End ChatMessage Object
@@ -571,10 +587,9 @@ Chat.Objects.ChatRoomContainer.prototype._appendHiddenRoom = function (room) {
 	var currentContainer = this;
 
 	var listItem = sys.createElement("li", undefined, "hidden-room-list-element", undefined, undefined, { "id": room.getRoomIdentifier() });
-	listItem.onclick = function (event, param) {
-	    var clickedElement = (this == window ? param : this);
-	    currentContainer._showHiddenRoomAndHideLastVisibleRoom(room, clickedElement);
-	    currentContainer._minimizeHiddenList();
+	listItem.onclick = function (event) {
+		currentContainer._showHiddenRoomAndHideLastVisibleRoom(room, this);
+		currentContainer._minimizeHiddenList();
 	}
 
 	var aTag = sys.createElement("a", undefined, "hidden-room-list-item", undefined, undefined, { "href": "javascript:;" });
@@ -584,7 +599,8 @@ Chat.Objects.ChatRoomContainer.prototype._appendHiddenRoom = function (room) {
 	var closeButtonLabel = sys.createElement("label", undefined, "close-button-label");
 	var closeButton = sys.createElement("input", undefined, "close-button", undefined, undefined, { "type": "button" });
 	
-	closeButton.onclick = function () {
+	closeButton.onclick = function (event) {
+		event.stopPropagation();
 		sys.RemoveElmenet(currentContainer.listOfHiddenRoomElement, listItem);
 		chatEngine.closeRoom(room.getRoomIdentifier());
 	}
@@ -593,8 +609,11 @@ Chat.Objects.ChatRoomContainer.prototype._appendHiddenRoom = function (room) {
 	sys.AppendChild(divClearFix, closeButtonLabel);
 
 	var divRoomNameWrapper = sys.createElement("div", undefined, "room-name-wrapper");
-	var spanRoomName = sys.createElement("span", undefined, "room-name", room.getRoomName());
 
+	var roomName = room.getRoomName();
+	roomName = roomName.length > (Chat.Objects.ChatRoom.roomNameLength-3)?(roomName.substring(0, Chat.Objects.ChatRoom.roomNameLength) + "..."): roomName;
+	var spanRoomName = sys.createElement("span", undefined, "room-name", roomName);
+	
 	sys.AppendChild(divRoomNameWrapper, spanRoomName);
 	sys.AppendChild(divClearFix, divRoomNameWrapper);
 	
@@ -630,6 +649,7 @@ Chat.Objects.ChatRoomContainer.prototype._deleteRoomIdentifierFromVisibleList = 
 
 Chat.Objects.ChatRoomContainer.prototype._showHiddenRoomAndHideLastVisibleRoom = function (hiddenRoom,clickedHtmlListItem) {
 	var sys = Chat.system;
+
 	sys.RemoveElmenet(this.listOfHiddenRoomElement, clickedHtmlListItem)
 	var lastVisibleRoom = this.getRoomByIdentifier(this.visibleRoomsIdentifiers.lastOrDefault())
 
@@ -660,9 +680,8 @@ Chat.Objects.ChatRoomContainer.prototype.showSingForUnreadMessage = function (ro
 	var sys = Chat.system;
 	var roomContainer = this;
 
-	if (this.menuButton.className.indexOf("blink") < 0)
-		this.menuButton.className += " blink";
-	
+	this._addMenuButtonBlinkClass();
+
 	var listElement = sys.getElementsByAttributeAndValueFromElement(this.listOfHiddenRoomElement, "id", roomIdentifier)[0];
 	var oldClasses = listElement.className;
 	listElement.className = oldClasses + " blink"
@@ -672,11 +691,19 @@ Chat.Objects.ChatRoomContainer.prototype.showSingForUnreadMessage = function (ro
 		listElement.className = oldClasses;
 		var allRoomWithUnreadMessages = roomContainer.listOfHiddenRoomElement.getElementsByClassName("blink");
 		if (sys.isNullOrUndefined(allRoomWithUnreadMessages) || allRoomWithUnreadMessages.length <= 0) {
-			roomContainer.menuButton.className = roomContainer.menuButton.className.replace("blink","");
+			roomContainer._removeMenuButtonBlinkClass()
 		}
 
-		previousClick(event,this);
+		if (!sys.isNullOrUndefined(previousClick))
+			previousClick.apply(this, [event]);
 	}
+}
+Chat.Objects.ChatRoomContainer.prototype._removeMenuButtonBlinkClass = function () {
+	this.menuButton.className = this.menuButton.className.replace("blink", "");
+}
+Chat.Objects.ChatRoomContainer.prototype._addMenuButtonBlinkClass = function () {
+	if (this.menuButton.className.indexOf("blink") < 0)
+		this.menuButton.className += " blink";
 }
 
 Chat.Objects.ChatRoomContainer.prototype.addRoom = function (room, insertAtTheEnd) {
@@ -700,30 +727,34 @@ Chat.Objects.ChatRoomContainer.prototype.addRoom = function (room, insertAtTheEn
 }
 Chat.Objects.ChatRoomContainer.prototype.removeRoom = function (room) {
 	var sys = Chat.system;
+	try {
+		if (this.visibleRoomsIdentifiers.contains(room.getRoomIdentifier())) {
+			sys.RemoveElmenet(this.chatRoomContainer, room.getRoomHtmlObject());
+			this._deleteRoomIdentifierFromVisibleList(room.getRoomIdentifier())
 
-	if (this.visibleRoomsIdentifiers.contains(room.getRoomIdentifier())) {
-		sys.RemoveElmenet(this.chatRoomContainer, room.getRoomHtmlObject());
-		this._deleteRoomIdentifierFromVisibleList(room.getRoomIdentifier())
-		
-		if (this.hiddenRoomsIdentifiers.length > 0)
-		{
-			var firstRoomFromHiddenList = this.getRoomByIdentifier(this.hiddenRoomsIdentifiers.firstOrDefault())
-			sys.AppendChild(this.chatRoomContainer, firstRoomFromHiddenList.getRoomHtmlObject(), false);
-			sys.RemoveElmenet(this.listOfHiddenRoomElement, this.listOfHiddenRoomElement.firstChild);
+			if (this.hiddenRoomsIdentifiers.length > 0) {
+				var firstRoomFromHiddenList = this.getRoomByIdentifier(this.hiddenRoomsIdentifiers.firstOrDefault())
+				sys.AppendChild(this.chatRoomContainer, firstRoomFromHiddenList.getRoomHtmlObject(), false);
+				sys.RemoveElmenet(this.listOfHiddenRoomElement, this.listOfHiddenRoomElement.firstChild);
 
-			this._deleteRoomIdentifierFromHiddenList(firstRoomFromHiddenList.getRoomIdentifier())
-			this.visibleRoomsIdentifiers.push(firstRoomFromHiddenList.getRoomIdentifier())
+				this._deleteRoomIdentifierFromHiddenList(firstRoomFromHiddenList.getRoomIdentifier())
+				this.visibleRoomsIdentifiers.push(firstRoomFromHiddenList.getRoomIdentifier())
+			}
+		} else {
+			this._deleteRoomIdentifierFromHiddenList(room.getRoomIdentifier())
 		}
-	} else {
-		this._deleteRoomIdentifierFromHiddenList(room.getRoomIdentifier())
-	}
-
 	this.roomCount--;
 	delete this.openedRoom[room.getRoomIdentifier()];
 	this._updateCounterOfInvisibleRooms();
 
-	if(0 >= (this.roomCount - this.maxVisibleRoomsCount))
+	if (0 >= (this.roomCount - this.maxVisibleRoomsCount)) {
+		this._minimizeHiddenList();
 		this._hideHiddenListOfRoomsMenu()
+		this._removeMenuButtonBlinkClass();
+	}
+	} catch (ex) {
+		sys.logError(ex);
+	}
 }
 Chat.Objects.ChatRoomContainer.prototype.listOfRoomContains = function (roomIdentifier) {
 	var sys = Chat.system;

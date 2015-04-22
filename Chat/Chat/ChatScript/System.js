@@ -62,8 +62,11 @@ Chat.system.RemoveElmenet = function (Parent, Child)
 		childElment = GetElement(Child);
 	else if (typeof Child == "object")
 		childElment = Child;
-
-	parentElment.removeChild(Child);
+    try {
+        parentElment.removeChild(Child);
+    } catch (ex){
+        debugger;
+    }
 }
 Chat.system.GetElement = function (Id) {
     return document.getElementById(Id);
