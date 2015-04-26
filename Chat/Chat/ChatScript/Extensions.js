@@ -17,6 +17,15 @@ String.stringFormat = function () {
 
     return stringForFormat;
 }
+String.prototype.startWith = function(expression)
+{
+    var stringForCompare = this.substring(0, expression.length);
+    return stringForCompare == expression ? true : false;
+}
+String.prototype.endWith = function (expression) {
+    var stringForCompare = this.substring(this.length - expression.length, this.length);
+    return stringForCompare == expression ? true : false;
+}
 //Array extension
 Array.prototype.lastOrDefault = function () {
     var sys = Chat.system;
@@ -50,7 +59,11 @@ Array.prototype.firstOrDefault = function () {
 Array.prototype.contains = function (obj) {
     var sys = Chat.system;
     if (sys.isFunction(this.indexOf)) {
-        return this.indexOf(obj) != -1;
+        var contains = this.indexOf(obj) != -1;
+        if (!contains && this.length == 0)
+            contains = !sys.isNullOrUndefined(this[obj]);
+
+        return contains;
     } else {
         for (var i in this)
         {
@@ -91,19 +104,33 @@ Date.prototype.chatFormat = function(){
     var hour = this.getHours();
     var minutes = this.getMinutes();
 
-   return String.stringFormat("{0}:{1} - {2}/{3}/{4}", hour, minutes, date, month, year);   
+    hour = hour.length == 1?"0"+hour:hour;
+    minutes = minutes.length == 1?"0"+minutes:minutes;
+    date = date.length == 1?"0"+date:date;
+    month = month.length == 1?"0"+month:month;
+
+    return String.stringFormat("{0}:{1} - {2}/{3}/{4}", hour, minutes, date, month, year);   
 }
 Date.tryToParseFromChatFormatString = function(dateTime){
     var parts = dateTime.split("-");
     var hourAndMinutes = parts[0].split(':');
     var date = parts[1].split("/");
 
-    var hour = hourAndMinutes[0]
-    var minutes = hourAndMinutes[1]
+    var hour = hourAndMinutes[0];
+    var minutes = hourAndMinutes[1];
 
     var day = date[0];
     var month = date[1];
     var year = date[2];
 
     return new Date(year, month, day, hour, minutes, 0, 0)
+}
+
+Object.inherit = function (C, P) {
+    var F = function () { };
+    F.prototype = P.prototype;
+
+    C.prototype = new F();
+    C.uber = P.prototype;
+    C.prototype.constructor = C;
 }

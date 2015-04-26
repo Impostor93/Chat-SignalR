@@ -14,11 +14,6 @@ Chat.Start = function Start(currentUserIdentifier)
 
     this.chatEngine = new Chat.Engine(currentUserIdentifier);
     var chatEngine = this.chatEngine;
-
-    var statusElements = sys.getElementsByAttribute("status");
-    for (var i = 0; i < statusElements.length; i++)
-        statusElements[i].onclick = function () { document.getElementById("Settings").style.display = "none"; chatEngine.changeStatus(this) }
-    
 }
 Chat.Show = function () { var sys = Chat.system; sys.GetElement("Chat").style.display = "block"; }
 Chat.Hide = function () { var sys = Chat.system; sys.GetElement("Chat").style.display = "none"; }
@@ -26,8 +21,14 @@ Chat.Hide = function () { var sys = Chat.system; sys.GetElement("Chat").style.di
 //Chat engine
 Chat.Engine = function (currentUserIdentifier)
 {
+    var sys = Chat.system;
+    
     var chatEngin = this;
-    this.roomContainer = new Chat.Objects.ChatRoomContainer(Chat.system.GetElement("Conteiner"), chatEngin)
+    this.roomContainer = new Chat.Objects.ChatRoomContainer(sys.GetElement("Conteiner"), chatEngin)
+
+    var settings = Chat.Engine.createSettings(this);
+    this.listOfUserContainer = new Chat.Objects.ChatUserListContainer(sys.GetElement("UserList"), settings);
+    sys.AppendChild(sys.GetElement("Chat"), settings.getHtmlObject())
     
     chatEngin._registrateClientEvents($.connection.chatHubs, chatEngin, currentUserIdentifier);
 
@@ -65,8 +66,7 @@ Chat.Engine.prototype.loadAllUserList = function (data, currentUserIdentifier) {
     var users = JSON.parse(data);
     var sys = Chat.system;
 
-    var listUser = sys.GetElement("UserInList");
-    listUser.innerHTML = '';
+    this.listOfUserContainer.clearUserContainer();
 
     for (var key in users) {
         if (users.hasOwnProperty(key)) {
@@ -79,8 +79,8 @@ Chat.Engine.prototype.loadAllUserList = function (data, currentUserIdentifier) {
                     continue;
                 var status = Chat.Objects.ChatUserStatus.parseStatusFromJson(userInJsonFormat.UserStatus)
                 var user = new Chat.Objects.ChatUser(userInJsonFormat.UserIdentifier, userInJsonFormat.UserName, status);
-                Chat.Engine.users[userInJsonFormat.UserIdentifier] = user;
-                sys.AppendChild(listUser, user.createUserListElement(chatEngine));
+
+                this.listOfUserContainer.appendUser(user,this);
             }
         }
     }
@@ -106,9 +106,10 @@ Chat.Engine.prototype.openRoomChat = function ()
                 var chatRoom = new Chat.Objects.ChatRoom(roomInJsonFormat.RoomIdentifier, roomInJsonFormat.RoomName, chatEngine)
                 chatEngine.roomContainer.addRoom(chatRoom);
             }
-
-            Chat.Engine.SessionNextDate[roomInJsonFormat.RoomIdentifier] = "";
-            chatEngine._fillRoomWithHistory(chatEngine.roomContainer.getRoomByIdentifier(roomInJsonFormat.RoomIdentifier));
+            
+            var room = chatEngine.roomContainer.getRoomByIdentifier(roomInJsonFormat.RoomIdentifier);
+            room.getRoomSession().setSessionNextDate("");
+            chatEngine._fillRoomWithHistory(room);
 
         } catch (exception) {
             sys.logError(exception.message + " - openRoomChat");
@@ -148,14 +149,17 @@ Chat.Engine.prototype.createRoom = function (data) {
         return;
     }
 }
-Chat.Engine.prototype._fillRoomWithHistory = function(room){
-    this.loadHistory(room.getRoomIdentifier())
+Chat.Engine.prototype._fillRoomWithHistory = function (room) {
+    //this.loadHistory(room.getRoomIdentifier())
     var chatEngin = this;
+    var sys = Chat.system;
             
-    var loadHistoryInterval = setInterval(function () {
-        if (Chat.Engine.SessionNextDate[room.getRoomIdentifier()] != "false" || room.getRoomMessageContentScrollHeight() < room.getRoomMessageContentHeight()) {
-            clearInterval(loadHistoryInterval);
+    Chat.Engine.loadHistoryInterval = setInterval(function () {
+        
+        if (!room.getRoomSession().getCanLoadMoreHistory() || room.getRoomMessageContentScrollHeight() > room.getRoomMessageContentHeight()) {
+            clearInterval(Chat.Engine.loadHistoryInterval);
             room.scrollToTheBottonOfMessageContent();
+            return;
         }
 
         chatEngin.loadHistory(room.getRoomIdentifier());
@@ -268,13 +272,13 @@ Chat.Engine.prototype.chageStatusToUser = function (data) {
         return;
 
     var userInJsonFormat = data;
-    var storedUser = Chat.Engine.users[userInJsonFormat.UserIdentifier];
+    var storedUser = this.listOfUserContainer.getUserByIdentifier(userInJsonFormat.UserIdentifier);
     if (sys.isNullOrUndefined(storedUser) && Chat.Engine.currentUser.getUserIdentifier() != userInJsonFormat.UserIdentifier) {
 
         var status = Chat.Objects.ChatUserStatus.parseStatusFromJson(userInJsonFormat.UserStatus)
         var user = new Chat.Objects.ChatUser(userInJsonFormat.UserIdentifier, userInJsonFormat.UserName, status);
-        Chat.Engine.users[userInJsonFormat.UserIdentifier] = user;
-        sys.AppendChild(listUser, user.createUserListElement(chatEngine));
+
+        this.listOfUserContainer.appendUser(user, this);
     }
     if (!sys.isNullOrUndefined(storedUser)) {
         storedUser.changeStatus(userInJsonFormat.UserStatus.IdStaut)
@@ -282,38 +286,171 @@ Chat.Engine.prototype.chageStatusToUser = function (data) {
 }
 
 Chat.Engine.prototype.loadHistory = function (idRoom) {
-
     var sys = Chat.system;
+    sys.debugLog("-------------------------------------------------------- Start ---------------------------------------------------");
+    sys.debugLog( "current iteration " + iterator)
     var chatContainer = this.roomContainer;
+    room = chatContainer.getRoomByIdentifier(idRoom);
 
-    if (sys.isUndefined(Chat.Engine.SessionNextDate[idRoom]))
-        Chat.Engine.SessionNextDate[idRoom] = "";
+    if (!sys.isNullOrUndefined(room.getRoomSession()) && sys.isNullOrUndefinedOrEmptyObject(room.getRoomSession().getSessionNextDate())) {
+        room.getRoomSession().setSessionNextDate("");
+        sys.debugLog("clear session date");
+        sys.debugLog("condition 1 " + sys.isNullOrUndefined(room.getRoomSession()));
+        sys.debugLog("condition 2 " + sys.isNullOrUndefinedOrEmptyObject(room.getRoomSession().getSessionNextDate()));
+        sys.debugLog("");
+    }
 
-    if (Chat.Engine.SessionNextDate[idRoom] == "false")
+    if (!room.getRoomSession().getCanLoadMoreHistory()) {
+        sys.debugLog("can load history false");
+        sys.debugLog("");
         return;
-
-    this.chatHub.server.loadHistory(idRoom, Chat.Engine.SessionNextDate[idRoom]).done(function (result) {
+    }
+    sys.debugLog("send to hub  " + room.getRoomSession().getSessionNextDate());
+    this.chatHub.server.loadHistory(idRoom, room.getRoomSession().getSessionNextDate()).done(function (result) {
         result = JSON.parse(result);
 
         if (sys.isNullOrUndefinedOrEmptyObject(result))
             return;
 
         if (result.IdRoom == 0) {
-            Chat.Engine.SessionNextDate[idRoom] = "false";
+            room.getRoomSession().setCanLoadMoreHistory(false);
             return;
         }
 
-        var room = chatContainer.getRoomByIdentifier(idRoom);
         room.loadHistory(Chat.Objects.ChatMessageSession.parseFromJsonResult(result));
-
-        Chat.Engine.SessionNextDate[idRoom] = result.SessionStartDate;
-
+        room.getRoomSession().setSessionNextDate(result.SessionStartDate);
+        sys.debugLog("next session date " + result.SessionStartDate);
+        iterator++;
+        sys.debugLog("");
+        sys.debugLog("-------------------------------------------------------- END ---------------------------------------------------");
     });
 }
 
 // Chat engine static variables
 Chat.Engine.currentUser = {};
-Chat.Engine.users = [];
-Chat.Engine.openedRoom = [];
-Chat.Engine.SessionNextDate = [];
+Chat.Engine.loadHistoryInterval = "";
+
+// Chat engine static methods
+Chat.Engine.createSettings = function (chatEngine) {
+    var sys = Chat.system;
+    
+    var settings = new Chat.Objects.ChatSettings();
+    settings.addSettings(Chat.Engine._createStatusSetting(settings, chatEngine));
+    settings.addSettings(Chat.Engine._createStartConference(settings, chatEngine));
+
+    settings.createSettings();
+
+    return settings;
+}
+Chat.Engine._createStatusSetting = function (settings, chatEngine) {
+
+    var statusOptions = new Chat.Objects.ChatSetting("ChatStatusSettings")
+
+    var offline = new Chat.Objects.ChatSettingOption("Off-line", "onclick", function () { settings.minimizeSettings(); chatEngine.changeStatus(this); })
+    offline.setAttribute("status", "2")
+    offline.createHtmlElement(Chat.Engine._createStatusOptionContent("/ChatImage/offline.png", offline.getName()))
+
+    var online = new Chat.Objects.ChatSettingOption("On-line", "onclick", function () { settings.minimizeSettings(); chatEngine.changeStatus(this); })
+    online.setAttribute("status", "1")
+    online.createHtmlElement(Chat.Engine._createStatusOptionContent("/ChatImage/online.png", online.getName()))
+
+    statusOptions.addOption(offline);
+    statusOptions.addOption(online);
+
+    return statusOptions;
+}
+Chat.Engine._createStatusOptionContent = function (imgUrl, statusName) {
+    var sys = Chat.system;
+
+    var div = sys.createElement("div");
+    var spanStatusName = sys.createElement("span", undefined, undefined, statusName);
+    var statusImage = sys.createElement("img", undefined, undefined, undefined, undefined, { "src": imgUrl, "style": "width: 15px;" });
+
+    sys.AppendChild(div, spanStatusName);
+    sys.AppendChild(div, statusImage);
+    
+    return div;
+}
+Chat.Engine._createStartConference = function (settings,engine)
+{
+    var sys = Chat.system;
+
+    var statusOptions = new Chat.Objects.ChatSetting("StartConference")
+
+    var conference = new Chat.Objects.ChatSettingOption("Conference", "onclick", function () {
+      
+        settings.minimizeSettings();
+        var popUp = new Chat.ConferencePopup();
+
+        var apply = sys.createElement("button", undefined, "button-apply", "Apply");
+        var cancel = sys.createElement("button", undefined, "button-cancel", "Cancel");
+
+        cancel.onclick = function () { popUp.closeModalPopUp(); delete popUp; }
+
+        var divSelectedUserList = sys.createElement("div", undefined, "UserListContent-style");
+        var selectedListUsers = new Chat.Objects.ChatUserListContainer(divSelectedUserList, new Chat.Objects.ChatSettings());
+        selectedListUsers.hideSettingsButton();
+
+        apply.onclick = function () {
+            var users = selectedListUsers.getUsers();
+            var userIdentifiers = [];
+
+            for (var i in users) {
+                if (users.hasOwnProperty(i))
+                {
+                    userIdentifiers.push(users[i].getUserIdentifier());
+                }
+            }
+
+            engine.openRoomChat.apply(engine, userIdentifiers);
+            popUp.closeModalPopUp();
+            delete popUp;
+        }
+
+        popUp.creatPopup("Begin Conference", function (parent) {
+            var divUserList = sys.createElement("div", undefined, "UserListContent-style");
+            var listUsers = new Chat.Objects.ChatUserListContainer(divUserList, new Chat.Objects.ChatSettings())
+            listUsers.hideSettingsButton();
+            var users = engine.listOfUserContainer.getUsers();
+
+            var addOnClickToListItem = function (userListItem, user) {
+                userListItem.onclick = function (event) {
+                    if (listUsers.isContains(user.getUserIdentifier())) {
+                        listUsers.removeUser(user.getUserIdentifier());
+                        selectedListUsers.appendUser(user, engine);
+                    } else {
+                        selectedListUsers.removeUser(user.getUserIdentifier());
+                        listUsers.appendUser(user, engine);
+                    }
+
+                    addOnClickToListItem(user.getHtmlObject(), user);
+                }
+            }
+
+            for (var i in users) {
+                if (users.hasOwnProperty(i)) {
+                    var user = users[i];
+                    listUsers.appendUser(user, engine);
+                    var userListItem = user.getHtmlObject();
+                    addOnClickToListItem(userListItem, user);
+                }
+            }
+            
+            var listsWrapper = sys.createElement("div",undefined,"");
+            sys.AppendChild(listsWrapper, divUserList)
+            sys.AppendChild(listsWrapper, divSelectedUserList);
+
+            sys.AppendChild(parent, listsWrapper);
+        }, [apply, cancel]);
+
+        popUp.showPopUp();
+    })
+    conference.createHtmlElement(Chat.Engine._createStatusOptionContent("/ChatImage/add_group-16.png", conference.getName()))
+
+    statusOptions.addOption(conference);
+
+    return statusOptions;
+}
+
+var iterator = 0;
 

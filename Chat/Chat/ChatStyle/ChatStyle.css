@@ -20,7 +20,16 @@ box-sizing: initial!important;
     line-height: normal !important;
     box-sizing: initial !important;
 }
-.UserListContent {
+.UserListContent-style {
+border: 1px solid silver;
+    border-radius: 3px;
+    width: 240px;
+    background-color: white;
+    float: left;
+    margin-left: 10px;
+}
+.UserListContent
+{
     border: 1px solid silver;
     border-radius: 3px;
     width: 240px;
@@ -402,4 +411,10 @@ color:black;
 }
 .blink {
     background-color:darkorange;
+}
+.button-apply {
+margin:2px;
+}
+.button-cancel {
+margin:2px;
 }

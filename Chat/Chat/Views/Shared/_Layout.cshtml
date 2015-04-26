@@ -7,6 +7,7 @@
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
     @Styles.Render("~/ChatStyle/FBPopUp.css")
+    @Styles.Render("~/ChatStyle/PopupStyle.css")
 
 </head>
 <body>
@@ -28,6 +29,7 @@
     <div class="container body-content">
         @RenderBody()
         <hr />
+        <div style="" id="popupInitialContent"></div>
     </div>
 
     @Scripts.Render("~/bundles/jquery")
@@ -49,17 +51,18 @@
     @Scripts.Render("~/ChatScript/Extensions.js")
     @Scripts.Render("~/ChatScript/ChatScript.js")
     @Scripts.Render("~/ChatScript/ChatObjects.js")
+    @Scripts.Render("~/ChatScript/ChatConferencePopup.js")
 
-    
+
 </body>
+
 <script>
-    $(document).ready(function(){
+    $(document).ready(function () {
 
-        if ("@(User.Identity.IsAuthenticated == true && Session["UserIdentifier"] != null)" == "True"){
+        if ("@(User.Identity.IsAuthenticated == true && Session["UserIdentifier"] != null)" == "True") {
             Chat.Start("@Session["UserIdentifier"]");
+            sizeListOfUsers()
         }
-
-        sizeListOfUsers()
     });
     function sizeListOfUsers() {
         document.getElementById("UserInList").style.maxHeight = (document.documentElement.clientHeight - 50) + "px"

@@ -1,0 +1,66 @@
+﻿.Smothe {
+    background: black;
+    opacity: 0.7;
+    filter: alpha(opacity=70);
+}
+
+.PopUp {
+    min-width: 500px;
+    max-width: 800px;
+    min-height: 200px;
+    position: fixed;
+    background: silver;
+    z-index: 9999999;
+    box-shadow: 5px 5px 10px 1px;
+    border-radius: 10px;
+    filter: progid:DXImageTransform.Microsoft.Shadow(Strength=5, Direction=135, Color='#000000');
+}
+
+.PopUpHeder {
+    float: left;
+    width: 100%;
+    font-size: 14pt;
+    font-family: 'lucia-grande',tahoma,verdana;
+}
+
+.PopUpCloseButton {
+    height: 25px;
+    right: 0;
+    position: absolute;
+    cursor: pointer;
+}
+
+.popUpHeaderText {
+    width: 100%;
+    height: 25px;
+    float: left;
+}
+
+.SmoothBackground {
+    width: 100%;
+    height: 100%;
+    float: left;
+    background: black;
+    opacity: 0.7;
+    position: fixed;
+    z-index: 1;
+}
+
+.button-wrapper {
+    float: left;
+    width: 100%;
+}
+
+.buttons {
+    float: right;
+    margin-right: 10px;
+    margin-bottom: 5px;
+}
+.PanelContent {
+      float: left;
+  width: 100%;
+  padding-top: 10px;
+  padding-bottom: 5px;
+  padding-left: 15px;
+  padding-right: 5px;
+}

@@ -7,33 +7,10 @@
     </div>
     <div id="Chat" class="Chat" style="display:none">
         <div id="UserList" class="UserListContent">
-            <div id="listContent" style="float: left;padding-top: 15px;">
-                <ul id="UserInList" class="UserInList"></ul>
-            </div>
-            <div class="ListUserFooter">
-                <div>
-                    <textarea rows="2" class="SearchUser" onfocus="TextAreaOnFocus(this)" onblur="TextAreaOnBlur(this)">Search</textarea>
-                </div>
-                <div id="Settings" onclick="ShowSetting(this)" class="Status" style="background-image:url(@Url.Content("~/ChatImage/settingsButton.png"));background-repeat: no-repeat;background-size: contain;">
-                </div>
-                <div id="Status" class="Status">
-                </div>
-            </div>
             <div id="Conteiner" class="divConteiner">
 
             </div>
         </div>
-        <div id="SettingsDiv" class="SettingsDiv" style="display:none">
-            <ul class="settingsContent">
-                <li class="SettigsElment">
-                    <div onclick="ChangeStatus(this)" status="1"><span>OnLine </span> <img src="@Url.Content("~/ChatImage/online.png")" style="width: 15px;" /></div>
-                </li>
-                <li class="SettigsElment">
-                    <div><span onclick="ChangeStatus(this)" status="2">OffLine </span><img src="@Url.Content("~/ChatImage/offline.png")" style="width: 15px;" /></div>
-                </li>
-            </ul>
-        </div>
-    </div>
 </div>
 
 <link rel="stylesheet" type="text/css" href="@Url.Content("~/ChatStyle/ChatStyle.css")" />

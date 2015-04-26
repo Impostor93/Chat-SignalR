@@ -30,7 +30,7 @@ Chat.Objects.ChatRoom.prototype._createNewRoomElement = function () {
 
 	this.roomContentElement = sys.createElement("div", "RoomContent", "RoomContent");
 
-	this.roomHeaderElement = sys.createElement("div", "RoomHeader" + this.getRoomIdentifier(), "RoomHeader", undefined, "block")
+	this.roomHeaderElement = sys.createElement("div", undefined, "RoomHeader", undefined, "block")
 	this.roomHeaderElement.onclick = function () {
 		if (chatRoom.isRoomVisible) {
 			chatRoom.minimizeRoom();
@@ -50,7 +50,7 @@ Chat.Objects.ChatRoom.prototype._createNewRoomElement = function () {
 
 	this.conversationPartElement = sys.createElement("div", "ConversationPart", "ConversationPart", undefined, "block");
 
-	this.messageContent = sys.createElement("div", "MessageContent" + this.getRoomIdentifier(), "MessageContent", undefined, "block");
+	this.messageContent = sys.createElement("div", undefined, "MessageContent", undefined, "block");
 	var timer = null;
 	this.messageContent.onscroll = function () {
 		if (this.scrollTop == 0) {
@@ -67,7 +67,7 @@ Chat.Objects.ChatRoom.prototype._createNewRoomElement = function () {
 
 	sys.AppendChild(this.conversationPartElement, this.messageContent);
 
-	this.textAreaOfRoom = sys.createElement("textarea", "MessageText" + this.getRoomIdentifier(), "TextBox", undefined, "block", { "rows": "1" })
+	this.textAreaOfRoom = sys.createElement("textarea", undefined, "TextBox", undefined, "block", { "rows": "1" })
 	this.textAreaOfRoom.onkeydown = function (event) { chatRoom.engine.sendMessage(event, chatRoom.getRoomIdentifier()); };
 
 	this.roomFooterElement = sys.createElement("div", "RoomFooter", "RoomFooter");
@@ -76,7 +76,8 @@ Chat.Objects.ChatRoom.prototype._createNewRoomElement = function () {
 	sys.AppendChild(this.conversationPartElement, this.roomFooterElement);
 	sys.AppendChild(this.roomContentElement, this.conversationPartElement);
 
-	var chatRoomElement = sys.createElement("div", "Chat-" + this.getRoomIdentifier(), "ChatRoom", undefined, "block", { "RoomId": this.getRoomIdentifier(), "Visible": true });
+	var chatRoomElement = sys.createElement("div", undefined, "ChatRoom", undefined, "block", { "RoomId": this.getRoomIdentifier(), "Visible": true });
+	chatRoomElement.onclick = function () { chatRoom.textAreaOfRoom.focus(); }
 
 	sys.AppendChild(chatRoomElement, this.roomContentElement);
 
@@ -277,8 +278,9 @@ Chat.Objects.ChatRoom.prototype.loadHistory = function (result) {
 Chat.Objects.ChatRoom.prototype.getRoomHtml = function () { return this.chatRoomElement.outerHTML }
 Chat.Objects.ChatRoom.prototype.getRoomHtmlObject = function () { return this.chatRoomElement }
 Chat.Objects.ChatRoom.prototype.getRoomHeaderNameContainerElement = function () { return this._definedRoomNameElement(this.getRoomName()) }
-Chat.Objects.ChatRoom.prototype.getRoomMessageContentScrollHeight = function () { this.messageContent.scrollHeight; }
-Chat.Objects.ChatRoom.prototype.getRoomMessageContentHeight = function () { this.messageContent.clientHeight; }
+Chat.Objects.ChatRoom.prototype.getRoomMessageContentScrollHeight = function () { return this.messageContent.scrollHeight; }
+Chat.Objects.ChatRoom.prototype.getRoomMessageContentHeight = function () { return this.messageContent.clientHeight; }
+Chat.Objects.ChatRoom.prototype.getRoomSession = function () { return this.currentMessageSession }
 
 Chat.Objects.ChatRoom.prototype.getRoomIdentifier = function () { return this.roomIdentifier; }
 Chat.Objects.ChatRoom.prototype.getRoomName = function () { return this.roomName; }
@@ -357,6 +359,9 @@ Chat.Objects.ChatMessageSession = function (roomIdentifier)
 	this.roomIdentifier = roomIdentifier;
 	this.sessionStartDate = "";
 	this.sessionEndDate = "";
+
+	this.sessionNextDate = "";
+	this.canLoadMoreHistory = true;
 }
 Chat.Objects.ChatMessageSession.prototype.addToMessageList = function (message) { this.listOfMessages.push(message); }
 Chat.Objects.ChatMessageSession.prototype.insertOnTheTopOfMessageList = function (message) {
@@ -377,6 +382,8 @@ Chat.Objects.ChatMessageSession.prototype.setIdRoom = function (list) { this.lis
 Chat.Objects.ChatMessageSession.prototype.setUnreadMessages = function (unreadMessages) { this.unreadMessages = unreadMessages; }
 Chat.Objects.ChatMessageSession.prototype.setSessionStartDate = function (sessionStartDate) { this.sessionStartDate = sessionStartDate; }
 Chat.Objects.ChatMessageSession.prototype.setSessionEndDate = function (sessionEndDate) { this.sessionEndDate = sessionEndDate; }
+Chat.Objects.ChatMessageSession.prototype.setSessionNextDate = function (sessionNextDate) { this.sessionNextDate = sessionNextDate; }
+Chat.Objects.ChatMessageSession.prototype.setCanLoadMoreHistory = function (canLoadMoreHistory) { this.canLoadMoreHistory = canLoadMoreHistory; }
 
 //Getters
 Chat.Objects.ChatMessageSession.prototype.getIdRoom = function () { return this.roomId; }
@@ -385,6 +392,8 @@ Chat.Objects.ChatMessageSession.prototype.getUnreadMessages = function () { retu
 Chat.Objects.ChatMessageSession.prototype.getRoomIdentifier = function () { return this.roomIdentifier; }
 Chat.Objects.ChatMessageSession.prototype.getSessionStartDate = function () { return this.sessionStartDate; }
 Chat.Objects.ChatMessageSession.prototype.getSessionEndDate = function () { return this.sessionEndDate; }
+Chat.Objects.ChatMessageSession.prototype.getSessionNextDate = function () { return this.sessionNextDate; }
+Chat.Objects.ChatMessageSession.prototype.getCanLoadMoreHistory = function () { return this.canLoadMoreHistory; }
 
 //Static methods
 Chat.Objects.ChatMessageSession.parseFromJsonResult = function (result) {
@@ -415,6 +424,7 @@ Chat.Objects.ChatUser = function (userIndentifier, userName,chatStatus)
 	this.userIndentifier = userIndentifier;
 	this.chatUserStatus = chatStatus;
 	this.userInListOfUsersHtmlObject = "";
+	this.isUserVisible = true;
 }
 Chat.Objects.ChatUser.prototype.createUserListElement = function (chatEngine) {
 
@@ -453,6 +463,16 @@ Chat.Objects.ChatUser.prototype.changeStatus = function (statusId) {
 	this.imageElement = this.getStatus().getImageElement();
 
 	this.userStatusContainer.replaceChild(this.imageElement, oldStatusImage);
+}
+Chat.Objects.ChatUser.prototype.getHtmlObject = function () { return this.userInListOfUsersHtmlObject; }
+
+Chat.Objects.ChatUser.prototype.show = function(){
+	this.userInListOfUsersHtmlObject.style.display = "";
+	this.isUserVisible = true;
+}
+Chat.Objects.ChatUser.prototype.hide = function () {
+	this.userInListOfUsersHtmlObject.style.display = "none";
+	this.isUserVisible = false;
 }
 
 //End ChatUser Object
@@ -663,6 +683,7 @@ Chat.Objects.ChatRoomContainer.prototype._showHiddenRoomAndHideLastVisibleRoom =
 	this.addRoom(hiddenRoom, true);
 
 	lastVisibleRoom.maximizeRoom();
+	hiddenRoom.scrollToTheBottonOfMessageContent();
 }
 
 Chat.Objects.ChatRoomContainer.prototype.getRoomContainer = function () { return this.chatRoomContainer; }
@@ -772,27 +793,241 @@ Chat.Objects.ChatRoomContainer.hiddenRoomListMenu = 42;
 
 //End Chat Room Container object
 
-	function ShowSetting(a)
-	{
-		var sys = Chat.system;
+//Start Chat user list container
+Chat.Objects.ChatUserListContainer = function (container, settings) {
+	this.listContainer = container;
+	this.userList = "";
+	this.listOfUserContainerFooter = "";
+	this.searchUserTextArea = "";
 
-		if (sys.GetElement("SettingsDiv").style.display == "block")
-			sys.GetElement("SettingsDiv").style.display = "none";
-		else {
-			sys.GetElement("SettingsDiv").style.display = "block";
-			a.focus()
+	this.settingsDiv = settings;
+
+	var sys = Chat.system;
+	this.listContainerOfUserList = this._createListContainerOfUserList();
+	sys.AppendChild(this.listContainer, this.listContainerOfUserList);
+	this._createListContainerFooter();
+	sys.AppendChild(this.listContainer, this.listOfUserContainerFooter);
+
+	this.users = [];
+}
+Chat.Objects.ChatUserListContainer.prototype._createListContainerOfUserList = function () {
+	var sys = Chat.system;
+
+	var listContainer = sys.createElement("div", "listContent")
+	listContainer.style.setProperty("float", "left");
+	listContainer.style.setProperty("padding-top", "15px");
+	listContainer.style.setProperty("max-height", "588px");
+
+	this.userList = sys.createElement("ul", "UserInList", "UserInList");
+	this.userList.style.setProperty("max-height", "593px");
+
+	sys.AppendChild(listContainer, this.userList);
+
+	return listContainer;
+}
+Chat.Objects.ChatUserListContainer.prototype._createListContainerFooter = function () {
+	var sys = Chat.system;
+	var chatUserListContainer = this;
+
+	this.listOfUserContainerFooter = sys.createElement("div", undefined, "ListUserFooter");
+	var textAreaWrapper = sys.createElement("div");
+
+	this.searchUserTextArea = sys.createElement("textarea", undefined, "SearchUser", "Search", undefined, { "rows": "2" });
+	this.searchUserTextArea.onfocus = function () { this.value = "" };
+	this.searchUserTextArea.onblur = function () { this.value = "Search"; setTimeout(function () { chatUserListContainer.showAllUsers() },100) };
+	this.searchUserTextArea.onkeyup = function () { if (this.value != "Search") { chatUserListContainer._filterUsers(this.value); } };
+
+	sys.AppendChild(textAreaWrapper, this.searchUserTextArea);
+	sys.AppendChild(this.listOfUserContainerFooter, textAreaWrapper);
+
+	this.settingsButton = sys.createElement("div", "Settings", "Status");
+	this.settingsButton.style.setProperty("background-image", "url(/ChatImage/settingsButton.png)");
+	this.settingsButton.style.setProperty("background-repeat", "no-repeat");
+	this.settingsButton.style.setProperty("background-size", "contain");
+
+	this.settingsButton.onclick = function () {
+		chatUserListContainer.settingsDiv.isSettingDivExpand ? chatUserListContainer.settingsDiv.minimizeSettings() : chatUserListContainer.settingsDiv.maximizeSettings();
+	}
+
+	sys.AppendChild(this.listOfUserContainerFooter, this.settingsButton);
+
+	var statusImageWrapper = sys.createElement("div", "Status", "Status")
+	sys.AppendChild(this.listOfUserContainerFooter, statusImageWrapper);
+}
+Chat.Objects.ChatUserListContainer.prototype._filterUsers = function (val) {
+	for (var i in this.users)
+	{
+		if (this.users.hasOwnProperty(i))
+		{
+			var iterationUser = this.users[i];
+			if (iterationUser.getUserName().toLowerCase().startWith(val.toLowerCase())) {
+				iterationUser.show();
+			} else {
+				iterationUser.hide();
+			}
 		}
 	}
-	function TextAreaOnFocus(currElement)
-	{
-		currElement.value = "";
+}
+Chat.Objects.ChatUserListContainer.prototype.showAllUsers = function () {
+	for (var i in this.users) {
+		if (this.users.hasOwnProperty(i)) 
+			this.users[i].show();
 	}
-	function TextAreaOnBlur(currElement)
+}
+
+Chat.Objects.ChatUserListContainer.prototype.getHtmlObject = function () { return this.listContainer; }
+Chat.Objects.ChatUserListContainer.prototype.addUsers = function (user) { this.users[user.getUserIdentifier()] = user; }
+Chat.Objects.ChatUserListContainer.prototype.isContains = function (userIdentifier) { return this.users.contains(userIdentifier) }
+Chat.Objects.ChatUserListContainer.prototype.appendUser = function (user, engine) {
+	var sys = Chat.system;
+
+	if (!this.isContains(user.getUserIdentifier())) {
+		sys.AppendChild(this.userList, user.createUserListElement(engine));
+		this.addUsers(user)
+	}
+}
+Chat.Objects.ChatUserListContainer.prototype.clearUserContainer = function () { this.userList.innerHTML = ""; }
+Chat.Objects.ChatUserListContainer.prototype.hideSettingsButton = function () { this.settingsButton.style.display = "none" }
+Chat.Objects.ChatUserListContainer.prototype.showSettingsButton = function () { this.settingsButton.style.display = "" }
+Chat.Objects.ChatUserListContainer.prototype.removeUser = function (userIdentifier) {
+	if (this.isContains(userIdentifier)) {
+	    Chat.system.RemoveElmenet(this.userList, this.users[userIdentifier].getHtmlObject());
+		delete this.users[userIdentifier];
+	}
+}
+
+//Getters
+Chat.Objects.ChatUserListContainer.prototype.getUsers = function () { return this.users; }
+Chat.Objects.ChatUserListContainer.prototype.getUserByIdentifier = function (userIdentifier) { return this.users[userIdentifier]; }
+
+//End Chat user list container
+
+//Start Chat settings
+Chat.Objects.ChatSettings = function (){
+	this.settings = [];
+
+	this.settingContainer = "";
+	this.isSettingDivExpand = false;
+}
+Chat.Objects.ChatSettings.prototype.addSettings = function (setting) {
+	this.settings[setting.getName()] = setting;
+}
+Chat.Objects.ChatSettings.prototype.getSettingByName = function (name) {
+	return this.settings[name];
+}
+
+Chat.Objects.ChatSettings.prototype.createSettings = function(){
+	var sys = Chat.system;
+
+	this.settingContainer = sys.createElement("div", "SettingsDiv", "SettingsDiv", undefined, "none");
+	for (var i in this.settings)
 	{
-		currElement.value = "Search";
+		if (this.settings.hasOwnProperty(i)) {
+			this.settings[i].createSettingHtmlElement()
+			sys.AppendChild(this.settingContainer, this.settings[i].getHtmlObject());
+		}
+	}
+}
+
+Chat.Objects.ChatSettings.prototype.minimizeSettings = function () { this.settingContainer.style.display = "none"; this.isSettingDivExpand = false; }
+Chat.Objects.ChatSettings.prototype.maximizeSettings = function () { this.settingContainer.style.display = ""; this.isSettingDivExpand = true }
+Chat.Objects.ChatSettings.prototype.getHtmlObject = function () { return this.settingContainer; }
+
+// Chat setting
+Chat.Objects.ChatSetting = function (name) {
+	this.settingsName = name;
+	this.optionsOfTheSetting = [];
+
+	this.settingContainer = "";
+}
+Chat.Objects.ChatSetting.prototype.getName = function () { return this.settingsName; };
+
+Chat.Objects.ChatSetting.prototype.addOption = function (option) {
+	this.optionsOfTheSetting[option.getName()] = option;
+}
+Chat.Objects.ChatSetting.prototype.getSettingByName = function (name) {
+	return this.optionsOfTheSetting[option.getName()];
+}
+
+Chat.Objects.ChatSetting.prototype.createSettingHtmlElement = function () {
+	var sys = Chat.system;
+	this.settingContainer = sys.createElement("ul", undefined, "settingsContent");
+	for (var i in this.optionsOfTheSetting)
+	{
+		if (this.optionsOfTheSetting.hasOwnProperty(i)) {
+			var option = this.optionsOfTheSetting[i];
+			sys.AppendChild(this.settingContainer, option.getHtmlElement());
+		}
+	}
+}
+Chat.Objects.ChatSetting.prototype.getHtmlObject = function () { return this.settingContainer; }
+
+//Chat options
+Chat.Objects.ChatSettingOption = function (name, eventName, callback) {
+	this.name = name;
+	this.events = [];
+	this.events[eventName] = [callback];
+
+	this.attributes = [];
+
+	this.listElement = "";
+	this.divContainer = "";
+}
+Chat.Objects.ChatSettingOption.prototype.getName = function () { return this.name; }
+Chat.Objects.ChatSettingOption.prototype.setEventToOption = function (eventName, callback) {
+	var sys = Chat.system;
+
+	if (sys.isNullOrUndefinedOrEmptyObject(this.events[eventName]))
+		this.events[eventName] = [callback];
+	else
+		this.events[eventName].push(callback);
+}
+Chat.Objects.ChatSettingOption.prototype.removeEvent = function (eventName) {
+	if (!sys.isNullOrUndefinedOrEmptyObject(this.events[eventName]))
+		delete this.events[eventName];
+}
+Chat.Objects.ChatSettingOption.prototype.getEventsByName = function (eventName) {
+	return this.events[eventName];
+}
+Chat.Objects.ChatSettingOption.prototype.setAttribute = function (name, value) { this.attributes[name] = value; }
+Chat.Objects.ChatSettingOption.prototype.getAttribute = function (name) { return this.attributes[name]; }
+Chat.Objects.ChatSettingOption.prototype.getHtmlElement = function () { return this.listElement; }
+
+Chat.Objects.ChatSettingOption.prototype.createHtmlElement = function (contentElement) {
+	var sys = Chat.system;
+
+	this.listElement = sys.createElement("li", undefined, "SettigsElment");
+
+	this.divContainer = sys.createElement("div");
+	for (var i in this.attributes)
+	{
+		if(this.attributes.hasOwnProperty(i)){
+			this.divContainer.setAttribute(i, this.attributes[i])
+		}
+	}
+	for (var funcName in this.events) {
+		if (this.events.hasOwnProperty(funcName)) {
+			var iterationEvents = this.events[funcName];
+			var eventName = funcName.startWith("on") ? funcName.substring(2, funcName.length) : funcName;
+			for (var funcIndex in iterationEvents) {
+
+				if (iterationEvents.hasOwnProperty(funcIndex)) {
+					if (sys.isNullOrUndefined(this.divContainer["on" + eventName]))
+						this.divContainer["on" + eventName] = iterationEvents[funcIndex];
+					else
+						sys.addEventListener(this.divContainer, eventName, iterationEvents[funcIndex]);
+				}
+			}
+		}
 	}
 
-	Chat.HtmlHalpers.generateCoolPopUpHtml = function (userNames) {
+	sys.AppendChild(this.divContainer, contentElement);
+	sys.AppendChild(this.listElement, this.divContainer);
+	
+}
+//End Chat settings
+
+Chat.HtmlHalpers.generateCoolPopUpHtml = function (userNames) {
 		var bodyOfPopUp = "";
 		for(var i = 0; i < userNames.length;i++)
 		{
