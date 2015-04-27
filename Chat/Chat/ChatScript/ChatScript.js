@@ -109,7 +109,7 @@ Chat.Engine.prototype.openRoomChat = function ()
             
             var room = chatEngine.roomContainer.getRoomByIdentifier(roomInJsonFormat.RoomIdentifier);
             room.getRoomSession().setSessionNextDate("");
-            chatEngine._fillRoomWithHistory(room);
+            chatEngine.loadHistory(room.getRoomIdentifier(), true);
 
         } catch (exception) {
             sys.logError(exception.message + " - openRoomChat");
@@ -141,29 +141,13 @@ Chat.Engine.prototype.createRoom = function (data) {
 
             var room = new Chat.Objects.ChatRoom(result.RoomIdentifier, result.RoomName, this);
             this.roomContainer.addRoom(room);
-            this._fillRoomWithHistory(room);
+            this.loadHistory(room.getRoomIdentifier(),true);
         }
 
     } catch (ex) {
         sys.logError(ex.message + " - CheckForRooms");
         return;
     }
-}
-Chat.Engine.prototype._fillRoomWithHistory = function (room) {
-    //this.loadHistory(room.getRoomIdentifier())
-    var chatEngin = this;
-    var sys = Chat.system;
-            
-    Chat.Engine.loadHistoryInterval = setInterval(function () {
-        
-        if (!room.getRoomSession().getCanLoadMoreHistory() || room.getRoomMessageContentScrollHeight() > room.getRoomMessageContentHeight()) {
-            clearInterval(Chat.Engine.loadHistoryInterval);
-            room.scrollToTheBottonOfMessageContent();
-            return;
-        }
-
-        chatEngin.loadHistory(room.getRoomIdentifier());
-    }, 100)
 }
 
 Chat.Engine.prototype.sendMessage = function (e, idRoom) {
@@ -285,27 +269,20 @@ Chat.Engine.prototype.chageStatusToUser = function (data) {
     }
 }
 
-Chat.Engine.prototype.loadHistory = function (idRoom) {
+Chat.Engine.prototype.loadHistory = function (idRoom, isTrigerOnOpenRoom) {
     var sys = Chat.system;
-    sys.debugLog("-------------------------------------------------------- Start ---------------------------------------------------");
-    sys.debugLog( "current iteration " + iterator)
     var chatContainer = this.roomContainer;
+    var chatEngin = this;
+
     room = chatContainer.getRoomByIdentifier(idRoom);
 
-    if (!sys.isNullOrUndefined(room.getRoomSession()) && sys.isNullOrUndefinedOrEmptyObject(room.getRoomSession().getSessionNextDate())) {
+    if (!sys.isNullOrUndefined(room.getRoomSession()) && sys.isNullOrUndefinedOrEmptyObject(room.getRoomSession().getSessionNextDate())) 
         room.getRoomSession().setSessionNextDate("");
-        sys.debugLog("clear session date");
-        sys.debugLog("condition 1 " + sys.isNullOrUndefined(room.getRoomSession()));
-        sys.debugLog("condition 2 " + sys.isNullOrUndefinedOrEmptyObject(room.getRoomSession().getSessionNextDate()));
-        sys.debugLog("");
-    }
+    
 
-    if (!room.getRoomSession().getCanLoadMoreHistory()) {
-        sys.debugLog("can load history false");
-        sys.debugLog("");
+    if (!room.getRoomSession().getCanLoadMoreHistory()) 
         return;
-    }
-    sys.debugLog("send to hub  " + room.getRoomSession().getSessionNextDate());
+    
     this.chatHub.server.loadHistory(idRoom, room.getRoomSession().getSessionNextDate()).done(function (result) {
         result = JSON.parse(result);
 
@@ -319,16 +296,18 @@ Chat.Engine.prototype.loadHistory = function (idRoom) {
 
         room.loadHistory(Chat.Objects.ChatMessageSession.parseFromJsonResult(result));
         room.getRoomSession().setSessionNextDate(result.SessionStartDate);
-        sys.debugLog("next session date " + result.SessionStartDate);
-        iterator++;
-        sys.debugLog("");
-        sys.debugLog("-------------------------------------------------------- END ---------------------------------------------------");
+
+        if (!sys.isNullOrUndefined(isTrigerOnOpenRoom) && isTrigerOnOpenRoom) {
+            if (!room.getRoomSession().getCanLoadMoreHistory() || room.getRoomMessageContentScrollHeight() > room.getRoomMessageContentHeight())
+                return;
+
+            chatEngin.loadHistory(idRoom, true)
+        }
     });
 }
 
 // Chat engine static variables
 Chat.Engine.currentUser = {};
-Chat.Engine.loadHistoryInterval = "";
 
 // Chat engine static methods
 Chat.Engine.createSettings = function (chatEngine) {
@@ -451,6 +430,4 @@ Chat.Engine._createStartConference = function (settings,engine)
 
     return statusOptions;
 }
-
-var iterator = 0;
 

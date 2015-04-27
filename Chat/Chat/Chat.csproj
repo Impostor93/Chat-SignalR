@@ -188,6 +188,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoggerController.cs" />
+    <Compile Include="Controllers\MochaController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -228,6 +229,7 @@
     <Content Include="ChatStyle\PopupStyle.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\mocha.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -249,6 +251,14 @@
     <Content Include="Scripts\respond.matchmedia.addListener.js" />
     <Content Include="Scripts\respond.matchmedia.addListener.min.js" />
     <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\specs\application\calculator.js" />
+    <Content Include="Scripts\specs\bdd\chai-jquery.js" />
+    <Content Include="Scripts\specs\bdd\chai.js" />
+    <Content Include="Scripts\specs\bdd\fixtures.js" />
+    <Content Include="Scripts\specs\bdd\mocha.js" />
+    <Content Include="Scripts\specs\bdd\sinon-chai.js" />
+    <Content Include="Scripts\specs\bdd\sinon.js" />
+    <Content Include="Scripts\specs\fixtures\readme.txt" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -277,6 +287,7 @@
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Logger\Index.cshtml" />
+    <Content Include="Views\Mocha\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

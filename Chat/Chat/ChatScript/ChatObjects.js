@@ -20,6 +20,7 @@ Chat.Objects.ChatRoom = function ChatRoom(roomIdentifier, roomName, engine) {
 
 	this.isRoomVisible = true;
 	this.hasUnreadMessage = false;
+	this.isRoomOnFocus = false;
 
 }
 Chat.Objects.ChatRoom.prototype._createNewRoomElement = function () {
@@ -59,7 +60,7 @@ Chat.Objects.ChatRoom.prototype._createNewRoomElement = function () {
 			if (chatRoom.isMessageNotSeen()) {
 				chatRoom._showOrHideUnreadSing();
 			} else {
-				chatRoom.currentMessageSession.clearUnreadMessage()
+			    chatRoom.currentMessageSession.clearUnreadMessage();
 				chatRoom._showOrHideUnreadSing();
 			}
 		}
@@ -69,6 +70,11 @@ Chat.Objects.ChatRoom.prototype._createNewRoomElement = function () {
 
 	this.textAreaOfRoom = sys.createElement("textarea", undefined, "TextBox", undefined, "block", { "rows": "1" })
 	this.textAreaOfRoom.onkeydown = function (event) { chatRoom.engine.sendMessage(event, chatRoom.getRoomIdentifier()); };
+	this.textAreaOfRoom.onfocus = function () {
+	    chatRoom.isRoomOnFocus = true;
+	    //chatRoom.currentMessageSession.clearUnreadMessage(); chatRoom._showOrHideUnreadSing()
+	}
+	this.textAreaOfRoom.blur = function () { chatRoom.isRoomOnFocus = false; }
 
 	this.roomFooterElement = sys.createElement("div", "RoomFooter", "RoomFooter");
 	sys.AppendChild(this.roomFooterElement, this.textAreaOfRoom);
@@ -163,6 +169,9 @@ Chat.Objects.ChatRoom.prototype.isMessageNotSeen = function(){
 			&& Chat.Objects.ChatRoom.newMessageMaxArea < (this.messageContent.scrollHeight - this.messageContent.scrollTop - this.messageContent.clientHeight)) {
 		return true;
 	}
+
+	//if (!this.isRoomOnFocus)
+	//    return true;
 	
 	return false;
 }
@@ -251,8 +260,9 @@ Chat.Objects.ChatRoom.prototype.appendMessageElementToContent = function (messag
 		throw Error("There is no message in the array");
 
 	//TODO: add this logic in the below if and test it
-	//var difference = Math.abs(Date.now() - Data.tryToParseFromChatFormatString(message.getSendDate()))
-	//&& difference < 1
+	//var diff = Math.abs(Date.now() - Date.tryToParseFromChatFormatString(message.getSendDate()))
+	//var minutes = Math.floor((diff / 1000) / 60);
+	//&& minutes <= 1
 
 	if (lastUserMessage.getMessageSenderIdentifier() == message.getMessageSenderIdentifier()) {
 		lastUserMessage._appendMessageNode(message)
@@ -886,7 +896,7 @@ Chat.Objects.ChatUserListContainer.prototype.appendUser = function (user, engine
 		this.addUsers(user)
 	}
 }
-Chat.Objects.ChatUserListContainer.prototype.clearUserContainer = function () { this.userList.innerHTML = ""; }
+Chat.Objects.ChatUserListContainer.prototype.clearUserContainer = function () { this.userList.innerHTML = ""; this.users = []; }
 Chat.Objects.ChatUserListContainer.prototype.hideSettingsButton = function () { this.settingsButton.style.display = "none" }
 Chat.Objects.ChatUserListContainer.prototype.showSettingsButton = function () { this.settingsButton.style.display = "" }
 Chat.Objects.ChatUserListContainer.prototype.removeUser = function (userIdentifier) {
