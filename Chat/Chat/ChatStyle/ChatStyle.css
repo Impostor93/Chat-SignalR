@@ -140,7 +140,8 @@ border: 1px solid silver;
 }
 .MessageContent {
     height: 233px;
-    background-color: white;
+    background-color: rgba(192, 192, 192, 0.31);
+    b1ackground-color: white;
     overflow-y: auto;
     padding-top: 5px;
 }
@@ -198,9 +199,13 @@ border: 1px solid silver;
     float: left;
     width: 100%;
     word-break: break-word;
+    padding-bottom:2px;
 }
 .SenderImg {
 display:none;
+}
+.foreignMassage {
+    background-color: white;
 }
 .foreignMassage .ImageContainer {
     background-color: red;
@@ -417,4 +422,8 @@ margin:2px;
 }
 .button-cancel {
 margin:2px;
+}
+.message-node-timestamp {
+float: left;
+border-bottom: 1px solid rgba(171, 170, 169, 0.29);
 }

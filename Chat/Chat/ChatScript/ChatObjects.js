@@ -60,7 +60,7 @@ Chat.Objects.ChatRoom.prototype._createNewRoomElement = function () {
 			if (chatRoom.isMessageNotSeen()) {
 				chatRoom._showOrHideUnreadSing();
 			} else {
-			    chatRoom.currentMessageSession.clearUnreadMessage();
+				chatRoom.currentMessageSession.clearUnreadMessage();
 				chatRoom._showOrHideUnreadSing();
 			}
 		}
@@ -71,8 +71,8 @@ Chat.Objects.ChatRoom.prototype._createNewRoomElement = function () {
 	this.textAreaOfRoom = sys.createElement("textarea", undefined, "TextBox", undefined, "block", { "rows": "1" })
 	this.textAreaOfRoom.onkeydown = function (event) { chatRoom.engine.sendMessage(event, chatRoom.getRoomIdentifier()); };
 	this.textAreaOfRoom.onfocus = function () {
-	    chatRoom.isRoomOnFocus = true;
-	    //chatRoom.currentMessageSession.clearUnreadMessage(); chatRoom._showOrHideUnreadSing()
+		chatRoom.isRoomOnFocus = true;
+		//chatRoom.currentMessageSession.clearUnreadMessage(); chatRoom._showOrHideUnreadSing()
 	}
 	this.textAreaOfRoom.blur = function () { chatRoom.isRoomOnFocus = false; }
 
@@ -215,9 +215,11 @@ Chat.Objects.ChatRoom.prototype._appendHistoryToMessageContainerElement = functi
 	var curretnMessageElement = message.getMessageElement();
 
 	for (var i = chatRoomMessageSession.getListOfMessages().length - 2; i >= 0; i--) {
-		var currentSessionMessage = chatRoomMessageSession.getMessageAtIndex(i);
+	    var currentSessionMessage = chatRoomMessageSession.getMessageAtIndex(i);
 
-		if (message.getMessageSenderIdentifier() == currentSessionMessage.getMessageSenderIdentifier()) {
+	    diff = Chat.system.dateDiff.inMinutes(Date.tryToParseFromChatFormatString(message.getSendDate()), Date.tryToParseFromChatFormatString(currentSessionMessage.getSendDate()))
+
+	    if (message.getMessageSenderIdentifier() == currentSessionMessage.getMessageSenderIdentifier() && (!sys.isNullOrUndefined(diff) && diff < 1)) {
 
 			message._appendMessageNode(currentSessionMessage, false)
 
@@ -259,12 +261,9 @@ Chat.Objects.ChatRoom.prototype.appendMessageElementToContent = function (messag
 	if (sys.isNullOrUndefined(lastUserMessage))
 		throw Error("There is no message in the array");
 
-	//TODO: add this logic in the below if and test it
-	//var diff = Math.abs(Date.now() - Date.tryToParseFromChatFormatString(message.getSendDate()))
-	//var minutes = Math.floor((diff / 1000) / 60);
-	//&& minutes <= 1
+	diff = Chat.system.dateDiff.inMinutes(Date.tryToParseFromChatFormatString(message.getSendDate()), Date.tryToParseFromChatFormatString(lastUserMessage.getSendDate()))
 
-	if (lastUserMessage.getMessageSenderIdentifier() == message.getMessageSenderIdentifier()) {
+	if (lastUserMessage.getMessageSenderIdentifier() == message.getMessageSenderIdentifier() && (!sys.isNullOrUndefined(diff) && diff <= 1)) {
 		lastUserMessage._appendMessageNode(message)
 
 	} else {
@@ -322,9 +321,11 @@ Chat.Objects.ChatMessage.prototype._createMessageElement = function () {
 	var userMessageElement = sys.createElement("div", "UserMessages", "UserMessages " + additionalClass, undefined, undefined, { "User-Identifier": this.chatUser.getUserIdentifier() });
 	this.imageContentElement = sys.createElement("div", "ImageContainer", "ImageContainer", "<img src'" + this.chatUser.getUserIdentifier() + "_pic.png' class='SenderImg' />");
 
-	this.textMessageContainerElement = sys.createElement("div", "TextMessageContainer", "TextMessageContainer", chatMessageObject.createMessageNodeElement(this).outerHTML, "block", { "Container": "true" });
-	
+	var time = sys.createElement("div", undefined, "TextMessageContainer message-node-timestamp", this.getSendDate());
+	this.textMessageContainerElement = sys.createElement("div", "TextMessageContainer", "TextMessageContainer", chatMessageObject.createMessageNodeElement(this,false).outerHTML, "block", { "Container": "true" });
+
 	sys.AppendChild(userMessageElement, this.imageContentElement);
+	sys.AppendChild(userMessageElement, time);
 	sys.AppendChild(userMessageElement, this.textMessageContainerElement);
 
 	return userMessageElement;
@@ -332,10 +333,17 @@ Chat.Objects.ChatMessage.prototype._createMessageElement = function () {
 Chat.Objects.ChatMessage.prototype._appendMessageNode = function (message, addAtTheEnd)
 {
 	var sys = Chat.system;
-	var messageNode = Chat.Objects.ChatMessage.createMessageNodeElement(message);
-	this.messageNodes.push(message.getMessageText());
+	var messageNode = Chat.Objects.ChatMessage.createMessageNodeElement(message, false);
 
-	sys.AppendChild(this.getTextMessageContainerElement(), messageNode, sys.isNullOrUndefined(addAtTheEnd) ? true : addAtTheEnd);
+	if (sys.isNullOrUndefined(addAtTheEnd)) {
+	    addAtTheEnd = true;
+	}
+	if (addAtTheEnd)
+	    this.messageNodes.push(message);
+	else
+	    this.messageNodes.insert(message);
+
+	sys.AppendChild(this.getTextMessageContainerElement(), messageNode, addAtTheEnd);
 }
 
 //Getters of ChatMessage objects
@@ -345,13 +353,18 @@ Chat.Objects.ChatMessage.prototype.getMessageSenderIdentifier = function(){ retu
 Chat.Objects.ChatMessage.prototype.getMessageText = function () { return this.message }
 Chat.Objects.ChatMessage.prototype.getTextMessageContainerElement = function () { return this.textMessageContainerElement; }
 Chat.Objects.ChatMessage.prototype.getSendDate = function () { return this.sendDate.chatFormat(); }
+Chat.Objects.ChatMessage.prototype.getMessageNotes = function () { return this.messageNodes; }
 
 //Static methods 
-Chat.Objects.ChatMessage.createMessageNodeElement = function (message) {
+Chat.Objects.ChatMessage.createMessageNodeElement = function (message, appendTimestam) {
 	var sys = Chat.system;
-	var messageNode = sys.createElement("div", undefined, "MessageNode", message.getMessageText());
-	var time = sys.createElement("span", undefined, undefined, message.getSendDate(), undefined, { "style": "float:right" });
+	var messageNode = sys.createElement("div", undefined, "MessageNode");
+	
+	var time = sys.createElement("div", undefined, "message-node-timestamp", message.getSendDate(), appendTimestam?"":"none");
 	sys.AppendChild(messageNode, time);
+	
+	var message = sys.createElement("span", undefined, undefined, message.getMessageText());
+	sys.AppendChild(messageNode, message);
 
 	return messageNode;
 }
@@ -901,7 +914,7 @@ Chat.Objects.ChatUserListContainer.prototype.hideSettingsButton = function () { 
 Chat.Objects.ChatUserListContainer.prototype.showSettingsButton = function () { this.settingsButton.style.display = "" }
 Chat.Objects.ChatUserListContainer.prototype.removeUser = function (userIdentifier) {
 	if (this.isContains(userIdentifier)) {
-	    Chat.system.RemoveElmenet(this.userList, this.users[userIdentifier].getHtmlObject());
+		Chat.system.RemoveElmenet(this.userList, this.users[userIdentifier].getHtmlObject());
 		delete this.users[userIdentifier];
 	}
 }

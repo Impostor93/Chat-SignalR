@@ -430,4 +430,3 @@ Chat.Engine._createStartConference = function (settings,engine)
 
     return statusOptions;
 }
-
