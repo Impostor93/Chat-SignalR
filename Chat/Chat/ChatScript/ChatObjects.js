@@ -97,7 +97,7 @@ Chat.Objects.ChatRoom.prototype._createNewRoomElement = function () {
 }
 
 Chat.Objects.ChatRoom.prototype._putUnreadSing = function () {
-	this.roomUnreadedMessageIdentifier.style.backgroundImage = "url(/ChatImage/unreadedMessageIcon.png)";
+	this.roomUnreadedMessageIdentifier.style.backgroundImage = "url(/ChatImage/unreadedMessageIcon.gif)";
 }
 Chat.Objects.ChatRoom.prototype._removeUnreadSing = function () {
 	this.roomUnreadedMessageIdentifier.style.backgroundImage = "";

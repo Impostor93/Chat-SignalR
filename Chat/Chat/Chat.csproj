@@ -214,11 +214,15 @@
     <Compile Include="SignalR\Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ChatImage\add_group-16.png" />
+    <Content Include="ChatImage\blink-background.gif" />
     <Content Include="ChatImage\button-x.png" />
+    <Content Include="ChatImage\chatIcon.png" />
     <Content Include="ChatImage\ChatIcons.png" />
     <Content Include="ChatImage\offline.png" />
     <Content Include="ChatImage\online.png" />
     <Content Include="ChatImage\settingsButton.png" />
+    <Content Include="ChatImage\unreadedMessageIcon.gif" />
     <Content Include="ChatScript\ChatObjects.js" />
     <Content Include="ChatScript\ChatScript.js" />
     <Content Include="ChatScript\Extensions.js" />

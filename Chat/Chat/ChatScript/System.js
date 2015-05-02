@@ -125,30 +125,30 @@ Chat.system.removeEventListener = function (element, event, funk, useCapture) {
 
 Chat.system.isDateInChatFormat = function (date) {
 
-    if (this.isNullOrUndefined(date))
-        return false;
+	if (this.isNullOrUndefined(date))
+		return false;
 
-    var hoursAndDate = date.split("-");
-    if (this.isNullOrUndefined(hoursAndDate) || hoursAndDate.length != 2)
-        return false;
+	var hoursAndDate = date.split("-");
+	if (this.isNullOrUndefined(hoursAndDate) || hoursAndDate.length != 2)
+		return false;
 
-    if (this.isNullOrUndefined(hoursAndDate[0]))
-        return false;
+	if (this.isNullOrUndefined(hoursAndDate[0]))
+		return false;
 
-    var minuteAndHour = hoursAndDate[0].split(":");
-    if (this.isNullOrUndefined(minuteAndHour) || minuteAndHour.length != 2)
-        return false;
+	var minuteAndHour = hoursAndDate[0].split(":");
+	if (this.isNullOrUndefined(minuteAndHour) || minuteAndHour.length != 2)
+		return false;
 
-    
-    if (this.isNullOrUndefined(hoursAndDate[1]))
-        return false;
+	
+	if (this.isNullOrUndefined(hoursAndDate[1]))
+		return false;
 
-    var dateParts = hoursAndDate[1].split("/");
+	var dateParts = hoursAndDate[1].split("/");
 
-    if (this.isNullOrUndefined(dateParts) || dateParts.length != 3)
-        return false;
+	if (this.isNullOrUndefined(dateParts) || dateParts.length != 3)
+		return false;
 
-    return true;
+	return true;
 }
 
 Chat.system.logError = function (error) {
@@ -161,12 +161,12 @@ Chat.system.debugLog = function (error) {
 }
 
 Chat.system.dateDiff = {
-    inMinutes: function (d1, d2) {
-        var diffMs = (d1 - d2);
+	inMinutes: function (d1, d2) {
+		var diffMs = (d1 - d2);
 		return Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
 	},
-    inHours: function (d1, d2) {
-        var diffMs = (d1 - d2);
+	inHours: function (d1, d2) {
+		var diffMs = (d1 - d2);
 		return Math.round((diffMs % 86400000) / 3600000); // hours
 	},
 	inDays: function(d1, d2) {
