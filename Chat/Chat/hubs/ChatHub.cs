@@ -15,9 +15,23 @@ namespace Chat.Hubs
     [HubName("chatHubs")]
     public class ChatHub : Hub, IRequiresSessionState
     {
-        public void Connect()
+        public String Connect(string userIdentifier)
         {
             Clients.Others.GetAllUsers(JsonConvert.SerializeObject(ChatUserManager.ListOfUsers));
+            try
+            {
+                var rooms = new List<ChatRoom>();
+                foreach (var roomIdentifier in ChatUserManager.GetUserRooms(Guid.Parse(userIdentifier)))
+                {
+                    rooms.Add(ChatRoomManager.listOfRooms[roomIdentifier]);
+                }
+                return JsonConvert.SerializeObject(rooms);
+            }
+            catch (Exception ex)
+            {
+                ErrorLoger.Log(ex);
+                return "[]";
+            }
         }
 
         public String OpenRoom(string roomCreator, String[] roomRecipientUserIdentifiers)
@@ -38,7 +52,7 @@ namespace Chat.Hubs
                     userForRoom.Add(ChatUserManager.FindUser(roomRecipientIdentifier));
                 }
 
-                ChatRoom Room = ChatRoomManager.OpenChatRoom(roomCreatorIdentifier, userForRoom.ToArray());
+                ChatRoom Room = ChatRoomManager.OpenChatRoom(ChatUserManager.ListOfUsers[roomCreatorIdentifier], userForRoom.ToArray());
 
                 return Room == null ? "[]" : JsonConvert.SerializeObject(Room);
             }
@@ -49,7 +63,7 @@ namespace Chat.Hubs
             }
         }
 
-        public void CloseRoom(String RoomIdentifier,string strCurrentUserIdentifier)
+        public void CloseRoom(String RoomIdentifier, string strCurrentUserIdentifier)
         {
             try
             {
@@ -70,7 +84,7 @@ namespace Chat.Hubs
             }
         }
 
-        public String SendMessages(string strCurrentUserIdentifier,String Messages, String roomId)
+        public String SendMessages(string strCurrentUserIdentifier, String Messages, String roomId)
         {
             try
             {
@@ -90,12 +104,13 @@ namespace Chat.Hubs
                 var listOfAllMembersOfRoom = new List<string>();
                 var keyValuePaireFromIdentifierAndUnreadedMessage = new Dictionary<Guid, List<Message>>();
 
-                foreach(var userIdentifier in  ChatRoomManager.listOfRooms[roomIdentifier].UsersInRoom)
+                foreach (var userIdentifier in ChatRoomManager.listOfRooms[roomIdentifier].UsersInRoom)
                 {
                     if (!userIdentifier.Equals(strCurrentUserIdentifier))
                     {
                         listOfAllMembersOfRoom.Add(userIdentifier.ToString());
                         keyValuePaireFromIdentifierAndUnreadedMessage.Add(userIdentifier, ChatRoomManager.GetUserMessage(userIdentifier, roomIdentifier));
+                        ChatUserManager.FindUser(userIdentifier).AddRoomToList(userIdentifier);
                     }
                 }
                 foreach (var user in listOfAllMembersOfRoom)
@@ -145,7 +160,16 @@ namespace Chat.Hubs
                 if (SessionFrom != String.Empty)
                     SessionStartDate = Convert.ToDateTime(SessionFrom);
 
-                return JsonConvert.SerializeObject(ChatRoomManager.LoadHistory(RoomIdentifier, SessionStartDate));
+                var lastDBStoretSession = ChatRoomManager.LoadHistory(RoomIdentifier, SessionStartDate);
+
+                if (SessionFrom == string.Empty)
+                {
+                    var room = ChatRoomManager.listOfRooms[RoomIdentifier];
+                    foreach (var message in room.CurrentRoomSession.RoomMessages)
+                        lastDBStoretSession.RoomMessages.Add(message);
+                }
+
+                return JsonConvert.SerializeObject(lastDBStoretSession);
             }
             catch (Exception Ex)
             {
@@ -194,7 +218,7 @@ namespace Chat.Hubs
             }
         }
 
-        public String ChangUserStatus(String IdNewStatus,string userIdentifier)
+        public String ChangUserStatus(String IdNewStatus, string userIdentifier)
         {
             try
             {

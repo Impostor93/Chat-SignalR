@@ -44,10 +44,15 @@ namespace Chat
 
         protected void Session_End(object sender, EventArgs e)
         {
-            Guid UserId = new Guid(Session["UserIdentifier"].ToString());
+            var UserId = new Guid(Session["UserIdentifier"].ToString());
 
-            ChatUserManager.FindUser(UserId).SaveUserState();
-            ChatUserManager.FindUser(UserId).UserStatus.ChangeStatus(Infrastructure.IdTypeStatus.OffLine);
+            var user = ChatUserManager.FindUser(UserId);
+            user.SaveUserState();
+            user.UserStatus.ChangeStatus(Infrastructure.IdTypeStatus.OffLine);
+            foreach (var roomIdentifiers in user.UserRooms)
+            {
+                ChatRoomManager.CloseRoom(roomIdentifiers, user.UserIdentifier);
+            }
         }
 
         protected void Application_End(object sender, EventArgs e)

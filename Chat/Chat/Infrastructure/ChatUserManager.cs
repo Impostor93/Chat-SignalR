@@ -99,7 +99,7 @@ namespace Chat.Infrastructure
 
                     lock (ListOfUsers)
                     {
-                        if (ListOfUsers[UserIdentifier].UserRooms.ContainsKey(RoomIdentifier))
+                        if (ListOfUsers[UserIdentifier].UserRooms.Contains(RoomIdentifier))
                             ListOfUsers[UserIdentifier].UserRooms.Remove(RoomIdentifier);
                     }
                 }catch(ChatException Ex)
@@ -119,8 +119,8 @@ namespace Chat.Infrastructure
                         throw new ChatException("Room is null");
                     lock (ListOfUsers)
                     {
-                        if (!ListOfUsers[UserIdentifier].UserRooms.ContainsKey(Room.RoomIdentifier))
-                            ListOfUsers[UserIdentifier].UserRooms.Add(Room.RoomIdentifier, Room);
+                        if (!ListOfUsers[UserIdentifier].UserRooms.Contains(Room.RoomIdentifier))
+                            ListOfUsers[UserIdentifier].UserRooms.Add(Room.RoomIdentifier);
                     }
                 }
                 catch (ChatException Ex)
@@ -129,15 +129,15 @@ namespace Chat.Infrastructure
                     return;
                 }
             }
-            public static IDictionary<Guid,ChatRoom> GetUserRooms(Guid UserIdentifier)
+            public static HashSet<Guid> GetUserRooms(Guid UserIdentifier)
             {
                 if (!listOfUsers.ContainsKey(UserIdentifier))
                     throw new KeyNotFoundException("UserIdentifier in GetUserRooms");
 
-                Dictionary<Guid, ChatRoom> USerRooms = new Dictionary<Guid, ChatRoom>(listOfUsers[UserIdentifier].UserRooms);
-                listOfUsers[UserIdentifier].UserRooms.Clear();
-               
-                return USerRooms;
+                //var USerRooms = new HashSet<Guid>(listOfUsers[UserIdentifier].UserRooms);
+                //listOfUsers[UserIdentifier].UserRooms.Clear();
+
+                return new HashSet<Guid>(listOfUsers[UserIdentifier].UserRooms);
             }
 
             public static void AddUserToList(ChatUser UserToAdd)

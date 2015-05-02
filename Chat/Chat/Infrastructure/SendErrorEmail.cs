@@ -32,6 +32,7 @@ namespace Chat.Infrastructure
                 SmtpServer.EnableSsl = true;
                 //SmtpServer.Send(Massage);
             #endif
+                ErrorLoger.Log(Ex);
             }
             catch (SmtpException ex)
             {

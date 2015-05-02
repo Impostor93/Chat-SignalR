@@ -66,6 +66,11 @@ namespace Chat.Infrastructure
                 get { return userInRoom; }
                 set { userInRoom = value; }
             }
+            public ChatSessions CurrentRoomSession
+            {
+                get { return currentRoomSession; }
+                set { currentRoomSession = value; }
+            }
             
             #endregion
 

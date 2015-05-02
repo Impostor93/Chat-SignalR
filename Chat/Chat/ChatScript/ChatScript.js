@@ -23,6 +23,8 @@ Chat.Engine = function (currentUserIdentifier)
 {
     var sys = Chat.system;
     
+    this.currentUserIdentifier = currentUserIdentifier;
+
     var chatEngin = this;
     this.roomContainer = new Chat.Objects.ChatRoomContainer(sys.GetElement("Conteiner"), chatEngin)
 
@@ -45,14 +47,15 @@ Chat.Engine.prototype._registrateClientEvents = function (chatHubAsParam, chatEn
     chatHubAsParam.client.showingMassages = function (data, idRoom) { chatEngin.showingMassages(data, idRoom) }
 }
 Chat.Engine.prototype._registrateServerEvents = function (currentUserIdentifier, chatEngin) {
-    this.chatHub.server.connect();
+    this.chatHub.server.connect(currentUserIdentifier).done(function (rooms) { setTimeout(function () { chatEngin.restoreUserOpendRoom(rooms) }, 100); });
     this.chatHub.server.initializeUser(currentUserIdentifier).done(function (Data) { chatEngin.initializeCurrentUser(Data) })
     this.chatHub.server.getAllUsers(currentUserIdentifier).done(function (Data) { chatEngin.loadAllUserList(Data) })
 }
 
 Chat.Engine.prototype.initializeCurrentUser = function (data) {
-
+    
     var currentUserData = JSON.parse(data);
+
     var sys = Chat.system;
     var chatObject = Chat.Objects;
     var status = Chat.Objects.ChatUserStatus.parseStatusFromJson(currentUserData.UserStatus)
@@ -84,6 +87,27 @@ Chat.Engine.prototype.loadAllUserList = function (data, currentUserIdentifier) {
             }
         }
     }
+}
+
+//Because of load history async calling have to call that strange logic
+//to be able to load history correct into the correct room
+Chat.Engine.prototype.restoreUserOpendRoom = function (data) {
+    var opendRooms = JSON.parse(data);
+
+    this._loadRestoreUserRoom(opendRooms, 0);
+}
+Chat.Engine.prototype._loadRestoreUserRoom = function(roomsInJSON, index)
+{
+    if (roomsInJSON.hasOwnProperty(index)) {
+        this.createRoom(JSON.stringify(roomsInJSON[index]))
+    }else{
+        return;
+    }
+    index = index + 1;
+    var engine = this;
+    setTimeout(function () {
+        engine._loadRestoreUserRoom(roomsInJSON, index);
+    }, 300);
 }
 
 Chat.Engine.prototype.openRoomChat = function ()

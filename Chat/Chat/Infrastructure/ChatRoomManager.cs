@@ -30,7 +30,7 @@ namespace Chat.Infrastructure
                 foreach (var userInRoom in listOfRooms[roomIdentifier].UsersInRoom)
                 {
                     var user = ChatUserManager.ListOfUsers[userInRoom];
-                    if (!user.UserRooms.ContainsKey(roomIdentifier))
+                    if (!user.UserRooms.Contains(roomIdentifier))
                         user.SetRoomInListOfRoomOfUser(listOfRooms[roomIdentifier]);
                 }
 
@@ -61,22 +61,26 @@ namespace Chat.Infrastructure
             }
         }
 
-        public static ChatRoom OpenChatRoom(Guid RoomCreatorIdentifier, params ChatUser[] Users)
+        public static ChatRoom OpenChatRoom(ChatUser roomCreator, params ChatUser[] Users)
         {
             try
             {
-                if(RoomCreatorIdentifier == Guid.Empty)
-                    throw new ArgumentException("Incorrect RoomCreatorIdentifier is Guid Empty in StartChat");
+                if (roomCreator == null)
+                    throw new ArgumentNullException("Incorrect RoomCreator is null in StartChat");
 
-                var room = new ChatRoom(ChatUserManager.FindUser(RoomCreatorIdentifier));
+                var room = new ChatRoom(roomCreator);
                 var listOfUser = Users.ToList<ChatUser>();
-                listOfUser.Add(ChatUserManager.FindUser(RoomCreatorIdentifier));
+                listOfUser.Add(roomCreator);
 
                 if (!room.LoadRoom(listOfUser, ChatUserManager.ListOfUsers))
                     return null;
 
                 if (!listOfRooms.ContainsKey(room.RoomIdentifier))
                     listOfRooms.Add(room.RoomIdentifier, room);
+
+
+                if (!roomCreator.UserRooms.Contains(room.RoomIdentifier))
+                    roomCreator.UserRooms.Add(room.RoomIdentifier);
 
                 return room;
             }

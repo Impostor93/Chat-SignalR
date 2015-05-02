@@ -123,6 +123,34 @@ Chat.system.removeEventListener = function (element, event, funk, useCapture) {
 	}
 }
 
+Chat.system.isDateInChatFormat = function (date) {
+
+    if (this.isNullOrUndefined(date))
+        return false;
+
+    var hoursAndDate = date.split("-");
+    if (this.isNullOrUndefined(hoursAndDate) || hoursAndDate.length != 2)
+        return false;
+
+    if (this.isNullOrUndefined(hoursAndDate[0]))
+        return false;
+
+    var minuteAndHour = hoursAndDate[0].split(":");
+    if (this.isNullOrUndefined(minuteAndHour) || minuteAndHour.length != 2)
+        return false;
+
+    
+    if (this.isNullOrUndefined(hoursAndDate[1]))
+        return false;
+
+    var dateParts = hoursAndDate[1].split("/");
+
+    if (this.isNullOrUndefined(dateParts) || dateParts.length != 3)
+        return false;
+
+    return true;
+}
+
 Chat.system.logError = function (error) {
 	console.log(error);
 	//alert(error);

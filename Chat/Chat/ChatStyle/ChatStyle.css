@@ -73,7 +73,7 @@ border: 1px solid silver;
 .ListElment {
     list-style: none;
     float: left;
-    width: 97%;
+    width: 100%;
     border-bottom: 1px solid silver;
     padding-top: 3px;
     padding-bottom: 3px;

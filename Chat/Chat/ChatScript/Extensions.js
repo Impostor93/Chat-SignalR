@@ -98,16 +98,16 @@ if (!Array.prototype.indexOf) {
 //Data time
 Date.prototype.chatFormat = function(){
     var date = this.getDate()
-    var month = this.getMonth();
+    var month = this.getMonth()+1;
     var year = this.getFullYear()
 
     var hour = this.getHours().toString();
     var minutes = this.getMinutes().toString();
 
-    hour = hour.toString().length <= 1?"0"+hour:hour;
-    minutes = minutes.toString().length <= 1 ? "0" + minutes : minutes;
-    date = date.toString().length <= 1 ? "0" + date : date;
-    month = month.toString().length <= 1 ? "0" + month : month;
+    hour = (hour.toString().length <= 1?"0"+hour:hour);
+    minutes = (minutes.toString().length <= 1 ? "0" + minutes : minutes);
+    date = (date.toString().length <= 1 ? "0" + date : date);
+    month = (month.toString().length <= 1 ? "0" + month : month);
 
     return String.stringFormat("{0}:{1} - {2}/{3}/{4}", hour, minutes, date, month, year);   
 }
@@ -120,7 +120,7 @@ Date.tryToParseFromChatFormatString = function(dateTime){
     var minutes = hourAndMinutes[1];
 
     var day = date[0];
-    var month = date[1];
+    var month = date[1]-1;
     var year = date[2];
 
     return new Date(year, month, day, hour, minutes, 0, 0)

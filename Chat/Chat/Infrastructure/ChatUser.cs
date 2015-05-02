@@ -16,7 +16,7 @@ namespace Chat.Infrastructure
             String userName;
             Guid userIdentifier;
             ChatStatus userStatus;
-            Dictionary<Guid, ChatRoom> userRooms;
+            HashSet<Guid> userRooms;
             DateTime lastLogIn;
 
         #endregion
@@ -39,7 +39,7 @@ namespace Chat.Infrastructure
                 idLogin = IdLogin;
                 userName = Name;
                 userIdentifier = Identifier;
-                userRooms = new Dictionary<Guid, ChatRoom>();
+                userRooms = new HashSet<Guid>();
                 userStatus = new ChatStatus();
                 lastLogIn = DateTime.Now;
             }
@@ -66,7 +66,7 @@ namespace Chat.Infrastructure
                get { return userStatus; }
                set { userStatus = value; }
            }
-           public Dictionary<Guid, ChatRoom> UserRooms
+           public HashSet<Guid> UserRooms
            {
                get { return userRooms; }
                set { userRooms = value; }
@@ -97,7 +97,7 @@ namespace Chat.Infrastructure
                    this.idLogin = IdLogin;
                    this.userName = UserName;
                    this.UserStatus = new ChatStatus();
-                   this.userRooms = new Dictionary<Guid, ChatRoom>();
+                   this.userRooms = new HashSet<Guid>();
                    this.lastLogIn = DateTime.Now;
 
                    if (!SaveUserState())
@@ -122,7 +122,7 @@ namespace Chat.Infrastructure
                    this.userIdentifier = Guid.NewGuid();
                    this.userName = UserName;
                    this.UserStatus = new ChatStatus();
-                   this.userRooms = new Dictionary<Guid, ChatRoom>();
+                   this.userRooms = new HashSet<Guid>();
                    this.lastLogIn = DateTime.Now;
 
                    if (!SaveUserState())
@@ -134,15 +134,15 @@ namespace Chat.Infrastructure
                    return true;
                }
 
-               public ChatRoom FineRoomInUserList(Guid IdRoom)
+               public bool CheckIsRoomInUserList(Guid IdRoom)
                {
                    if (IdRoom == null)
                        throw new ArgumentNullException("Parameters IdRoom on CheckInUserRoom method is null");
 
-                   if (userRooms.ContainsKey(IdRoom))
-                       return userRooms[IdRoom];
+                   if (userRooms.Contains(IdRoom))
+                       return true;
                    else
-                       return null;
+                       return false;
                }
 
                public void SetRoomInListOfRoomOfUser(ChatRoom Room)
@@ -150,8 +150,8 @@ namespace Chat.Infrastructure
                    if (Room == null)
                        throw new ArgumentNullException("In SetRoomInListOfRoomOfUser Room is null");
 
-                   if(!userRooms.ContainsKey(Room.RoomIdentifier))
-                       userRooms.Add(Room.RoomIdentifier,Room);
+                   if(!userRooms.Contains(Room.RoomIdentifier))
+                       userRooms.Add(Room.RoomIdentifier);
                }
 
                public override int GetHashCode()
@@ -218,10 +218,18 @@ namespace Chat.Infrastructure
                    if (RoomIdentifier == null || RoomIdentifier == Guid.Empty)
                        throw new ChatException("RoomIdentifier in function RemoveRoomFromList is null or empty");
 
-                   if (this.userRooms.ContainsKey(RoomIdentifier)) 
+                   if (this.userRooms.Contains(RoomIdentifier)) 
                         this.userRooms.Remove(RoomIdentifier);
                }
 
+               public void AddRoomToList(Guid roomIdentifier)
+               {
+                   if (roomIdentifier == null || roomIdentifier == Guid.Empty)
+                       throw new ChatException("RoomIdentifier in function RemoveRoomFromList is null or empty");
+
+                   if (this.userRooms.Contains(roomIdentifier))
+                       this.userRooms.Add(roomIdentifier);
+               }
            #endregion
 
            #region Protected Method
