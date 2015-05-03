@@ -93,21 +93,23 @@ Chat.Engine.prototype.loadAllUserList = function (data, currentUserIdentifier) {
 //to be able to load history correct into the correct room
 Chat.Engine.prototype.restoreUserOpendRoom = function (data) {
     var opendRooms = JSON.parse(data);
+    var index = 0;
+    var engine = this;
 
-    this._loadRestoreUserRoom(opendRooms, 0);
+    this.createRoom(JSON.stringify(opendRooms[index]), function () {
+        engine._loadRestoreUserRoom(opendRooms, index)
+    });
 }
 Chat.Engine.prototype._loadRestoreUserRoom = function(roomsInJSON, index)
 {
-    if (roomsInJSON.hasOwnProperty(index)) {
-        this.createRoom(JSON.stringify(roomsInJSON[index]))
-    }else{
-        return;
+    if (roomsInJSON.hasOwnProperty(index))
+    {
+        var engine = this;
+        index += 1;
+        this.createRoom(JSON.stringify(roomsInJSON[index]),function(){
+            engine._loadRestoreUserRoom(roomsInJSON, index)
+        })
     }
-    index = index + 1;
-    var engine = this;
-    setTimeout(function () {
-        engine._loadRestoreUserRoom(roomsInJSON, index);
-    }, 300);
 }
 
 Chat.Engine.prototype.openRoomChat = function ()
@@ -152,7 +154,7 @@ Chat.Engine.prototype.closeRoom = function (roomIdentifier)
         }
     })
 }
-Chat.Engine.prototype.createRoom = function (data) {
+Chat.Engine.prototype.createRoom = function (data, onFinishLoadingRoomHistory) {
     var sys = Chat.system;
     try {
         if (sys.isEmptyObject(data))
@@ -165,7 +167,7 @@ Chat.Engine.prototype.createRoom = function (data) {
 
             var room = new Chat.Objects.ChatRoom(result.RoomIdentifier, result.RoomName, this);
             this.roomContainer.addRoom(room);
-            this.loadHistory(room.getRoomIdentifier(),true);
+            this.loadHistory(room.getRoomIdentifier(), true, onFinishLoadingRoomHistory);
         }
 
     } catch (ex) {
@@ -293,10 +295,12 @@ Chat.Engine.prototype.chageStatusToUser = function (data) {
     }
 }
 
-Chat.Engine.prototype.loadHistory = function (idRoom, isTrigerOnOpenRoom) {
+Chat.Engine.prototype.loadHistory = function (idRoom, isTrigerOnOpenRoom, onFinishLoadingRoomHistory) {
     var sys = Chat.system;
     var chatContainer = this.roomContainer;
     var chatEngin = this;
+
+    var callBack = function () { if (!sys.isNullOrUndefined(onFinishLoadingRoomHistory)) onFinishLoadingRoomHistory(); }
 
     room = chatContainer.getRoomByIdentifier(idRoom);
 
@@ -304,8 +308,10 @@ Chat.Engine.prototype.loadHistory = function (idRoom, isTrigerOnOpenRoom) {
         room.getRoomSession().setSessionNextDate("");
     
 
-    if (!room.getRoomSession().getCanLoadMoreHistory()) 
+    if (!room.getRoomSession().getCanLoadMoreHistory()) {
+        callBack();
         return;
+    }
     
     this.chatHub.server.loadHistory(idRoom, room.getRoomSession().getSessionNextDate()).done(function (result) {
         result = JSON.parse(result);
@@ -315,6 +321,7 @@ Chat.Engine.prototype.loadHistory = function (idRoom, isTrigerOnOpenRoom) {
 
         if (result.IdRoom == 0) {
             room.getRoomSession().setCanLoadMoreHistory(false);
+            callBack();
             return;
         }
 
@@ -322,10 +329,11 @@ Chat.Engine.prototype.loadHistory = function (idRoom, isTrigerOnOpenRoom) {
         room.getRoomSession().setSessionNextDate(result.SessionStartDate);
 
         if (!sys.isNullOrUndefined(isTrigerOnOpenRoom) && isTrigerOnOpenRoom) {
-            if (!room.getRoomSession().getCanLoadMoreHistory() || room.getRoomMessageContentScrollHeight() > room.getRoomMessageContentHeight())
+            if (!room.getRoomSession().getCanLoadMoreHistory() || room.getRoomMessageContentScrollHeight() > room.getRoomMessageContentHeight()) {
+                callBack();
                 return;
-
-            chatEngin.loadHistory(idRoom, true)
+            }
+            chatEngin.loadHistory(idRoom, true, onFinishLoadingRoomHistory)
         }
     });
 }
