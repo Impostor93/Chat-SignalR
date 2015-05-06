@@ -54,8 +54,8 @@ namespace Chat.Infrastructure
                 IEnumerable<tblRoomMessageSession> roomMessageSesssion;
                 using (var repo = new RoomMessageSessionRepository(new ChatEntities()))
                 {
-                    roomMessageSesssion = new List<tblRoomMessageSession>(repo.GetAndOrderBy(e => e.IdRoom == idRoom && e.SessionStartDate < startDate,
-                        order => order.SessionStartDate, true));
+                    roomMessageSesssion = new List<tblRoomMessageSession>(repo.GetAndOrderBy(e => e.IdRoom == idRoom && e.SessionEndDate < startDate,
+                        order => order.SessionEndDate, true));
                 }
 
                 return roomMessageSesssion;

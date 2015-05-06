@@ -223,8 +223,10 @@ Chat.Engine.prototype.showingMassages = function (data, room) {
 
         var parsedRoomAsJson = JSON.parse(room);
         idRoom = parsedRoomAsJson.RoomIdentifier;
-        if (!this.roomContainer.listOfRoomContains(idRoom) && parsedRoomAsJson.UsersInRoom.contains(Chat.Engine.currentUser.getUserIdentifier()))
+        if (!this.roomContainer.listOfRoomContains(idRoom) && parsedRoomAsJson.UsersInRoom.contains(Chat.Engine.currentUser.getUserIdentifier())) {
             this.createRoom(room)
+            return;
+        }
 
         data = JSON.parse(data);
         var result = data[Chat.Engine.currentUser.getUserIdentifier()];
