@@ -9,18 +9,12 @@ using System.Web;
 using Chat.Common;
 using Chat.DAL;
 using Chat.DAL.Infrastructure.Repositories.ChatRepositories;
-using Chat.Infrastructure;
+using Chat.Services;
 
-namespace Chat.Infrastructure
+namespace Chat.Services
 {
-    class DataBaseFunctions
+    internal class DataBaseFunctions
     {
-
-
-        #region Constructors
-        public DataBaseFunctions() { }
-        #endregion
-
         #region SELECT
 
         public IEnumerable<tblChatRoom> SelectRoomByHashIdentifier(Int32 RoomHashIdentifier)
@@ -95,7 +89,7 @@ namespace Chat.Infrastructure
 
                 using (var repo = new ChatUserLoginRepository(new ChatEntities()))
                 {
-                    return repo.SelectAllAndInclude(e => e.AspAuthenticationUserId == aspAuthenticationUserId,c => c.tblChatUsers).FirstOrDefault();
+                    return repo.SelectAllAndInclude(e => e.AspAuthenticationUserId == aspAuthenticationUserId, c => c.tblChatUsers).FirstOrDefault();
                 }
             }
             catch (SqlException ex)
@@ -109,7 +103,7 @@ namespace Chat.Infrastructure
         {
             try
             {
-                if (userIdentifier == null || userIdentifier == Guid.Empty)
+                if (ChatHelper.IsGuidNullOrEmpty(userIdentifier)) 
                     throw new ChatSqlException("UserIdentifier is null or Guid empty");
 
                 using (var repo = new ChatUserRepository(new ChatEntities()))
@@ -142,7 +136,8 @@ namespace Chat.Infrastructure
                 return null;
             }
         }
-        #endregion
+
+        #endregion SELECT
 
         #region INSERT
 
@@ -190,45 +185,37 @@ namespace Chat.Infrastructure
         public int InsertChatUser(int idLogin, Guid userIdentifier, string chatUserName,
                                             int idChatUserStatus, DateTime lastSeen, string creator)
         {
-            try
+            if (ChatHelper.IsGuidNullOrEmpty(userIdentifier))
+                throw new ChatSqlException("In InsertChatUser UserIdentifier Is Null or Empty");
+
+            if (string.IsNullOrEmpty(chatUserName))
+                throw new ChatSqlException("In InsertChatUser ChatUserName Is Null or Empty");
+
+            if (idChatUserStatus == 0)
+                throw new ChatSqlException("In InsertChatUser IdChatUserStatus Is incorrect");
+
+            if (string.IsNullOrEmpty(creator))
+                throw new ChatSqlException("In InsertChatUser Creator Is Null or Empty");
+
+            var newUser = new tblChatUser()
             {
-                if (userIdentifier == null || userIdentifier == Guid.Empty)
-                    throw new ChatSqlException("In InsertChatUser UserIdentifier Is Null or Empty");
+                IdLogin = idLogin,
+                ChatUserIdentifier = userIdentifier,
+                ChatUserName = chatUserName,
+                IdChatUserStatus = idChatUserStatus,
+                LastSeen = lastSeen,
+                DateCreated = DateTime.Now,
+                DateChange = DateTime.Now,
+                UserName = creator
+            };
 
-                if (String.IsNullOrEmpty(chatUserName))
-                    throw new ChatSqlException("In InsertChatUser ChatUserName Is Null or Empty");
-
-                if (idChatUserStatus == 0)
-                    throw new ChatSqlException("In InsertChatUser IdChatUserStatus Is incorrect");
-
-                if (String.IsNullOrEmpty(creator))
-                    throw new ChatSqlException("In InsertChatUser Creator Is Null or Empty");
-
-                var newUser = new tblChatUser()
-                {
-                    IdLogin = idLogin,
-                    ChatUserIdentifier = userIdentifier,
-                    ChatUserName = chatUserName,
-                    IdChatUserStatus = idChatUserStatus,
-                    LastSeen = lastSeen,
-                    DateCreated = DateTime.Now,
-                    DateChange = DateTime.Now,
-                    UserName = creator
-                };
-
-                using (var repo = new ChatUserRepository(new ChatEntities()))
-                {
-                    repo.Add(newUser);
-                    repo.Save();
-                }
-
-                return newUser.IdUser;
-            }
-            catch (SqlException ex)
+            using (var repo = new ChatUserRepository(new ChatEntities()))
             {
-                SendErrorEmail.SendError(ex, "InsertChatUser");
-                return 0;
+                repo.Add(newUser);
+                repo.Save();
             }
+
+            return newUser.IdUser;
         }
 
         public void InsertChatSession(int idRoom, DateTime sessionStartDate, DateTime sessionEndDate, string sessionMessages, string creator)
@@ -264,57 +251,52 @@ namespace Chat.Infrastructure
                     });
                     repo.Save();
                 }
-
             }
             catch (SqlException ex)
             {
                 SendErrorEmail.SendError(ex, "InsertChatSession");
             }
         }
-        #endregion
+
+        #endregion INSERT
 
         #region UPDATE
-        public Boolean UpdateChatUser(int idUser, string chatUserName, int idChatUserStatus, DateTime lastSeen, string userName)
+
+        public void UpdateChatUser(int idUser, string chatUserName, int idChatUserStatus, DateTime lastSeen, string userName)
         {
-            try
+            if (idUser == 0)
+                throw new ChatSqlException("In UpdateChatUser IdUser Is incorrect");
+
+            if (string.IsNullOrEmpty(chatUserName))
+                throw new ChatSqlException("In UpdateChatUser ChatUserName Is Null or Empty");
+
+            if (idChatUserStatus == 0)
+                throw new ChatSqlException("In UpdateChatUser IdChatUserStatus Is incorrect");
+
+            if (string.IsNullOrEmpty(userName))
+                throw new ChatSqlException("In UpdateChatUser UserName Is Null or Empty");
+
+            using (var repo = new ChatUserRepository(new ChatEntities()))
             {
-                if (idUser == 0)
-                    throw new ChatSqlException("In UpdateChatUser IdUser Is incorrect");
-
-                if (string.IsNullOrEmpty(chatUserName))
-                    throw new ChatSqlException("In UpdateChatUser ChatUserName Is Null or Empty");
-
-                if (idChatUserStatus == 0)
-                    throw new ChatSqlException("In UpdateChatUser IdChatUserStatus Is incorrect");
-
-                if (string.IsNullOrEmpty(userName))
-                    throw new ChatSqlException("In UpdateChatUser UserName Is Null or Empty");
-
-                using (var repo = new ChatUserRepository(new ChatEntities()))
+                repo.Update(e => e.IdUser == idUser, (entity) =>
                 {
-                    repo.Update(e => e.IdUser == idUser, (entity) =>
-                    {
-                        entity.ChatUserName = chatUserName.Trim();
-                        entity.IdChatUserStatus = idChatUserStatus;
-                        entity.UserName = userName;
-                        entity.LastSeen = lastSeen;
+                    entity.ChatUserName = chatUserName.Trim();
+                    entity.IdChatUserStatus = idChatUserStatus;
+                    entity.UserName = userName;
+                    entity.LastSeen = lastSeen;
 
-                        return entity;
-                    });
+                    return entity;
+                });
 
-                    repo.Save();
-                }
+                repo.Save();
             }
-            catch (SqlException ex)
-            {
-                SendErrorEmail.SendError(ex, "InsertNewLogin");
-                return false;
-            }
-            return true;
         }
-        #endregion
+
+
+        #endregion UPDATE
 
         #region Good But not useful for this moment
+
         //public Boolean InsertNewRooms(DataTable dtTable)
         //{
         //    try
@@ -324,7 +306,6 @@ namespace Chat.Infrastructure
 
         //        if (dtNewRoom == null)
         //            throw new ArgumentNullException("In InsertNewRooms  dtNewRoom is null");
-
 
         //        if (dtNewRoom.Rows.Count == 0)
         //            return true;
@@ -358,7 +339,6 @@ namespace Chat.Infrastructure
         //{
         //    try
         //    {
-
         //        if (Rooms == null)
         //            throw new ArgumentNullException("In GeneratDataTableFromRoomMassages Rooms is null");
 
@@ -423,7 +403,6 @@ namespace Chat.Infrastructure
 
         //        foreach (ChatRoom Room in Rooms)
         //        {
-
         //            foreach (Message RoomMassages in Room.getRoomMessages())
         //            {
         //                if (LastInsert > RoomMassages.DateOfSend)
@@ -449,6 +428,7 @@ namespace Chat.Infrastructure
         //        throw new Exception("Exception in DBfile in GeneratDataTableFromRoomMassages method massage is - " + ex.Message);
         //    }
         //}
-        #endregion
+
+        #endregion Good But not useful for this moment
     }
 }

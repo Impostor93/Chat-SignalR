@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
-using System.Linq;
 using System.Net.Mail;
-using System.Text;
 
-namespace Chat.Infrastructure
+namespace Chat.Services
 {
-    class SendErrorEmail
+    internal class SendErrorEmail
     {
         public static void SendError(Exception Ex, String MethodName)
         {
             try
             {
-            #if(debug)
+#if(debug)
                 MailAddress To = new MailAddress("crow_3@abv.bg");
                 MailAddress From = new MailAddress("NoReplay@gmail.bg");
                 MailMessage Massage = new MailMessage(From, To);
@@ -31,7 +28,7 @@ namespace Chat.Infrastructure
 
                 SmtpServer.EnableSsl = true;
                 //SmtpServer.Send(Massage);
-            #endif
+#endif
                 ErrorLoger.Log(Ex);
             }
             catch (SmtpException ex)
@@ -44,14 +41,13 @@ namespace Chat.Infrastructure
                 //WriteErrorOnServer(ex);
                 return;
             }
-
-
         }
+
         public static void SendError(String Error, String MethodName)
         {
             try
             {
-        #if(debug)
+#if(debug)
                 MailAddress To = new MailAddress("crow_3@abv.bg");
                 MailAddress From = new MailAddress("NoReplay@gmail.bg");
                 MailMessage Massage = new MailMessage(From, To);
@@ -68,7 +64,7 @@ namespace Chat.Infrastructure
 
                 SmtpServer.EnableSsl = true;
                 SmtpServer.Send(Massage);
-        #endif
+#endif
                 WriteErrorOnServer(new Exception(Error));
             }
             catch (SmtpException ex)
@@ -86,13 +82,13 @@ namespace Chat.Infrastructure
         public static void WriteErrorOnServer(Exception ex)
         {
             String path = Path.Combine(@"C:\Errors\", String.Format("{0} - {1}a.{2}", "ErrorOnSendingMail", DateTime.Now.ToString().Replace('.', ' ').Replace(':', '-'), "txt"));
-            var content = new List<string>(){ String.Format("{0}\n\n\n{1}", ex.Message, ex.StackTrace) };
-            for (var error = ex.InnerException; error != null; error = error.InnerException )
+            var content = new List<string>() { String.Format("{0}\n\n\n{1}", ex.Message, ex.StackTrace) };
+            for (var error = ex.InnerException; error != null; error = error.InnerException)
             {
                 content.Add(String.Format("{0}\n\n\n{1}", error.Message, error.StackTrace));
             }
 
-                File.WriteAllLines(path, content);
+            File.WriteAllLines(path, content);
         }
     }
 }

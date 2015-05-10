@@ -109,7 +109,7 @@ Date.prototype.chatFormat = function(){
     date = (date.toString().length <= 1 ? "0" + date : date);
     month = (month.toString().length <= 1 ? "0" + month : month);
 
-    return String.stringFormat("{0}:{1} - {2}/{3}/{4}", hour, minutes, date, month, year);   
+    return String.stringFormat("{0}:{1} - {2}/{3}/{4}", hour, minutes, date, month, year);
 }
 Date.tryToParseFromChatFormatString = function(dateTime){
     var parts = dateTime.split("-");

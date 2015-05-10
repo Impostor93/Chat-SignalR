@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNet.SignalR;
-
 namespace Chat.Common
 {
-    public class Extentions
+    public static class Extentions
     {
+        public static bool IsNullOrEmpty(this Guid indentifier) { return indentifier == null || indentifier == Guid.Empty; }
     }
 }

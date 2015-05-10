@@ -1,67 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using System.Text;
+using Chat.Common;
 using Chat.Infrastructure;
+using Chat.Infrastructure.ChatObjects.ChatRooms;
+using Chat.Infrastructure.ChatObjects.ChatUsers;
+using Chat.Services;
 
 namespace Chat.Infrastructure
 {
-    class ChatRoomManager
+    public class ChatRoomManager
     {
-        #region Member
-        public static Dictionary<Guid, ChatRoom> listOfRooms = new Dictionary<Guid, ChatRoom>();
-        #endregion
+        
 
-        #region Proparties
-        #endregion
-
-        #region Constructors
-        #endregion
-
-        #region Methods
-        public static void SendMessage(String Message, Guid SenderIdentifier, Guid roomIdentifier)
-        {
-            try
-            {
-                if (!listOfRooms.ContainsKey(roomIdentifier))
-                    return;
-
-                foreach (var userInRoom in listOfRooms[roomIdentifier].UsersInRoom)
-                {
-                    var user = ChatUserManager.ListOfUsers[userInRoom];
-                    if (!user.UserRooms.Contains(roomIdentifier))
-                        user.SetRoomInListOfRoomOfUser(listOfRooms[roomIdentifier]);
-                }
-
-                lock (listOfRooms)
-                {
-                    listOfRooms[roomIdentifier].AddMessage(Message, ChatUserManager.FindUser(SenderIdentifier), ChatUserManager.ListOfUsers);
-                }
-            }
-            catch (ChatException Ex)
-            {
-                SendErrorEmail.SendError(Ex, "SendMessage");
-                return;
-            }
-        }
-        public static List<Message> GetUserMessage(Guid UserIdentifier, Guid RoomIdentifier)
-        {
-            try
-            {
-                if (UserIdentifier == null || UserIdentifier == Guid.Empty)
-                    throw new ArgumentException("UserIdentifier in GetUserMessage is empty or null");
-
-                return listOfRooms[RoomIdentifier].GetUserUnReadMessages(UserIdentifier);
-            }
-            catch (ChatException Ex)
-            {
-                SendErrorEmail.SendError(Ex, "GetUserMessage");
-                return null;
-            }
-        }
-
-        public static ChatRoom OpenChatRoom(ChatUser roomCreator, params ChatUser[] Users)
+        public static ChatRoom OpenChatRoom(ChatUser roomCreator, params ChatUser[] users)
         {
             try
             {
@@ -69,18 +21,15 @@ namespace Chat.Infrastructure
                     throw new ArgumentNullException("Incorrect RoomCreator is null in StartChat");
 
                 var room = new ChatRoom(roomCreator);
-                var listOfUser = Users.ToList<ChatUser>();
+                var listOfUser = new List<ChatUser>(users);
                 listOfUser.Add(roomCreator);
 
                 if (!room.LoadRoom(listOfUser, ChatUserManager.ListOfUsers))
                     return null;
 
-                if (!listOfRooms.ContainsKey(room.RoomIdentifier))
-                    listOfRooms.Add(room.RoomIdentifier, room);
+                AddToListOfRooms(room.RoomIdentifier, room);
 
-
-                if (!roomCreator.UserRooms.Contains(room.RoomIdentifier))
-                    roomCreator.UserRooms.Add(room.RoomIdentifier);
+                roomCreator.AddRoomToList(room.RoomIdentifier);
 
                 return room;
             }
@@ -91,14 +40,66 @@ namespace Chat.Infrastructure
             }
         }
 
-        public static Boolean CloseRoom(Guid RoomIdentifier,Guid UserIdentifier)
+        public static ChatSessions LoadHistory(Guid roomIdentifier, DateTime sesstionFrom)
         {
             try
             {
-                ChatUserManager.FindUser(UserIdentifier).RemoveRoomFromList(RoomIdentifier);
-                
-                if(ChatRoomManager.listOfRooms.ContainsKey(RoomIdentifier))
-                    ChatRoomManager.listOfRooms[RoomIdentifier].CloseCurrentSession();
+                return FindRoom(roomIdentifier).GetRoomOldMessages(sesstionFrom);
+            }
+            catch (ChatException Ex)
+            {
+                SendErrorEmail.SendError(Ex, "LoadHistory");
+                return null;
+            }
+        }
+
+        public static List<Message> GetUserMessage(Guid userIdentifier, Guid roomIdentifier)
+        {
+            try
+            {
+                return FindRoom(roomIdentifier).GetUserUnReadMessages(userIdentifier);
+            }
+            catch (ChatException Ex)
+            {
+                SendErrorEmail.SendError(Ex, "GetUserMessage");
+                return null;
+            }
+        }
+
+        public static void SendMessage(String message, Guid senderIdentifier, Guid roomIdentifier)
+        {
+            try
+            {
+                if (!listOfRooms.ContainsKey(roomIdentifier))
+                    return;
+
+                foreach (var userInRoom in FindRoom(roomIdentifier).UsersInRoom)
+                {
+                    var user = ChatUserManager.ListOfUsers[userInRoom];
+                    if (!user.UserRooms.Contains(roomIdentifier))
+                        user.AddRoomToList(roomIdentifier);
+                }
+
+                lock (listOfRooms)
+                {
+                    FindRoom(roomIdentifier).AddMessage(message, ChatUserManager.FindUser(senderIdentifier));
+                }
+            }
+            catch (ChatException Ex)
+            {
+                SendErrorEmail.SendError(Ex, "SendMessage");
+                return;
+            }
+        }
+
+        public static Boolean CloseRoom(Guid roomIdentifier, Guid userIdentifier)
+        {
+            try
+            {
+                ChatUserManager.FindUser(userIdentifier).RemoveRoomFromList(roomIdentifier);
+
+                if (listOfRooms.ContainsKey(roomIdentifier))
+                    FindRoom(roomIdentifier).CloseCurrentSession();
             }
             catch (ChatException Ex)
             {
@@ -108,21 +109,27 @@ namespace Chat.Infrastructure
             return true;
         }
 
-        public static ChatSessions LoadHistory(Guid IdRoom, DateTime SesstionFrom)
+        public static ChatRoom FindRoom(Guid roomIdentifier)
         {
-            ChatSessions oldSession = new ChatSessions();
-            try
-            {
-                oldSession = listOfRooms[IdRoom].GetRoomOldMessages(SesstionFrom);
-            }
-            catch (ChatException Ex)
-            {
-                SendErrorEmail.SendError(Ex, "LoadHistory");
+            if (ChatHelper.IsGuidNullOrEmpty(roomIdentifier))
+                throw new ArgumentException("Room identifier is null or empty please provide correct identifier");
+
+            if (listOfRooms.ContainsKey(roomIdentifier))
+                return listOfRooms[roomIdentifier];
+            else
                 return null;
-            }
-            return oldSession;
+        }
+        public static void AddToListOfRooms(Guid identifier, ChatRoom room)
+        {
+            if (!listOfRooms.ContainsKey(room.RoomIdentifier))
+                listOfRooms.Add(room.RoomIdentifier, room);
+        }
+        public static void RemoveToListOfRooms(Guid identifier)
+        {
+            if (!listOfRooms.ContainsKey(identifier))
+                listOfRooms.Remove(identifier);
         }
 
-        #endregion
+        private static Dictionary<Guid, ChatRoom> listOfRooms = new Dictionary<Guid, ChatRoom>();
     }
 }

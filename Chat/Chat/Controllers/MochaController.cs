@@ -1,4 +1,5 @@
 #if DEBUG
+
 namespace Chat.Controllers
 {
     using System.Web.Mvc;
@@ -11,4 +12,5 @@ namespace Chat.Controllers
         }
     }
 }
+
 #endif

@@ -18,7 +18,7 @@ Chat.ConferencePopup.prototype.creatPopup = function (headerText, renderBodyCall
 
     var Header = sys.createElement("div", "PopUpHeder", "PopUpHeder");
 
-    var PopUpCloseButton = sys.createElement("img", "PopUpCloseButton", "PopUpCloseButton", undefined, undefined, {"src" : "/ChatImage/button-x.png"});
+    var PopUpCloseButton = sys.createElement("img", "PopUpCloseButton", "PopUpCloseButton", undefined, undefined, { "src": "/ChatImage/button-x.png" });
     PopUpCloseButton.onclick = function () { popup.closeModalPopUp(); if (!sys.isNullOrUndefined(popup.onCloseCallback)) { popup.onCloseCallback(); } };
 
     var headerInnerHtml = ("<div style='display:table;margin:0 auto;'>" + (headerText != undefined ? headerText : '') + "</div>");
@@ -38,7 +38,7 @@ Chat.ConferencePopup.prototype.creatPopup = function (headerText, renderBodyCall
         }
     }
     sys.AppendChild(buttonWrapper, buttonsDiv);
-   
+
     sys.AppendChild(PanelContent, buttonWrapper);
 
     sys.AppendChild(PanelContent, this.TextContainer);
@@ -49,10 +49,8 @@ Chat.ConferencePopup.prototype.creatPopup = function (headerText, renderBodyCall
     sys.AppendChild(this.popupDiv, PanelContent);
     var Parent = document.body;
     sys.AppendChild(Parent, this.popupDiv);
-
 }
 Chat.ConferencePopup.prototype.closeModalPopUp = function () {
-
     document.body.removeChild(this.popupDiv);
     document.body.parentElement.removeChild(this.smoothBackground);
 }
@@ -83,16 +81,10 @@ Chat.ConferencePopup.prototype.showPopUp = function () {
 //    restoreDataInOriginalContainer(idValueCollection);
 //}
 //PopUp = function (Target, HeaderText, callback) {
-
 //    this.Target = Target;
-    
 
 //    this.CreatePopUp = function ( callback ) {
-        
-
 //    }
-
-    
 
 //    this.CreatePopUp(callback);
 //    this.ShowPopUp();
@@ -111,7 +103,7 @@ Chat.ConferencePopup.prototype.showPopUp = function () {
 //{
 //    var popUpConatainerId = document.getElementById(popUpConatainerId);
 //    var idValueCollection = [];
-    
+
 //    var allFormInputs = popUpConatainerId.getElementsByTagName("input");
 //    idValueCollection = fillCollection(allFormInputs, idValueCollection);
 
@@ -136,5 +128,3 @@ Chat.ConferencePopup.prototype.showPopUp = function () {
 //    for (var j = 0; j < idValueCollection.length;j++)
 //    document.getElementById(idValueCollection[j].id).value = idValueCollection[j].value;
 //}
-
-

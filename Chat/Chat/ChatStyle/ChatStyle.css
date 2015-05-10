@@ -1,5 +1,4 @@
 ﻿body {
-
 }
 .Chat {
 right: 0;
@@ -83,7 +82,7 @@ border: 1px solid silver;
     border-top:1px solid silver;
 }
 .ListElment:hover {
- background-color:rgb(224, 224, 224);   
+ background-color:rgb(224, 224, 224);
 }
 .ListGlobalElment {
     float: left;
@@ -399,7 +398,6 @@ color:white;
   font-weight: 600;
 }
 .close-button-label:hover {
-
     background-image: url(/ChatImage/ChatIcons.png);
     background-position: 42px 601px;
 }

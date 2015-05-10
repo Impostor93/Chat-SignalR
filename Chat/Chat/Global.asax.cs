@@ -6,7 +6,10 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using Chat.Common;
 using Chat.Infrastructure;
+using Chat.Infrastructure.ChatObjects.ChatUsers;
+using Chat.Services;
 
 namespace Chat
 {
@@ -28,7 +31,6 @@ namespace Chat
 
         protected void Application_BeginRequest(object sender, EventArgs e)
         {
-
         }
 
         protected void Application_AuthenticateRequest(object sender, EventArgs e)
@@ -48,7 +50,7 @@ namespace Chat
 
             var user = ChatUserManager.FindUser(UserId);
             user.SaveUserState();
-            user.UserStatus.ChangeStatus(Infrastructure.IdTypeStatus.OffLine);
+            user.UserStatus.ChangeStatus(TypeStatus.OffLine);
             foreach (var roomIdentifiers in user.UserRooms)
             {
                 ChatRoomManager.CloseRoom(roomIdentifiers, user.UserIdentifier);
@@ -59,7 +61,7 @@ namespace Chat
         {
             Guid UserId = new Guid(Session["UserIdentifier"].ToString());
             ChatUserManager.FindUser(UserId).SaveUserState();
-            ChatUserManager.FindUser(UserId).UserStatus.ChangeStatus(Infrastructure.IdTypeStatus.OffLine);
+            ChatUserManager.FindUser(UserId).UserStatus.ChangeStatus(TypeStatus.OffLine);
             //FormsAuthentication.SignOut();
         }
     }

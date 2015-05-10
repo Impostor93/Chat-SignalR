@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Security;
+using System.Web.SessionState;
+using Chat.Common;
+using Chat.Infrastructure;
+using Chat.Infrastructure.ChatObjects.ChatRooms;
+using Chat.Infrastructure.ChatObjects.ChatUsers;
+using Chat.Services;
+using Chat.SignalR;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using Newtonsoft.Json;
-using Chat.Infrastructure;
-using Chat.SignalR;
-using System.Web.SessionState;
 
 namespace Chat.Hubs
 {
@@ -23,7 +27,8 @@ namespace Chat.Hubs
                 var rooms = new List<ChatRoom>();
                 foreach (var roomIdentifier in ChatUserManager.GetUserRooms(Guid.Parse(userIdentifier)))
                 {
-                    rooms.Add(ChatRoomManager.listOfRooms[roomIdentifier]);
+                    var room = ChatRoomManager.FindRoom(roomIdentifier);
+                    rooms.Add(room);
                 }
                 return JsonConvert.SerializeObject(rooms);
             }
@@ -45,14 +50,14 @@ namespace Chat.Hubs
                 var userForRoom = new List<ChatUser>();
                 foreach (var roomRecipientUserIdentifier in roomRecipientUserIdentifiers)
                 {
-                    Guid roomRecipientIdentifier = new Guid();
+                    Guid roomRecipientIdentifier;
                     if (!Guid.TryParse(roomRecipientUserIdentifier, out roomRecipientIdentifier))
                         throw new FormatException("Incorrect RoomRecipient in OpenRoom");
 
                     userForRoom.Add(ChatUserManager.FindUser(roomRecipientIdentifier));
                 }
 
-                ChatRoom Room = ChatRoomManager.OpenChatRoom(ChatUserManager.ListOfUsers[roomCreatorIdentifier], userForRoom.ToArray());
+                ChatRoom Room = ChatRoomManager.OpenChatRoom(ChatUserManager.FindUser(roomCreatorIdentifier), userForRoom.ToArray());
 
                 return Room == null ? "[]" : JsonConvert.SerializeObject(Room);
             }
@@ -91,20 +96,15 @@ namespace Chat.Hubs
                 if (string.IsNullOrEmpty(strCurrentUserIdentifier))
                     return "[]";
 
-                var currentUserIdentifier = new Guid();
-                if (!Guid.TryParse(strCurrentUserIdentifier, out currentUserIdentifier))
-                    throw new FormatException("Incorrect strCurrentUserIdentifier in SendMessages");
-
-                var roomIdentifier = new Guid();
-                if (!Guid.TryParse(roomId, out roomIdentifier))
-                    throw new FormatException("Incorrect RoomRecipient in SendMessages");
+                var currentUserIdentifier = ChatHelper.ConvertStringToGuid(strCurrentUserIdentifier);
+                var roomIdentifier = ChatHelper.ConvertStringToGuid(roomId);
 
                 ChatRoomManager.SendMessage(HttpContext.Current.Server.HtmlEncode(Messages), currentUserIdentifier, roomIdentifier);
 
                 var listOfAllMembersOfRoom = new List<string>();
                 var keyValuePaireFromIdentifierAndUnreadedMessage = new Dictionary<Guid, List<Message>>();
 
-                foreach (var userIdentifier in ChatRoomManager.listOfRooms[roomIdentifier].UsersInRoom)
+                foreach (var userIdentifier in ChatRoomManager.FindRoom(roomIdentifier).UsersInRoom)
                 {
                     if (!userIdentifier.Equals(strCurrentUserIdentifier))
                     {
@@ -115,7 +115,7 @@ namespace Chat.Hubs
                 }
                 foreach (var user in listOfAllMembersOfRoom)
                 {
-                    Clients.User(user).showingMassages(JsonConvert.SerializeObject(keyValuePaireFromIdentifierAndUnreadedMessage), JsonConvert.SerializeObject(ChatRoomManager.listOfRooms[roomIdentifier]));
+                    Clients.User(user).showingMassages(JsonConvert.SerializeObject(keyValuePaireFromIdentifierAndUnreadedMessage), JsonConvert.SerializeObject(ChatRoomManager.FindRoom(roomIdentifier)));
                 }
                 return JsonConvert.SerializeObject(new Message(HttpContext.Current.Server.HtmlEncode(Messages), ChatUserManager.FindUser(currentUserIdentifier)));
             }
@@ -126,17 +126,12 @@ namespace Chat.Hubs
             }
         }
 
-        public String GetMessages(String RoomId, string strCurrentUserIdentifier)
+        public String GetMessages(String roomId, string strCurrentUserIdentifier)
         {
             try
             {
-                Guid currentUserIdentifier = new Guid();
-                if (!Guid.TryParse(strCurrentUserIdentifier, out currentUserIdentifier))
-                    throw new FormatException("Incorrect strCurrentUserIdentifier in GetMessages");
-
-                Guid roomIdentifier = new Guid();
-                if (!Guid.TryParse(RoomId, out roomIdentifier))
-                    throw new FormatException("Incorrect RoomRecipient in GetMessages");
+                var currentUserIdentifier = ChatHelper.ConvertStringToGuid(strCurrentUserIdentifier);
+                var roomIdentifier = ChatHelper.ConvertStringToGuid(roomId);
 
                 return JsonConvert.SerializeObject(ChatRoomManager.GetUserMessage(currentUserIdentifier, roomIdentifier));
             }
@@ -151,10 +146,7 @@ namespace Chat.Hubs
         {
             try
             {
-                Guid RoomIdentifier = new Guid();
-                if (!Guid.TryParse(IdRoom, out RoomIdentifier))
-                    throw new FormatException("Incorrect RoomRecipient in LoadHistory");
-
+                var RoomIdentifier = ChatHelper.ConvertStringToGuid(IdRoom);
                 DateTime SessionStartDate = DateTime.Now;
 
                 if (SessionFrom != String.Empty)
@@ -164,7 +156,7 @@ namespace Chat.Hubs
 
                 if (SessionFrom == string.Empty)
                 {
-                    var room = ChatRoomManager.listOfRooms[RoomIdentifier];
+                    var room = ChatRoomManager.FindRoom(RoomIdentifier);
                     foreach (var message in room.CurrentRoomSession.RoomMessages)
                         lastDBStoretSession.RoomMessages.Add(message);
                 }
@@ -182,9 +174,7 @@ namespace Chat.Hubs
         {
             try
             {
-                Guid currentUserIdentifier = new Guid();
-                if (!Guid.TryParse(strCurrentUserIdentifier, out currentUserIdentifier))
-                    throw new FormatException("Incorrect strCurrentUserIdentifier in GetMessages");
+                var currentUserIdentifier = ChatHelper.ConvertStringToGuid(strCurrentUserIdentifier);
 
                 Dictionary<Guid, ChatUser> AllUser = new Dictionary<Guid, ChatUser>(ChatUserManager.ListOfUsers);
                 AllUser.Remove(currentUserIdentifier);
@@ -205,11 +195,9 @@ namespace Chat.Hubs
                 if (string.IsNullOrEmpty(strCurrentUserIdentifier))
                     return "[]";
 
-                Guid CurrentUserIdentifier = new Guid();
-                if (!Guid.TryParse(strCurrentUserIdentifier, out CurrentUserIdentifier))
-                    throw new FormatException("Incorrect strCurrentUserIdentifier in GetMessages");
+                var currentUserIdentifier = ChatHelper.ConvertStringToGuid(strCurrentUserIdentifier);
 
-                return JsonConvert.SerializeObject(ChatUserManager.FindUser(CurrentUserIdentifier));
+                return JsonConvert.SerializeObject(ChatUserManager.FindUser(currentUserIdentifier));
             }
             catch (Exception Ex)
             {
@@ -218,26 +206,24 @@ namespace Chat.Hubs
             }
         }
 
-        public String ChangUserStatus(String IdNewStatus, string userIdentifier)
+        public String ChangUserStatus(String idStatus, string userIdentifier)
         {
             try
             {
                 if (string.IsNullOrEmpty(userIdentifier))
                     return "[]";
 
-                Guid CurrentUserIdentifier = new Guid();
-                if (!Guid.TryParse(userIdentifier, out CurrentUserIdentifier))
-                    throw new FormatException("Incorrect strCurrentUserIdentifier in GetMessages");
+                var currentUserIdentifier = ChatHelper.ConvertStringToGuid(userIdentifier);
 
                 int idNewStatus = 0;
-                if (!Int32.TryParse(IdNewStatus, out idNewStatus))
+                if (!Int32.TryParse(idStatus, out idNewStatus))
                     return "[]";
 
                 if (idNewStatus > 2)
                     return "[]";
 
-                var user = ChatUserManager.FindUser(CurrentUserIdentifier);
-                user.UserStatus.ChangeStatus((IdTypeStatus)idNewStatus);
+                var user = ChatUserManager.FindUser(currentUserIdentifier);
+                user.UserStatus.ChangeStatus((TypeStatus)idNewStatus);
 
                 Clients.Others.ChangeUserStatus(user);
 
