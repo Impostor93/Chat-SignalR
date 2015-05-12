@@ -44,17 +44,17 @@ namespace Chat.Infrastructure.ChatObjects.ChatRooms
             DateOfSend = DateTime.Now;
         }
 
-        public String MessageContent{get;private set;}
+        public String MessageContent{get; set;}
 
-        public DateTime DateOfSend{get; private set;}
+        public DateTime DateOfSend{get;  set;}
 
-        public Guid SenderIdentifier{get;private set;}
+        public Guid SenderIdentifier{get; set;}
 
-        public String SenderName{get;private set;}
+        public String SenderName{get; set;}
 
         public ChatStatus CurrentSendreStatus { get; set; }
 
-        public string UserName { get; private set; }
+        public string UserName { get;  set; }
 
     }
 }

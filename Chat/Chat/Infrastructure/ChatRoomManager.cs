@@ -114,10 +114,13 @@ namespace Chat.Infrastructure
             if (ChatHelper.IsGuidNullOrEmpty(roomIdentifier))
                 throw new ArgumentException("Room identifier is null or empty please provide correct identifier");
 
-            if (listOfRooms.ContainsKey(roomIdentifier))
-                return listOfRooms[roomIdentifier];
-            else
-                return null;
+            lock (listOfRooms)
+            {
+                if (listOfRooms.ContainsKey(roomIdentifier))
+                    return listOfRooms[roomIdentifier];
+                else
+                    return null;
+            }
         }
         public static void AddToListOfRooms(Guid identifier, ChatRoom room)
         {

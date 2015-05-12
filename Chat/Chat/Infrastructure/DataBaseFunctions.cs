@@ -35,11 +35,11 @@ namespace Chat.Services
             }
         }
 
-        public IEnumerable<tblRoomMessageSession> SelectSession(DateTime startDate, int idRoom)
+        public IEnumerable<tblRoomMessageSession> SelectSession(DateTime sessionEndDate, int idRoom)
         {
             try
             {
-                if (startDate == DateTime.MinValue)
+                if (sessionEndDate == DateTime.MinValue)
                     throw new ChatSqlException("In SelectSession StartDate is incorrect");
 
                 if (idRoom == 0)
@@ -48,8 +48,8 @@ namespace Chat.Services
                 IEnumerable<tblRoomMessageSession> roomMessageSesssion;
                 using (var repo = new RoomMessageSessionRepository(new ChatEntities()))
                 {
-                    roomMessageSesssion = new List<tblRoomMessageSession>(repo.GetAndOrderBy(e => e.IdRoom == idRoom && e.SessionEndDate < startDate,
-                        order => order.SessionEndDate, true));
+                    roomMessageSesssion = new List<tblRoomMessageSession>(repo.GetAndOrderBy(e => e.IdRoom == idRoom && sessionEndDate > e.SessionEndDate,
+                        (order => new { order.SessionEndDate, order.SessionStartDate }), true));
                 }
 
                 return roomMessageSesssion;

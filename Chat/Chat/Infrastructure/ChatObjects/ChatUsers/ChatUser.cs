@@ -118,7 +118,7 @@ namespace Chat.Infrastructure.ChatObjects.ChatUsers
             if (ChatHelper.IsGuidNullOrEmpty(roomIdentifier))
                 throw new ChatException("RoomIdentifier in function RemoveRoomFromList is null or empty");
 
-            if (this.UserRooms.Contains(roomIdentifier))
+            if (!this.UserRooms.Contains(roomIdentifier))
                 this.UserRooms.Add(roomIdentifier);
         }
         public void RemoveRoomFromList(Guid roomIdentifier)

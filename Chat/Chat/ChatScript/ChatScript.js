@@ -305,7 +305,7 @@ Chat.Engine.prototype.loadHistory = function (idRoom, isTrigerOnOpenRoom, onFini
         }
 
         room.loadHistory(Chat.Objects.ChatMessageSession.parseFromJsonResult(result));
-        room.getRoomSession().setSessionNextDate(result.SessionStartDate);
+        room.getRoomSession().setSessionNextDate(result.SessionEndDate);
 
         if (!sys.isNullOrUndefined(isTrigerOnOpenRoom) && isTrigerOnOpenRoom) {
             if (!room.getRoomSession().getCanLoadMoreHistory() || room.getRoomMessageContentScrollHeight() > room.getRoomMessageContentHeight()) {
