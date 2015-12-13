@@ -22,8 +22,10 @@ namespace Chat.Infrastructure.ChatObjects.ChatUsers
         public string UserName { get; private set; }
         public ChatStatus UserStatus { get; private set; }
 
-        public HashSet<Guid> UserRooms { get; private set; }
+        public HashSet<Guid> UserRoomIdentifiers { get; private set; }
         public DateTime LastLogIn { get; private set; }
+
+        public string CurrentConnectionId { get; set; }
 
         public ChatUser()
             : this(string.Empty, 0, 0, Guid.Empty)
@@ -39,7 +41,7 @@ namespace Chat.Infrastructure.ChatObjects.ChatUsers
             IdLogin = idLogin;
             UserName = name;
             UserIdentifier = identifier;
-            UserRooms = new HashSet<Guid>();
+            UserRoomIdentifiers = new HashSet<Guid>();
             UserStatus = new ChatStatus();
             LastLogIn = DateTime.Now;
         }
@@ -118,23 +120,23 @@ namespace Chat.Infrastructure.ChatObjects.ChatUsers
             if (ChatHelper.IsGuidNullOrEmpty(roomIdentifier))
                 throw new ChatException("RoomIdentifier in function RemoveRoomFromList is null or empty");
 
-            if (!this.UserRooms.Contains(roomIdentifier))
-                this.UserRooms.Add(roomIdentifier);
+            if (!this.UserRoomIdentifiers.Contains(roomIdentifier))
+                this.UserRoomIdentifiers.Add(roomIdentifier);
         }
         public void RemoveRoomFromList(Guid roomIdentifier)
         {
             if (ChatHelper.IsGuidNullOrEmpty(roomIdentifier))
                 throw new ChatException("RoomIdentifier in function RemoveRoomFromList is null or empty");
 
-            if (this.UserRooms.Contains(roomIdentifier))
-                this.UserRooms.Remove(roomIdentifier);
+            if (this.UserRoomIdentifiers.Contains(roomIdentifier))
+                this.UserRoomIdentifiers.Remove(roomIdentifier);
         }
         public bool UserRoomsContains(Guid roomIdentifier)
         {
             if (ChatHelper.IsGuidNullOrEmpty(roomIdentifier))
                 throw new ArgumentNullException("Parameters IdRoom on CheckInUserRoom method is null");
 
-            return UserRooms.Contains(roomIdentifier);
+            return UserRoomIdentifiers.Contains(roomIdentifier);
         }
 
         protected Boolean TryToLoadUserDataByLogin(int IdLogin)

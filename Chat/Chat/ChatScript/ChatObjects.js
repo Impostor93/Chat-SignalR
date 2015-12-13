@@ -11,6 +11,7 @@ Chat.Objects.ChatRoom = function ChatRoom(roomIdentifier, roomName, engine) {
 	this.roomIdentifier = roomIdentifier;
 	this.roomName = this._parseRoomName(roomName);
 	this.engine = engine;
+
 	this.conversationPartElement = "";
 	this.roomContentElement = "";
 	this.roomHeaderElement = "";
@@ -206,7 +207,7 @@ Chat.Objects.ChatRoom.prototype.appendMessageElementToContent = function (messag
 	var diff = Chat.system.dateDiff.inMinutes(Date.tryToParseFromChatFormatString(message.getSendDate()), Date.tryToParseFromChatFormatString(lastUserMessage.getSendDate()))
 
 	if (lastUserMessage.getMessageSenderIdentifier() == message.getMessageSenderIdentifier() && (!sys.isNullOrUndefined(diff) && diff <= 1)) {
-		lastUserMessage._appendMessageNode(message)
+		lastUserMessage._appendMessageNode(message);
 	} else {
 		this._appendMessageElementToContent(message);
 	}
@@ -222,6 +223,10 @@ Chat.Objects.ChatRoom.prototype.isScrollAtTheBottom = function () {
 Chat.Objects.ChatRoom.prototype.isScrollInTheBufferArea = function () {
 	return Chat.Objects.ChatRoom.messagesElementScrollBufferArea > (this.messageContent.scrollHeight - this.messageContent.scrollTop - this.messageContent.clientHeight);
 }
+Chat.Objects.ChatRoom.prototype.hasRoomContentScroll = function () {
+	return this.getRoomMessageContentScrollHeight() > this.getRoomMessageContentHeight()
+}
+
 
 Chat.Objects.ChatRoom.prototype._putUnreadSing = function () {
 	this.roomUnreadedMessageIdentifier.style.backgroundImage = "url(/ChatImage/unreadedMessageIcon.gif)";

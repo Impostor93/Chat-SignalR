@@ -137,7 +137,7 @@ namespace Chat.Infrastructure
             if (!listOfUsers.ContainsKey(userIdentifier))
                 throw new KeyNotFoundException("UserIdentifier in GetUserRooms");
 
-            return new HashSet<Guid>(listOfUsers[userIdentifier].UserRooms);
+            return new HashSet<Guid>(listOfUsers[userIdentifier].UserRoomIdentifiers);
         }
         public static void RemoveRoomFromUserList(Guid userIdentifier, Guid roomIdentifier)
         {

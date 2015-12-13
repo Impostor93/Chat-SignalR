@@ -51,7 +51,7 @@ namespace Chat
             var user = ChatUserManager.FindUser(UserId);
             user.SaveUserState();
             user.UserStatus.ChangeStatus(TypeStatus.OffLine);
-            foreach (var roomIdentifiers in user.UserRooms)
+            foreach (var roomIdentifiers in user.UserRoomIdentifiers)
             {
                 ChatRoomManager.CloseRoom(roomIdentifiers, user.UserIdentifier);
             }

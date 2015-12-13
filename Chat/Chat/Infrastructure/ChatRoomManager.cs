@@ -76,7 +76,7 @@ namespace Chat.Infrastructure
                 foreach (var userInRoom in FindRoom(roomIdentifier).UsersInRoom)
                 {
                     var user = ChatUserManager.ListOfUsers[userInRoom];
-                    if (!user.UserRooms.Contains(roomIdentifier))
+                    if (!user.UserRoomIdentifiers.Contains(roomIdentifier))
                         user.AddRoomToList(roomIdentifier);
                 }
 

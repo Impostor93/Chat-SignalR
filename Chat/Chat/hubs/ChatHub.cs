@@ -25,7 +25,10 @@ namespace Chat.Hubs
             try
             {
                 var rooms = new List<ChatRoom>();
-                foreach (var roomIdentifier in ChatUserManager.GetUserRooms(Guid.Parse(userIdentifier)))
+                var user = ChatUserManager.FindUser(ChatHelper.ConvertStringToGuid(userIdentifier));
+                //user.CurrentConnectionId = Context.ConnectionId;
+
+                foreach (var roomIdentifier in user.UserRoomIdentifiers)
                 {
                     var room = ChatRoomManager.FindRoom(roomIdentifier);
                     rooms.Add(room);
@@ -101,22 +104,26 @@ namespace Chat.Hubs
 
                 ChatRoomManager.SendMessage(HttpContext.Current.Server.HtmlEncode(Messages), currentUserIdentifier, roomIdentifier);
 
-                var listOfAllMembersOfRoom = new List<string>();
+                var listOfConnectionIdsOfUsersInRoom = new List<string>();
                 var keyValuePaireFromIdentifierAndUnreadedMessage = new Dictionary<Guid, List<Message>>();
 
                 foreach (var userIdentifier in ChatRoomManager.FindRoom(roomIdentifier).UsersInRoom)
                 {
                     if (!userIdentifier.Equals(strCurrentUserIdentifier))
                     {
-                        listOfAllMembersOfRoom.Add(userIdentifier.ToString());
                         keyValuePaireFromIdentifierAndUnreadedMessage.Add(userIdentifier, ChatRoomManager.GetUserMessage(userIdentifier, roomIdentifier));
-                        ChatUserManager.FindUser(userIdentifier).AddRoomToList(userIdentifier);
+                        
+                        var user = ChatUserManager.FindUser(userIdentifier);
+                        user.AddRoomToList(roomIdentifier);
+                        listOfConnectionIdsOfUsersInRoom.Add(user.UserIdentifier.ToString());
                     }
                 }
-                foreach (var user in listOfAllMembersOfRoom)
+                foreach (var connectionId in listOfConnectionIdsOfUsersInRoom)
                 {
-                    Clients.User(user).showingMassages(JsonConvert.SerializeObject(keyValuePaireFromIdentifierAndUnreadedMessage), JsonConvert.SerializeObject(ChatRoomManager.FindRoom(roomIdentifier)));
+                    Clients.User(connectionId).showingMassages(JsonConvert.SerializeObject(keyValuePaireFromIdentifierAndUnreadedMessage),
+                        JsonConvert.SerializeObject(ChatRoomManager.FindRoom(roomIdentifier)));
                 }
+
                 return JsonConvert.SerializeObject(new Message(HttpContext.Current.Server.HtmlEncode(Messages), ChatUserManager.FindUser(currentUserIdentifier)));
             }
             catch (Exception Ex)
@@ -176,10 +183,10 @@ namespace Chat.Hubs
             {
                 var currentUserIdentifier = ChatHelper.ConvertStringToGuid(strCurrentUserIdentifier);
 
-                Dictionary<Guid, ChatUser> AllUser = new Dictionary<Guid, ChatUser>(ChatUserManager.ListOfUsers);
-                AllUser.Remove(currentUserIdentifier);
+                var allUser = new Dictionary<Guid, ChatUser>(ChatUserManager.ListOfUsers);
+                allUser.Remove(currentUserIdentifier);
 
-                return JsonConvert.SerializeObject(AllUser.Values);
+                return JsonConvert.SerializeObject(allUser.Values);
             }
             catch (Exception Ex)
             {
